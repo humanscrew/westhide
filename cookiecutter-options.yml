@@ -1,0 +1,9 @@
+default_context:
+    project_name: "westhide"
+    app_name: "myapi"
+    python_version: "3.8"
+    admin_user_username: "westhide"
+    admin_user_email: "tibetourist@gmail.com"
+    admin_user_password: "westhide"
+    use_celery: "yes"
+    wsgi_server: "gunicorn"

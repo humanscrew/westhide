@@ -1,0 +1,55 @@
+from sqlalchemy.ext.hybrid import hybrid_property
+
+from myapi.extensions import db, pwd_context
+
+from datetime import datetime
+
+Map_User_CompanyGroup = db.Table(
+    "map_user2company_group",
+    db.Column("id", db.Integer, primary_key=True),
+    db.Column("user_id", db.Integer, db.ForeignKey('user.id')),
+    db.Column("company_group_id", db.Integer, db.ForeignKey('company_group.id'))
+)
+
+
+Map_User_SubsidiaryCompany = db.Table(
+    "map_user2subsidiary_company",
+    db.Column("id", db.Integer, primary_key=True),
+    db.Column("user_id", db.Integer, db.ForeignKey('user.id')),
+    db.Column("subsidiary_company_id", db.Integer, db.ForeignKey('subsidiary_company.id'))
+)
+
+
+class User(db.Model):
+    """Basic user model"""
+    __tablename__ = "user"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(80), unique=True, nullable=False)
+    _password = db.Column("password", db.String(255), nullable=False)
+    active = db.Column(db.Boolean, default=True)
+    create_time = db.Column(db.DATETIME, default=datetime.now)
+
+    company_group = db.relationship(
+        'CompanyGroup',
+        secondary=Map_User_CompanyGroup,
+        back_populates="user",
+        lazy='dynamic'
+    )
+    subsidiary_company = db.relationship(
+        'SubsidiaryCompany',
+        secondary=Map_User_SubsidiaryCompany,
+        back_populates="user",
+        lazy='dynamic'
+    )
+
+    @hybrid_property
+    def password(self):
+        return self._password
+
+    @password.setter
+    def password(self, value):
+        self._password = pwd_context.hash(value)
+
+    def __repr__(self):
+        return "<User %s>" % self.username
