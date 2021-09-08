@@ -9,8 +9,7 @@ from myapi.models.user import User
 
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from flask import request, jsonify
-
+from flask import request
 from flask_restful import Resource
 
 
@@ -35,10 +34,12 @@ class RSA:
         return decryptText
 
     def setRSAKey(self, username):
-        user = User.query.filter_by(username=username).first_or_404()
-        user_id = user.user_id
-        publicKey, privateKey = self.createRSA()
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return None
+        user_id = user.id
         rsa = user.utils_rsa
+        publicKey, privateKey = self.createRSA()
         if rsa:
             schema = RSASchema(partial=True)
             rsa = schema.load(
@@ -51,8 +52,8 @@ class RSA:
         db.session.commit()
         return publicKey
 
-    def getRSAKey(self, user_id):
-        RSAKey = RSAModel.query.filter_by(user_id=user_id).first_or_404()
+    def getRSAKey(self, user):
+        RSAKey = RSAModel.query.filter_by(user_id=user).first() or User.query.filter_by(username=user).first().utils_rsa
         return {
             "publicKey": RSAKey.public_key,
             "privateKey": RSAKey.private_key
@@ -66,7 +67,7 @@ class RSAModel(db.Model):
     public_key = db.Column(db.Text, nullable=False)
     _private_key = db.Column("private_key", db.Text, nullable=False)
 
-    user = db.relationship('User', backref="utils_rsa",  uselist=False, lazy='joined')
+    user = db.relationship('User', backref=db.backref("utils_rsa", uselist=False),  uselist=False, lazy='joined')
 
     @hybrid_property
     def private_key(self):
@@ -96,4 +97,6 @@ class RSAResource(Resource):
     def post(self):
         username = request.json.get("username")
         publicKey = RSA().setRSAKey(username)
-        return jsonify({"publicKey": publicKey})
+        if not publicKey:
+            return {"msg": "用户名错误"}, 400
+        return {"publicKey": publicKey}

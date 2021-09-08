@@ -1,0 +1,5 @@
+{
+  "workbench.settings.editor": "json",
+  "python.linting.pylintEnabled": true,
+  "python.linting.enabled": true
+}

@@ -10,9 +10,9 @@ from flask_jwt_extended import (
 from myapi.models import User
 from myapi.extensions import pwd_context, jwt, apispec
 from myapi.auth.helpers import revoke_token, is_token_revoked, add_token_to_database
+from myapi.utils.aes import AES
 
-
-blueprint = Blueprint("auth", __name__, url_prefix="/auth")
+blueprint = Blueprint("auth", __name__, url_prefix="/westhide/auth")
 
 
 @blueprint.route("/login", methods=["POST"])
@@ -58,20 +58,26 @@ def login():
         return jsonify({"msg": "Missing JSON in request"}), 400
 
     username = request.json.get("username", None)
-    password = request.json.get("password", None)
-    if not username or not password:
+    passwordWithAES = request.json.get("password", None)
+    if not username or not passwordWithAES:
         return jsonify({"msg": "Missing username or password"}), 400
 
     user = User.query.filter_by(username=username).first()
-    if user is None or not pwd_context.verify(password, user.password):
-        return jsonify({"msg": "Bad credentials"}), 400
+    if not user:
+        return jsonify({"msg": "用户名错误"}), 400
+
+    user_id = user.id
+    aesKeyWithRSA = request.json.get("aesKey")
+    password, _aesKey = AES().decryptWithRSA(passwordWithAES, aesKeyWithRSA, user_id)
+    if not pwd_context.verify(password, user.password):
+        return jsonify({"msg": "密码错误"}), 400
 
     access_token = create_access_token(identity=user.id)
     refresh_token = create_refresh_token(identity=user.id)
     add_token_to_database(access_token, app.config["JWT_IDENTITY_CLAIM"])
     add_token_to_database(refresh_token, app.config["JWT_IDENTITY_CLAIM"])
 
-    ret = {"access_token": access_token, "refresh_token": refresh_token}
+    ret = {"access_token": access_token, "refresh_token": refresh_token, "msg": "登录成功"}
     return jsonify(ret), 200
 
 

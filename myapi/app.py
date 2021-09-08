@@ -1,17 +1,16 @@
 from flask import Flask
-from myapi import api
-from myapi import auth
-from myapi import utils
-from myapi.extensions import apispec
-from myapi.extensions import db
-from myapi.extensions import jwt
-from myapi.extensions import migrate, celery
+from flask_cors import CORS
+
+from myapi import api, auth, utils
+from myapi.extensions import apispec, celery, db, jwt, migrate
 
 
 def create_app(testing=False):
     """Application factory, used to create application"""
     app = Flask("myapi")
     app.config.from_object("myapi.config")
+
+    CORS(app, supports_credentials=True)
 
     if testing is True:
         app.config["TESTING"] = True
