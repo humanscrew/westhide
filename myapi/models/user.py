@@ -11,12 +11,18 @@ Map_User_CompanyGroup = db.Table(
     db.Column("company_group_id", db.Integer, db.ForeignKey('company_group.id'))
 )
 
-
 Map_User_SubsidiaryCompany = db.Table(
     "map_user2subsidiary_company",
     db.Column("id", db.Integer, primary_key=True),
     db.Column("user_id", db.Integer, db.ForeignKey('user.id')),
     db.Column("subsidiary_company_id", db.Integer, db.ForeignKey('subsidiary_company.id'))
+)
+
+Map_User_Role = db.Table(
+    "map_user2role",
+    db.Column("id", db.Integer, primary_key=True),
+    db.Column("user_id", db.Integer, db.ForeignKey('user.id')),
+    db.Column("role_id", db.Integer, db.ForeignKey('role.id'))
 )
 
 
@@ -29,6 +35,8 @@ class User(db.Model):
     _password = db.Column("password", db.String(255), nullable=False)
     active = db.Column(db.Boolean, default=True)
     create_time = db.Column(db.DATETIME, default=datetime.now)
+    user_code = db.Column(db.Integer, unique=True, nullable=False)
+    real_name = db.Column(db.String(80), nullable=False)
 
     company_group = db.relationship(
         'CompanyGroup',
@@ -39,6 +47,12 @@ class User(db.Model):
     subsidiary_company = db.relationship(
         'SubsidiaryCompany',
         secondary=Map_User_SubsidiaryCompany,
+        back_populates="user",
+        lazy='dynamic'
+    )
+    role = db.relationship(
+        'Role',
+        secondary=Map_User_Role,
         back_populates="user",
         lazy='dynamic'
     )

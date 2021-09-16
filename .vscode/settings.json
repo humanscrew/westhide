@@ -1,5 +1,17 @@
 {
   "workbench.settings.editor": "json",
   "python.linting.pylintEnabled": true,
-  "python.linting.enabled": true
+  "python.linting.enabled": true,
+  "cSpell.words": [
+    "abcdsxyzhkj",
+    "getenv",
+    "jsonify",
+    "myapi",
+    "onupdate",
+    "PKCS",
+    "prefered",
+    "pymysql",
+    "sqla",
+    "unpad"
+  ]
 }

@@ -48,7 +48,7 @@ class CooperateCompany(db.Model):
     status = db.Column(
         db.String(2),
         server_default="1",
-        comment="1=onsave;2=submitted;3=verified;4=to be modified;5=modified;6=abandon;"
+        comment="1=on save;2=submitted;3=verified;4=to be modified;5=modified;6=abandon;"
     )
 
     create_user = db.relationship("User", foreign_keys=[create_user_id])
