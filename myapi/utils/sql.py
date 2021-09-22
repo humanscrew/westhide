@@ -26,7 +26,7 @@ class SQL:
 
     def executeSQL(self, sql=''):
         if not (sql):
-            return {'data': '', 'status': False, 'msg': 'sql语句为空！'}
+            return {'data': '', 'status': False, 'message': 'sql语句为空！'}
         try:
             connection = self.make_connection()
             cursor = connection.cursor(pymysql.cursors.DictCursor)
@@ -35,9 +35,9 @@ class SQL:
             connection.commit()
             cursor.close()
             connection.close()
-            return {'data': sqlresult, 'status': True, 'msg': '数据库操作成功！'}
+            return {'data': sqlresult, 'status': True, 'message': '数据库操作成功！'}
         except:
-            return {'data': '', 'status': False, 'msg': '数据库操作失败！'}
+            return {'data': '', 'status': False, 'message': '数据库操作失败！'}
 
 
 class SQLResource(Resource):

@@ -98,5 +98,5 @@ class RSAResource(Resource):
         username = request.json.get("username")
         publicKey = RSA().setRSAKey(username)
         if not publicKey:
-            return {"msg": "用户名错误"}, 400
+            return {"message": "用户名错误"}, 400
         return {"publicKey": publicKey}

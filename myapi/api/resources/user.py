@@ -49,7 +49,7 @@ class UserResource(Resource):
               schema:
                 type: object
                 properties:
-                  msg:
+                  message:
                     type: string
                     example: user updated
                   user: UserSchema
@@ -70,7 +70,7 @@ class UserResource(Resource):
               schema:
                 type: object
                 properties:
-                  msg:
+                  message:
                     type: string
                     example: user deleted
         404:
@@ -91,14 +91,14 @@ class UserResource(Resource):
 
         db.session.commit()
 
-        return {"msg": "user updated", "user": schema.dump(user)}
+        return {"message": "user updated", "user": schema.dump(user)}
 
     def delete(self, user_id):
         user = User.query.get_or_404(user_id)
         db.session.delete(user)
         db.session.commit()
 
-        return {"msg": "user deleted"}
+        return {"message": "user deleted"}
 
 
 class UserList(Resource):
@@ -136,7 +136,7 @@ class UserList(Resource):
               schema:
                 type: object
                 properties:
-                  msg:
+                  message:
                     type: string
                     example: user created
                   user: UserSchema
@@ -156,4 +156,4 @@ class UserList(Resource):
         db.session.add(user)
         db.session.commit()
 
-        return {"msg": "user created", "user": schema.dump(user)}, 201
+        return {"message": "user created", "user": schema.dump(user)}, 201

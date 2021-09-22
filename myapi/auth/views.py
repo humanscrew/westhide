@@ -55,29 +55,29 @@ def login():
       security: []
     """
     if not request.is_json:
-        return jsonify({"msg": "Missing JSON in request"}), 400
+        return jsonify({"message": "Missing JSON in request"}), 400
 
     username = request.json.get("username", None)
     passwordWithAES = request.json.get("password", None)
     if not username or not passwordWithAES:
-        return jsonify({"msg": "Missing username or password"}), 400
+        return jsonify({"message": "Missing username or password"}), 400
 
     user = User.query.filter_by(username=username).first()
     if not user:
-        return jsonify({"msg": "用户名错误"}), 400
+        return jsonify({"message": "用户名错误"}), 400
 
     user_id = user.id
     aesKeyWithRSA = request.json.get("aesKey")
     password, _aesKey = AES().decryptWithRSA(passwordWithAES, aesKeyWithRSA, user_id)
     if not pwd_context.verify(password, user.password):
-        return jsonify({"msg": "密码错误"}), 400
+        return jsonify({"message": "密码错误"}), 400
 
     access_token = create_access_token(identity=user.id)
     refresh_token = create_refresh_token(identity=user.id)
     add_token_to_database(access_token, app.config["JWT_IDENTITY_CLAIM"])
     add_token_to_database(refresh_token, app.config["JWT_IDENTITY_CLAIM"])
 
-    ret = {"access_token": access_token, "refresh_token": refresh_token, "msg": "登录成功"}
+    ret = {"access_token": access_token, "refresh_token": refresh_token, "message": "登录成功"}
     return jsonify(ret), 200
 
 
