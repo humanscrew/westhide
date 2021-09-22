@@ -26,7 +26,7 @@ class SQL:
 
     def executeSQL(self, sql=''):
         if not (sql):
-            return {'data': '', 'status': False, 'message': 'sql语句为空！'}
+            return {'result': '', 'status': False, 'message': 'sql语句为空！'}
         try:
             connection = self.make_connection()
             cursor = connection.cursor(pymysql.cursors.DictCursor)
@@ -35,9 +35,9 @@ class SQL:
             connection.commit()
             cursor.close()
             connection.close()
-            return {'data': sqlresult, 'status': True, 'message': '数据库操作成功！'}
+            return {'result': sqlresult, 'status': True, 'message': '数据库操作成功！'}
         except:
-            return {'data': '', 'status': False, 'message': '数据库操作失败！'}
+            return {'result': '', 'status': False, 'message': '数据库操作失败！'}
 
 
 class SQLResource(Resource):
@@ -51,7 +51,7 @@ class SQLResource(Resource):
         user_id = get_jwt_identity()
         sql, _aesKey = AES().decryptWithRSA(sqlWithAES, aesKeyWithRSA, user_id)
         sqlresult = SQL().executeSQL(sql)
-        sqlresultData = sqlresult.get('data')
+        sqlresultData = sqlresult.get('result')
         if sqlresultData:
-            sqlresult["data"] = AES().encrypt(jsonify(sqlresultData), _aesKey)
+            sqlresult["result"] = AES().encrypt(jsonify(sqlresultData), _aesKey)
         return jsonify(sqlresult)
