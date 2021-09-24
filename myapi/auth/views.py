@@ -10,7 +10,9 @@ from flask_jwt_extended import (
 from myapi.models import User
 from myapi.extensions import pwd_context, jwt, apispec
 from myapi.auth.helpers import revoke_token, is_token_revoked, add_token_to_database
-from myapi.utils.aes import AES
+from myapi.utils.rsa import RSA
+from myapi.utils.aes import encryptResponse
+
 
 blueprint = Blueprint("auth", __name__, url_prefix="/westhide/auth")
 
@@ -55,22 +57,28 @@ def login():
       security: []
     """
     if not request.is_json:
-        return jsonify({"message": "Missing JSON in request"}), 400
+        return jsonify({"message": "Missing JSON in request"}), 405
 
-    username = request.json.get("username", None)
-    passwordWithAES = request.json.get("password", None)
+    requestData = request.json
+    username = requestData.get("username", None)
+    passwordWithAES = requestData.get("password", None)
     if not username or not passwordWithAES:
-        return jsonify({"message": "Missing username or password"}), 400
+        return jsonify({"message": "Missing username or password"}), 401
 
     user = User.query.filter_by(username=username).first()
     if not user:
-        return jsonify({"message": "用户名错误"}), 400
+        return jsonify({"message": "用户名错误"}), 401
 
     user_id = user.id
-    aesKeyWithRSA = request.json.get("aesKey")
-    password, _aesKey = AES().decryptWithRSA(passwordWithAES, aesKeyWithRSA, user_id)
+    aesKeyWithRSA = requestData.get("aesKey")
+    aesIVWithRSA = requestData.get("aesIV")
+    if not aesKeyWithRSA or not aesIVWithRSA:
+        return jsonify({"message": "密钥缺失"}), 401
+    password,  __aesKey, __aesIV = RSA().decryptWithRSA(passwordWithAES, aesKeyWithRSA, aesIVWithRSA, user_id)
+    requestData.update(aesKey=__aesKey, aesIV=__aesIV)
+
     if not pwd_context.verify(password, user.password):
-        return jsonify({"message": "密码错误"}), 400
+        return jsonify({"message": "密码错误"}), 401
 
     access_token = create_access_token(identity=user.id)
     refresh_token = create_refresh_token(identity=user.id)
@@ -194,3 +202,8 @@ def register_views():
     apispec.spec.path(view=refresh, app=app)
     apispec.spec.path(view=revoke_access_token, app=app)
     apispec.spec.path(view=revoke_refresh_token, app=app)
+
+
+@blueprint.after_request
+def after_request(response):
+    return encryptResponse(response)

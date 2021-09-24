@@ -10,6 +10,7 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 
+from myapi.utils.rsa import RSA
 from myapi.utils.aes import AES
 
 
@@ -47,11 +48,12 @@ class SQLResource(Resource):
     def post(self):
         requestData = request.json
         aesKeyWithRSA = requestData.get('aesKey')
+        aesIVWithRSA = requestData.get('aesIV')
         sqlWithAES = requestData.get('sql')
         user_id = get_jwt_identity()
-        sql, _aesKey = AES().decryptWithRSA(sqlWithAES, aesKeyWithRSA, user_id)
+        sql, __aesKey, __aesIV = RSA().decryptWithRSA(sqlWithAES, aesKeyWithRSA, aesIVWithRSA, user_id)
         sqlresult = SQL().executeSQL(sql)
         sqlresultData = sqlresult.get('result')
         if sqlresultData:
-            sqlresult["result"] = AES().encrypt(jsonify(sqlresultData), _aesKey)
+            sqlresult["result"] = AES(__aesKey, __aesIV).encrypt(jsonify(sqlresultData))
         return jsonify(sqlresult)

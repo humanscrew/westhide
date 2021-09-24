@@ -9,8 +9,10 @@ from myapi.models.user import User
 
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from flask import request
+from flask import request, json
 from flask_restful import Resource
+
+from myapi.utils.aes import AES
 
 
 class RSA:
@@ -52,12 +54,28 @@ class RSA:
         db.session.commit()
         return publicKey
 
-    def getRSAKey(self, user):
-        RSAKey = RSAModel.query.filter_by(user_id=user).first() or User.query.filter_by(username=user).first().utils_rsa
+    def getRSAKey(self, userInfo):
+        RSAKey = RSAModel.query.filter_by(user_id=userInfo).first() \
+            or User.query.filter_by(username=userInfo).first().utils_rsa
         return {
             "publicKey": RSAKey.public_key,
             "privateKey": RSAKey.private_key
         }
+
+    # 用RSA解密aesKey，用解密后的aesKey，解密AES加密的密文
+    def decryptWithRSA(self, cipherVar, aesKeyWithRSA, aesIVWithRSA, user_id):
+        rsaPrivatekey = self.getRSAKey(user_id).get("privateKey")
+        __aesKey = self.decrypt(aesKeyWithRSA, rsaPrivatekey)
+        __aesIV = self.decrypt(aesIVWithRSA, rsaPrivatekey)
+        if isinstance(cipherVar, (dict)):
+            for key in cipherVar:
+                encryptText = cipherVar[key]
+                text = AES(__aesKey, __aesIV).decrypt(encryptText)
+                cipherVar[key] = json.loads(text)
+        else:
+            text = AES(__aesKey, __aesIV).decrypt(cipherVar)
+            cipherVar = json.loads(text)
+        return cipherVar, __aesKey, __aesIV
 
 
 class RSAModel(db.Model):
