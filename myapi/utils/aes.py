@@ -28,17 +28,20 @@ class AES:
 
 
 def encryptResponse(response):
-    if not request.is_json:
+    if not response.data:
         return response
-    __aesKey = request.json.get("aesKey")
-    __aesIV = request.json.get("aesIV")
-    responseData = response.json
-    if not __aesKey or not __aesIV or not responseData:
+    try:
+        requestData = request.json or request.args
+        __aesKey = requestData.get("aesKey")
+        __aesIV = requestData.get("aesIV")
+        if not __aesKey or not __aesIV:
+            return response
+        responseData = response.json
+        for key in responseData:
+            text = responseData[key]
+            text = json.dumps(text)
+            encryption = AES(__aesKey, __aesIV)
+            responseData[key] = encryption.encrypt(text)
+        response.data = json.dumps(responseData)
+    finally:
         return response
-    for key in responseData:
-        text = responseData[key]
-        text = json.dumps(text)
-        encryption = AES(__aesKey, __aesIV)
-        responseData[key] = encryption.encrypt(text)
-    response.data = json.dumps(responseData)
-    return response

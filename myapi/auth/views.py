@@ -70,8 +70,8 @@ def login():
         return jsonify({"message": "用户名错误"}), 401
 
     user_id = user.id
-    aesKeyWithRSA = requestData.get("aesKey")
-    aesIVWithRSA = requestData.get("aesIV")
+    aesKeyWithRSA = requestData.pop("aesKey", None)
+    aesIVWithRSA = requestData.pop("aesIV", None)
     if not aesKeyWithRSA or not aesIVWithRSA:
         return jsonify({"message": "密钥缺失"}), 401
     password,  __aesKey, __aesIV = RSA().decryptWithRSA(passwordWithAES, aesKeyWithRSA, aesIVWithRSA, user_id)

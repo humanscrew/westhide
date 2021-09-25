@@ -1,6 +1,7 @@
 from flask import request
 from flask_restful import Resource
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import get_jwt_identity
+
 from myapi.api.schemas import UserSchema
 from myapi.models import User
 from myapi.extensions import db
@@ -77,15 +78,17 @@ class UserResource(Resource):
           description: user does not exists
     """
 
-    method_decorators = [jwt_required()]
+    # method_decorators = [jwt_required()]
 
-    def get(self, user_id):
+    def get(self):
         schema = UserSchema()
+        user_id = get_jwt_identity()
         user = User.query.get_or_404(user_id)
         return {"user": schema.dump(user)}
 
-    def put(self, user_id):
+    def put(self):
         schema = UserSchema(partial=True)
+        user_id = get_jwt_identity()
         user = User.query.get_or_404(user_id)
         user = schema.load(request.json, instance=user)
 
@@ -93,7 +96,8 @@ class UserResource(Resource):
 
         return {"message": "user updated", "user": schema.dump(user)}
 
-    def delete(self, user_id):
+    def delete(self):
+        user_id = get_jwt_identity()
         user = User.query.get_or_404(user_id)
         db.session.delete(user)
         db.session.commit()
@@ -142,7 +146,7 @@ class UserList(Resource):
                   user: UserSchema
     """
 
-    method_decorators = [jwt_required()]
+    # method_decorators = [jwt_required()]
 
     def get(self):
         schema = UserSchema(many=True)

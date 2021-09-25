@@ -11,6 +11,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from flask import request, json
 from flask_restful import Resource
+from flask_jwt_extended import get_jwt_identity
 
 from myapi.utils.aes import AES
 
@@ -118,3 +119,24 @@ class RSAResource(Resource):
         if not publicKey:
             return {"message": "用户名错误"}, 400
         return {"publicKey": publicKey}
+
+
+def decryptRequest():
+    if not request.method in ('GET', 'POST', 'PUT', 'DELETE'):
+        return None
+    if request.is_json:
+        handleRequestData(request.json)
+    if request.args:
+        request.args = handleRequestData(request.args.to_dict())
+    return None
+
+
+def handleRequestData(requestData={}):
+    aesKeyWithRSA = requestData.pop("aesKey", None)
+    aesKeyWithIV = requestData.pop("aesIV", None)
+    if not aesKeyWithRSA or not aesKeyWithIV:
+        return None
+    user_id = get_jwt_identity()
+    requestData, __aesKey, __aesIV = RSA().decryptWithRSA(requestData, aesKeyWithRSA, aesKeyWithIV, user_id)
+    requestData.update(aesKey=__aesKey, aesIV=__aesIV)
+    return requestData

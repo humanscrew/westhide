@@ -1,23 +1,22 @@
-from flask import Blueprint, current_app, jsonify, request
+from flask import Blueprint, current_app, jsonify
 from flask_restful import Api
-from flask_jwt_extended import (
-    jwt_required,
-    get_jwt_identity
-)
+from flask_jwt_extended import jwt_required
+
 from marshmallow import ValidationError
+
 from myapi.extensions import apispec
 from myapi.api.resources import UserResource, UserList, RootPage
 from myapi.api.schemas import UserSchema
-from myapi.utils.rsa import RSA
-from myapi.utils.aes import encryptResponse
 
+from myapi.utils.aes import encryptResponse
+from myapi.utils.rsa import decryptRequest
 
 blueprint = Blueprint("api", __name__, url_prefix="/westhide/api")
 api = Api(blueprint)
 
 api.add_resource(RootPage, "/", endpoint="rootpage")
-api.add_resource(UserResource, "/users/<int:user_id>", endpoint="user_by_id")
-api.add_resource(UserList, "/users", endpoint="users")
+api.add_resource(UserResource, "/userInfo", endpoint="api_user_info")
+api.add_resource(UserList, "/userList", endpoint="api_user_list")
 
 
 @blueprint.before_app_first_request
@@ -40,17 +39,7 @@ def handle_marshmallow_error(e):
 @blueprint.before_request
 @jwt_required()
 def before_request():
-    if not request.is_json:
-        return None
-    requestData = request.json
-    aesKeyWithRSA = requestData.get("aesKey")
-    aesKeyWithIV = requestData.get("aesIV")
-    if not aesKeyWithRSA or not aesKeyWithIV or not requestData:
-        return None
-    user_id = get_jwt_identity()
-    requestData, __aesKey, __aesIV = RSA().decryptWithRSA(requestData, aesKeyWithRSA, aesKeyWithIV, user_id)
-    requestData.update(aesKey=__aesKey, aesIV=__aesIV)
-    return None
+    return decryptRequest()
 
 
 @blueprint.after_request
