@@ -13,5 +13,5 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         exclude = ("_password", "id")
         include_fk = False
-        include_relationships = True
+        # include_relationships = True
         # unknown = ma.INCLUDE
