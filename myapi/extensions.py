@@ -20,3 +20,12 @@ migrate = Migrate()
 apispec = APISpecExt()
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 celery = Celery()
+
+
+def camelCase(self, field_name, field_obj):
+    string = field_obj.data_key or field_name
+    parts = iter(string.split("_"))
+    field_obj.data_key = next(parts) + "".join(item.title() for item in parts)
+
+
+ma.SQLAlchemyAutoSchema.on_bind_field = camelCase

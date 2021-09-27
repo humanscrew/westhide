@@ -11,12 +11,12 @@ class Route(db.Model):
     redirect = db.Column(db.String(255))
     before_enter = db.Column(db.String(255))
     props = db.Column(db.String(255))
-    meta_id = db.Column(db.Integer, db.ForeignKey("route_meta.id"))
+    route_meta_id = db.Column(db.Integer, db.ForeignKey("route_meta.id"))
 
-    meta = db.relationship("Meta", lazy="joined")
+    route_meta = db.relationship("RouteMeta", lazy="joined")
 
 
-class Meta(db.Model):
+class RouteMeta(db.Model):
     __tablename__ = "route_meta"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80))

@@ -81,20 +81,29 @@ class UserResource(Resource):
     # method_decorators = [jwt_required()]
 
     def get(self):
-        schema = UserSchema()
+        userSchema = UserSchema()
         user_id = get_jwt_identity()
         user = User.query.get_or_404(user_id)
-        return {"user": schema.dump(user)}
+        return {**userSchema.dump(user)}
+
+    def post(self):
+        userSchema = UserSchema()
+        user = userSchema.load(request.json)
+
+        db.session.add(user)
+        db.session.commit()
+
+        return {**userSchema.dump(user), "message": "user created"}, 201
 
     def put(self):
-        schema = UserSchema(partial=True)
+        userSchema = UserSchema(partial=True)
         user_id = get_jwt_identity()
         user = User.query.get_or_404(user_id)
-        user = schema.load(request.json, instance=user)
+        user = userSchema.load(request.json, instance=user)
 
         db.session.commit()
 
-        return {"message": "user updated", "user": schema.dump(user)}
+        return {"user": userSchema.dump(user), "message": "user updated"}
 
     def delete(self):
         user_id = get_jwt_identity()
@@ -149,15 +158,6 @@ class UserList(Resource):
     # method_decorators = [jwt_required()]
 
     def get(self):
-        schema = UserSchema(many=True)
+        userSchema = UserSchema(many=True)
         query = User.query
-        return paginate(query, schema)
-
-    def post(self):
-        schema = UserSchema()
-        user = schema.load(request.json)
-
-        db.session.add(user)
-        db.session.commit()
-
-        return {"message": "user created", "user": schema.dump(user)}, 201
+        return paginate(query, userSchema)

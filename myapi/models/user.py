@@ -25,18 +25,26 @@ Map_User_Role = db.Table(
     db.Column("role_id", db.Integer, db.ForeignKey('role.id'))
 )
 
+Map_User_PermitCode = db.Table(
+    "map_user2permit_code",
+    db.Column("id", db.Integer, primary_key=True),
+    db.Column("user_id", db.Integer, db.ForeignKey('user.id')),
+    db.Column("permit_code_id", db.Integer, db.ForeignKey('permit_code.id'))
+)
+
 
 class User(db.Model):
     """Basic user model"""
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(80), unique=True, nullable=False)
+    mobile = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(80), unique=True)
     _password = db.Column("password", db.String(255), nullable=False)
     active = db.Column(db.Boolean, default=True)
     create_time = db.Column(db.DATETIME, default=datetime.now)
-    user_code = db.Column(db.Integer, unique=True, nullable=False)
-    real_name = db.Column(db.String(80), nullable=False)
+    update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
+    real_name = db.Column(db.String(80))
 
     company_group = db.relationship(
         'CompanyGroup',
@@ -53,6 +61,12 @@ class User(db.Model):
     role = db.relationship(
         'Role',
         secondary=Map_User_Role,
+        back_populates="user",
+        lazy='dynamic'
+    )
+    permit_code = db.relationship(
+        'PermitCode',
+        secondary=Map_User_PermitCode,
         back_populates="user",
         lazy='dynamic'
     )

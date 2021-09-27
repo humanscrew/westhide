@@ -8,11 +8,11 @@ from flask_jwt_extended import (
 )
 
 from myapi.models import User
-from myapi.extensions import pwd_context, jwt, apispec
+from myapi.extensions import pwd_context, jwt, apispec, db
 from myapi.auth.helpers import revoke_token, is_token_revoked, add_token_to_database
-from myapi.utils.rsa import RSA
-from myapi.utils.aes import encryptResponse
-
+from myapi.utils import RSA, encryptResponse, decryptRequest, getDefaultRSA
+from myapi.api.schemas import UserSchema
+from marshmallow import INCLUDE, ValidationError
 
 blueprint = Blueprint("auth", __name__, url_prefix="/westhide/auth")
 
@@ -85,8 +85,35 @@ def login():
     add_token_to_database(access_token, app.config["JWT_IDENTITY_CLAIM"])
     add_token_to_database(refresh_token, app.config["JWT_IDENTITY_CLAIM"])
 
-    ret = {"access_token": access_token, "refresh_token": refresh_token, "message": "登录成功"}
-    return jsonify(ret), 200
+    ret = {"accessToken": access_token, "refreshToken": refresh_token, "message": "登录成功"}
+    return jsonify(ret)
+
+
+@blueprint.route("/register", methods=["POST"])
+def register():
+    if not request.is_json:
+        return jsonify({"message": "Missing JSON in request"}), 405
+
+    requestData = request.json
+    username = requestData.pop('username', None)
+    if username and User.query.filter_by(username=username).first():
+        return jsonify({"message": "该用户名已被注册"}), 422
+    mobile = requestData.get('mobile')
+    if mobile and User.query.filter_by(mobile=mobile).first():
+        return jsonify({"message": "该手机号已被注册"}), 422
+    email = requestData.get('email')
+    if email and User.query.filter_by(email=email).first():
+        return jsonify({"message": "该邮箱已被注册"}), 422
+
+    defaultPrivateKey = getDefaultRSA().get("privateKey")
+    decryptRequest(None, defaultPrivateKey)
+
+    requestData.update(username=username)
+    userSchema = UserSchema(unknown=INCLUDE)
+    user = userSchema.load(requestData)
+    db.session.add(user)
+    db.session.commit()
+    return {**userSchema.dump(user), "message": "注册成功"}, 201
 
 
 @blueprint.route("/refresh", methods=["POST"])
@@ -120,9 +147,9 @@ def refresh():
     """
     current_user = get_jwt_identity()
     access_token = create_access_token(identity=current_user)
-    ret = {"access_token": access_token}
+    ret = {"accessToken": access_token}
     add_token_to_database(access_token, app.config["JWT_IDENTITY_CLAIM"])
-    return jsonify(ret), 200
+    return jsonify(ret)
 
 
 @blueprint.route("/revoke_access", methods=["DELETE"])
@@ -152,7 +179,7 @@ def revoke_access_token():
     jti = get_jwt()["jti"]
     user_identity = get_jwt_identity()
     revoke_token(jti, user_identity)
-    return jsonify({"message": "token revoked"}), 200
+    return jsonify({"message": "token revoked"})
 
 
 @blueprint.route("/revoke_refresh", methods=["DELETE"])
@@ -182,7 +209,7 @@ def revoke_refresh_token():
     jti = get_jwt()["jti"]
     user_identity = get_jwt_identity()
     revoke_token(jti, user_identity)
-    return jsonify({"message": "token revoked"}), 200
+    return jsonify({"message": "token revoked"})
 
 
 @jwt.user_lookup_loader
@@ -207,3 +234,8 @@ def register_views():
 @blueprint.after_request
 def after_request(response):
     return encryptResponse(response)
+
+
+@blueprint.errorhandler(ValidationError)
+def handle_marshmallow_error(e):
+    return jsonify(e.messages), 400

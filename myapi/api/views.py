@@ -15,7 +15,7 @@ blueprint = Blueprint("api", __name__, url_prefix="/westhide/api")
 api = Api(blueprint)
 
 api.add_resource(RootPage, "/", endpoint="rootpage")
-api.add_resource(UserResource, "/userInfo", endpoint="api_user_info")
+api.add_resource(UserResource, "/user", endpoint="api_user")
 api.add_resource(UserList, "/userList", endpoint="api_user_list")
 
 
