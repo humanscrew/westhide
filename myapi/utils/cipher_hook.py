@@ -4,7 +4,7 @@ from myapi.utils import AES, RSA
 from flask_jwt_extended import get_jwt_identity
 
 
-class ClipherHook:
+class CipherHook:
 
     def encryptResponse(self, response):
         if not response.data:

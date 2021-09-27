@@ -2,7 +2,7 @@ from flask import Blueprint
 
 from flask_restful import Api
 
-from myapi.utils import RSAResource, DefaultRSAResource, SQLResource, ClipherHook
+from myapi.utils import RSAResource, DefaultRSAResource, SQLResource, CipherHook
 
 
 blueprint = Blueprint("utils", __name__, url_prefix="/westhide/utils")
@@ -15,4 +15,4 @@ api.add_resource(SQLResource, "/sql", endpoint="utils_sql")
 
 @blueprint.after_request
 def after_request(response):
-    return ClipherHook().encryptResponse(response)
+    return CipherHook().encryptResponse(response)
