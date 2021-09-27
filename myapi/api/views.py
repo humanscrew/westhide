@@ -8,8 +8,7 @@ from myapi.extensions import apispec
 from myapi.api.resources import RootPage, UserResource, UserList, PermitCodeResource
 from myapi.api.schemas import UserSchema
 
-from myapi.utils.aes import encryptResponse
-from myapi.utils.rsa import decryptRequest
+from myapi.utils import ClipherHook
 
 blueprint = Blueprint("api", __name__, url_prefix="/westhide/api")
 api = Api(blueprint)
@@ -40,9 +39,9 @@ def handle_marshmallow_error(e):
 @blueprint.before_request
 @jwt_required()
 def before_request():
-    return decryptRequest()
+    return ClipherHook().decryptRequest()
 
 
 @blueprint.after_request
 def after_request(response):
-    return encryptResponse(response)
+    return ClipherHook().encryptResponse(response)

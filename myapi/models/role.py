@@ -1,5 +1,5 @@
 from myapi.extensions import db
-from myapi.models.user import Map_User_Role, Map_User_PermitCode
+from myapi.models import Map_User_Role, Map_User_PermitCode
 
 
 class Role(db.Model):

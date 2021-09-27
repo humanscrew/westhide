@@ -10,8 +10,7 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 
-from myapi.utils.rsa import RSA
-from myapi.utils.aes import AES
+from myapi.utils import AES, RSA
 
 
 class SQL:

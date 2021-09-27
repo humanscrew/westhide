@@ -1,5 +1,5 @@
 from myapi.extensions import db
-from myapi.models.user import Map_User_CompanyGroup, Map_User_SubsidiaryCompany
+from myapi.models import Map_User_CompanyGroup, Map_User_SubsidiaryCompany
 
 from datetime import datetime
 

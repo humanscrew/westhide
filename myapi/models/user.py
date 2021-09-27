@@ -32,6 +32,13 @@ Map_User_PermitCode = db.Table(
     db.Column("permit_code_id", db.Integer, db.ForeignKey('permit_code.id'))
 )
 
+Map_User_Route = db.Table(
+    "map_user2route",
+    db.Column("id", db.Integer, primary_key=True),
+    db.Column("user_id", db.Integer, db.ForeignKey('user.id')),
+    db.Column("route_id", db.Integer, db.ForeignKey('route.id'))
+)
+
 
 class User(db.Model):
     """Basic user model"""
@@ -67,6 +74,12 @@ class User(db.Model):
     permit_code = db.relationship(
         'PermitCode',
         secondary=Map_User_PermitCode,
+        back_populates="user",
+        lazy='dynamic'
+    )
+    route = db.relationship(
+        'Route',
+        secondary=Map_User_Route,
         back_populates="user",
         lazy='dynamic'
     )

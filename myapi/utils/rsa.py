@@ -5,13 +5,13 @@ from Crypto import Random
 import base64
 
 from myapi.extensions import db, ma
-from myapi.models.user import User
+from myapi.models import User
 
 from flask import request, json, jsonify
 from flask_restful import Resource
-from flask_jwt_extended import get_jwt_identity
 
-from myapi.utils.aes import AES
+
+from myapi.utils import AES
 
 
 class RSA:
@@ -61,6 +61,11 @@ class RSA:
         rsaSchema = RSASchema(only=("public_key", "private_key",))
         return rsaSchema.dump(RSAKey)
 
+    def getDefaultRSA(self):
+        defaultRSASchema = DefaultRSASchema()
+        defaultRSA = DefaultRSAModel.query.first()
+        return {**defaultRSASchema.dump(defaultRSA)}
+
     # 用RSA解密aesKey，用解密后的aesKey，解密AES加密的密文
     def decryptWithRSA(self, cipherVar, aesKeyWithRSA, aesIVWithRSA, userInfo, privateKey=None):
         if privateKey:
@@ -78,28 +83,6 @@ class RSA:
             text = AES(__aesKey, __aesIV).decrypt(cipherVar)
             cipherVar = json.loads(text)
         return cipherVar, __aesKey, __aesIV
-
-
-def decryptRequest(userInfo=None, privateKey=None):
-    if not request.method in ('GET', 'POST', 'PUT', 'DELETE'):
-        return None
-    if request.is_json:
-        handleRequestData(request.json, userInfo, privateKey)
-    if request.args:
-        request.args = handleRequestData(request.args.to_dict(), userInfo, privateKey)
-    return None
-
-
-def handleRequestData(requestData={}, userInfo=None, privateKey=None):
-    aesKeyWithRSA = requestData.pop("aesKey", None)
-    aesKeyWithIV = requestData.pop("aesIV", None)
-    if not aesKeyWithRSA or not aesKeyWithIV:
-        return None
-    if not privateKey and not userInfo:
-        userInfo = get_jwt_identity()
-    requestData, __aesKey, __aesIV = RSA().decryptWithRSA(requestData, aesKeyWithRSA, aesKeyWithIV, userInfo, privateKey)
-    requestData.update(aesKey=__aesKey, aesIV=__aesIV)
-    return requestData
 
 
 class RSAModel(db.Model):
@@ -146,12 +129,6 @@ class DefaultRSASchema(ma.SQLAlchemyAutoSchema):
         sqla_session = db.session
         load_instance = True
         exclude = (["id", ])
-
-
-def getDefaultRSA():
-    defaultRSASchema = DefaultRSASchema()
-    defaultRSA = DefaultRSAModel.query.first()
-    return {**defaultRSASchema.dump(defaultRSA)}
 
 
 class DefaultRSAResource(Resource):

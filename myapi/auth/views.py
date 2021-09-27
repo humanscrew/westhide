@@ -10,7 +10,7 @@ from flask_jwt_extended import (
 from myapi.models import User
 from myapi.extensions import pwd_context, jwt, apispec, db
 from myapi.auth.helpers import revoke_token, is_token_revoked, add_token_to_database
-from myapi.utils import RSA, encryptResponse, decryptRequest, getDefaultRSA
+from myapi.utils import RSA, ClipherHook
 from myapi.api.schemas import UserSchema
 from marshmallow import INCLUDE, ValidationError
 
@@ -105,8 +105,8 @@ def register():
     if email and User.query.filter_by(email=email).first():
         return jsonify({"message": "该邮箱已被注册"}), 422
 
-    defaultPrivateKey = getDefaultRSA().get("privateKey")
-    decryptRequest(None, defaultPrivateKey)
+    defaultPrivateKey = RSA().getDefaultRSA().get("privateKey")
+    ClipherHook().decryptRequest(None, defaultPrivateKey)
 
     requestData.update(username=username)
     userSchema = UserSchema(unknown=INCLUDE)
@@ -233,7 +233,7 @@ def register_views():
 
 @blueprint.after_request
 def after_request(response):
-    return encryptResponse(response)
+    return ClipherHook().encryptResponse(response)
 
 
 @blueprint.errorhandler(ValidationError)

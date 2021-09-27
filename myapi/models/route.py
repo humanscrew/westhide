@@ -1,5 +1,7 @@
 from myapi.extensions import db
 
+from myapi.models import Map_User_Route
+
 
 class Route(db.Model):
     __tablename__ = "route"
@@ -14,6 +16,13 @@ class Route(db.Model):
     route_meta_id = db.Column(db.Integer, db.ForeignKey("route_meta.id"))
 
     route_meta = db.relationship("RouteMeta", lazy="joined")
+
+    user = db.relationship(
+        "User",
+        secondary=Map_User_Route,
+        back_populates="route",
+        lazy="dynamic"
+    )
 
 
 class RouteMeta(db.Model):
@@ -35,3 +44,14 @@ class RouteMeta(db.Model):
     order_no = db.Column(db.Integer)
     ignore_route = db.Column(db.Boolean)
     hide_path_for_children = db.Column(db.Boolean)
+
+
+class RouteClosureTable(db.Model):
+    __tablename__ = "route_closure_table"
+    id = db.Column("id", db.Integer, primary_key=True)
+    ancestor_id = db.Column(db.Integer, db.ForeignKey('route.id'), nullable=False)
+    descendant_id = db.Column(db.Integer, db.ForeignKey('route.id'), nullable=False)
+    depth = db.Column(db.Integer, nullable=False)
+
+    ancestor_route = db.relationship("Route", foreign_keys=[ancestor_id])
+    descendant_route = db.relationship("Route", foreign_keys=[descendant_id])
