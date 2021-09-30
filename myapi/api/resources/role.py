@@ -8,5 +8,5 @@ class PermitCodeResource(Resource):
     def get(self):
         permitCodeSchema = PermitCodeSchema(many=True)
         user_id = get_jwt_identity()
-        permitCode = User.query.get_or_404(user_id).permit_code
-        return {"permitCode": permitCodeSchema.dump(permitCode)}
+        permitCodes = User.query.get_or_404(user_id).permit_code
+        return {"permitCode": permitCodeSchema.dump(permitCodes)}

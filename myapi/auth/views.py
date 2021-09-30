@@ -33,7 +33,7 @@ def login():
               properties:
                 username:
                   type: string
-                  example: myuser
+                  example: myUser
                   required: true
                 password:
                   type: string
@@ -48,37 +48,37 @@ def login():
                 properties:
                   access_token:
                     type: string
-                    example: myaccesstoken
+                    example: myAccessToken
                   refresh_token:
                     type: string
-                    example: myrefreshtoken
+                    example: myRefreshToken
         400:
           description: bad request
       security: []
     """
     if not request.is_json:
-        return jsonify({"message": "Missing JSON in request"}), 405
+        return {"message": "Missing JSON in request"}, 405
 
     requestData = request.json
     username = requestData.get("username", None)
     passwordWithAES = requestData.get("password", None)
     if not username or not passwordWithAES:
-        return jsonify({"message": "Missing username or password"}), 401
+        return {"message": "Missing username or password"}, 401
 
     user = User.query.filter_by(username=username).first()
     if not user:
-        return jsonify({"message": "用户名错误"}), 401
+        return {"message": "用户名错误"}, 401
 
     user_id = user.id
     aesKeyWithRSA = requestData.pop("aesKey", None)
     aesIVWithRSA = requestData.pop("aesIV", None)
     if not aesKeyWithRSA or not aesIVWithRSA:
-        return jsonify({"message": "密钥缺失"}), 401
+        return {"message": "密钥缺失"}, 401
     password,  __aesKey, __aesIV = RSA().decryptWithRSA(passwordWithAES, aesKeyWithRSA, aesIVWithRSA, user_id)
     requestData.update(aesKey=__aesKey, aesIV=__aesIV)
 
     if not pwd_context.verify(password, user.password):
-        return jsonify({"message": "密码错误"}), 401
+        return {"message": "密码错误"}, 401
 
     access_token = create_access_token(identity=user.id)
     refresh_token = create_refresh_token(identity=user.id)
@@ -86,24 +86,24 @@ def login():
     add_token_to_database(refresh_token, app.config["JWT_IDENTITY_CLAIM"])
 
     ret = {"accessToken": access_token, "refreshToken": refresh_token, "message": "登录成功"}
-    return jsonify(ret)
+    return ret
 
 
 @blueprint.route("/register", methods=["POST"])
 def register():
     if not request.is_json:
-        return jsonify({"message": "Missing JSON in request"}), 405
+        return {"message": "Missing JSON in request"}, 405
 
     requestData = request.json
     username = requestData.pop('username', None)
-    if username and User.query.filter_by(username=username).first():
-        return jsonify({"message": "该用户名已被注册"}), 422
+    if username and User.query.with_entities(User.id).filter_by(username=username).first():
+        return {"message": "该用户名已被注册"}, 422
     mobile = requestData.get('mobile')
-    if mobile and User.query.filter_by(mobile=mobile).first():
-        return jsonify({"message": "该手机号已被注册"}), 422
+    if mobile and User.query.with_entities(User.id).filter_by(mobile=mobile).first():
+        return {"message": "该手机号已被注册"}, 422
     email = requestData.get('email')
-    if email and User.query.filter_by(email=email).first():
-        return jsonify({"message": "该邮箱已被注册"}), 422
+    if email and User.query.with_entities(User.id).filter_by(email=email).first():
+        return {"message": "该邮箱已被注册"}, 422
 
     defaultPrivateKey = RSA().getDefaultRSA().get("privateKey")
     CipherHook().decryptRequest(None, defaultPrivateKey)
@@ -139,7 +139,7 @@ def refresh():
                 properties:
                   access_token:
                     type: string
-                    example: myaccesstoken
+                    example: myAccessToken
         400:
           description: bad request
         401:
@@ -149,7 +149,7 @@ def refresh():
     access_token = create_access_token(identity=current_user)
     ret = {"accessToken": access_token}
     add_token_to_database(access_token, app.config["JWT_IDENTITY_CLAIM"])
-    return jsonify(ret)
+    return ret
 
 
 @blueprint.route("/revoke_access", methods=["DELETE"])
@@ -179,7 +179,7 @@ def revoke_access_token():
     jti = get_jwt()["jti"]
     user_identity = get_jwt_identity()
     revoke_token(jti, user_identity)
-    return jsonify({"message": "token revoked"})
+    return {"message": "token revoked"}
 
 
 @blueprint.route("/revoke_refresh", methods=["DELETE"])
@@ -209,7 +209,7 @@ def revoke_refresh_token():
     jti = get_jwt()["jti"]
     user_identity = get_jwt_identity()
     revoke_token(jti, user_identity)
-    return jsonify({"message": "token revoked"})
+    return {"message": "token revoked"}
 
 
 @jwt.user_lookup_loader

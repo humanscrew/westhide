@@ -39,6 +39,13 @@ Map_User_Route = db.Table(
     db.Column("route_id", db.Integer, db.ForeignKey('route.id'))
 )
 
+Map_User_Route_Tree = db.Table(
+    "map_user2route_tree",
+    db.Column("id", db.Integer, primary_key=True),
+    db.Column("user_id", db.Integer, db.ForeignKey('user.id')),
+    db.Column("route_tree_id", db.Integer, db.ForeignKey('route_tree.id'))
+)
+
 
 class User(db.Model):
     """Basic user model"""
@@ -59,27 +66,38 @@ class User(db.Model):
         back_populates="user",
         lazy='dynamic'
     )
+
     subsidiary_company = db.relationship(
         'SubsidiaryCompany',
         secondary=Map_User_SubsidiaryCompany,
         back_populates="user",
         lazy='dynamic'
     )
+
     role = db.relationship(
         'Role',
         secondary=Map_User_Role,
         back_populates="user",
         lazy='dynamic'
     )
+
     permit_code = db.relationship(
         'PermitCode',
         secondary=Map_User_PermitCode,
         back_populates="user",
         lazy='dynamic'
     )
+
     route = db.relationship(
         'Route',
         secondary=Map_User_Route,
+        back_populates="user",
+        lazy='dynamic'
+    )
+
+    route_tree = db.relationship(
+        'RouteTree',
+        secondary=Map_User_Route_Tree,
         back_populates="user",
         lazy='dynamic'
     )

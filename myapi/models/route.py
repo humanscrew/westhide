@@ -1,6 +1,6 @@
 from myapi.extensions import db
 
-from myapi.models import Map_User_Route
+from myapi.models import Map_User_Route, Map_User_Route_Tree
 
 
 class Route(db.Model):
@@ -38,6 +38,7 @@ class RouteMeta(db.Model):
     transition_name = db.Column(db.String(80))
     hide_breadcrumb = db.Column(db.Boolean)
     carry_param = db.Column(db.Boolean)
+    hide_menu = db.Column(db.Boolean)
     hide_children_in_menu = db.Column(db.Boolean)
     current_active_menu = db.Column(db.String(255))
     hide_tab = db.Column(db.Boolean)
@@ -46,12 +47,28 @@ class RouteMeta(db.Model):
     hide_path_for_children = db.Column(db.Boolean)
 
 
+class RouteTree(db.Model):
+    __tablename__ = "route_tree"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80))
+
+    user = db.relationship(
+        "User",
+        secondary=Map_User_Route_Tree,
+        back_populates="route_tree",
+        lazy="dynamic"
+    )
+
+
 class RouteClosureTable(db.Model):
     __tablename__ = "route_closure_table"
     id = db.Column("id", db.Integer, primary_key=True)
+    tree_id = db.Column(db.Integer, db.ForeignKey("route_tree.id"), nullable=False)
     ancestor_id = db.Column(db.Integer, db.ForeignKey('route.id'), nullable=False)
     descendant_id = db.Column(db.Integer, db.ForeignKey('route.id'), nullable=False)
+    distance = db.Column(db.Integer, nullable=False)
     depth = db.Column(db.Integer, nullable=False)
 
-    ancestor_route = db.relationship("Route", foreign_keys=[ancestor_id])
-    descendant_route = db.relationship("Route", foreign_keys=[descendant_id])
+    ancestor = db.relationship("Route", foreign_keys=[ancestor_id])
+    descendant = db.relationship("Route", foreign_keys=[descendant_id])
+    tree = db.relationship("RouteTree", foreign_keys=[tree_id])

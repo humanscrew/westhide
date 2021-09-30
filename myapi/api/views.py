@@ -5,7 +5,12 @@ from flask_jwt_extended import jwt_required
 from marshmallow import ValidationError
 
 from myapi.extensions import apispec
-from myapi.api.resources import RootPage, UserResource, UserList, PermitCodeResource
+from myapi.api.resources import (
+    RootPage,
+    UserResource, UserList,
+    PermitCodeResource,
+    RouteResource, CreateRouteResource
+)
 from myapi.api.schemas import UserSchema
 
 from myapi.utils import CipherHook
@@ -15,8 +20,10 @@ api = Api(blueprint)
 
 api.add_resource(RootPage, "/", endpoint="rootpage")
 api.add_resource(UserResource, "/user", endpoint="api_user")
-api.add_resource(UserList, "/userList", endpoint="api_user_list")
+api.add_resource(UserList, "/userList", endpoint="api_userList")
 api.add_resource(PermitCodeResource, "/permitCode", endpoint="api_role_permitCode")
+api.add_resource(RouteResource, "/route", endpoint="api_route")
+api.add_resource(CreateRouteResource, "/createRoute", endpoint="api_createRoute")
 
 
 @blueprint.before_app_first_request

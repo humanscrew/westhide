@@ -2,6 +2,7 @@ from myapi.utils.aes import AES
 from myapi.utils.rsa import RSA, RSAResource, DefaultRSAResource
 from myapi.utils.sql import SQL, SQLResource
 from myapi.utils.cipher_hook import CipherHook
+from myapi.utils.closure_table import ClosureTable
 from myapi.utils import views
 
 __all__ = [
@@ -9,5 +10,6 @@ __all__ = [
     "RSA", "RSAResource", "DefaultRSAResource",
     "SQL", "SQLResource",
     "CipherHook",
+    "ClosureTable",
     "views",
 ]
