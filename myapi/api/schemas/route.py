@@ -19,6 +19,7 @@ class RouteSchema(ma.SQLAlchemyAutoSchema):
         model = Route
         sqla_session = db.session
         load_instance = True
+        exclude = ("alias",)
 
 
 class RouteClosureTableSchema(ma.SQLAlchemyAutoSchema):

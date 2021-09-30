@@ -43,7 +43,10 @@ class RouteResource(Resource):
             RouteTree, Route, RouteClosureTable, RouteSchema, RouteClosureTableSchema
         ).getTreeList(routes, routeTreeIdList)
 
-        return {"routes": routeTreeList}
+        for item in routeTreeList:
+            item["path"] = "/" + item["path"]
+
+        return {"routesList": routeTreeList}
 
 
 class CreateRouteResource(Resource):
