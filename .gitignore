@@ -90,3 +90,4 @@ ENV/
 
 # .flaskenv hide MySQL Link
 .flaskenv
+.vscode
