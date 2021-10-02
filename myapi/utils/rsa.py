@@ -108,7 +108,13 @@ class RSASchema(ma.SQLAlchemyAutoSchema):
 class RSAResource(Resource):
 
     def post(self):
+        if not request.is_json:
+            return {"message": "Missing JSON in request"}, 405
+
         username = request.json.get("username")
+        if not username:
+            return {"message": "用户名为空"}, 400
+
         publicKey = RSA().setRSAKey(username)
         if not publicKey:
             return {"message": "用户名错误"}, 400

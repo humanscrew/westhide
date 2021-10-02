@@ -1,18 +1,23 @@
 
-from flask import request, json
-from myapi.utils import AES, RSA
+from flask import json, request
+from flask_restful.reqparse import RequestParser
 from flask_jwt_extended import get_jwt_identity
+
+from myapi.utils import AES, RSA
 
 
 class CipherHook:
 
     def encryptResponse(self, response):
-        if not response.data:
+        if request.method == "OPTIONS":
             return response
+        parser = RequestParser()
+        parser.add_argument('aesKey', type=str, help='aesKey cannot be converted')
+        parser.add_argument('aesIV', type=str, help='aesKey cannot be converted')
+        args = parser.parse_args()
         try:
-            requestData = request.json or request.args
-            __aesKey = requestData.get("aesKey")
-            __aesIV = requestData.get("aesIV")
+            __aesKey = args.get("aesKey")
+            __aesIV = args.get("aesIV")
             if not __aesKey or not __aesIV:
                 return response
             responseData = response.json
@@ -26,7 +31,7 @@ class CipherHook:
             return response
 
     def decryptRequest(self, userInfo=None, privateKey=None):
-        if not request.method in ('GET', 'POST', 'PUT', 'DELETE'):
+        if request.method == "OPTIONS":
             return None
         if request.is_json:
             self.handleRequestData(request.json, userInfo, privateKey)
@@ -34,13 +39,13 @@ class CipherHook:
             request.args = self.handleRequestData(request.args.to_dict(), userInfo, privateKey)
         return None
 
-    def handleRequestData(self, requestData={}, userInfo=None, privateKey=None):
-        aesKeyWithRSA = requestData.pop("aesKey", None)
-        aesKeyWithIV = requestData.pop("aesIV", None)
+    def handleRequestData(self, args={}, userInfo=None, privateKey=None):
+        aesKeyWithRSA = args.pop("aesKey", None)
+        aesKeyWithIV = args.pop("aesIV", None)
         if not aesKeyWithRSA or not aesKeyWithIV:
             return None
         if not privateKey and not userInfo:
             userInfo = get_jwt_identity()
-        requestData, __aesKey, __aesIV = RSA().decryptWithRSA(requestData, aesKeyWithRSA, aesKeyWithIV, userInfo, privateKey)
-        requestData.update(aesKey=__aesKey, aesIV=__aesIV)
-        return requestData
+        args, __aesKey, __aesIV = RSA().decryptWithRSA(args, aesKeyWithRSA, aesKeyWithIV, userInfo, privateKey)
+        args.update(aesKey=__aesKey, aesIV=__aesIV)
+        return args

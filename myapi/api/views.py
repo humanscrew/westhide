@@ -7,9 +7,11 @@ from marshmallow import ValidationError
 from myapi.extensions import apispec
 from myapi.api.resources import (
     RootPage,
-    UserResource, UserList,
+    SQLResource,
+    UserResource, UserListResource,
     PermitCodeResource,
-    RouteResource, CreateRouteResource
+    RouteResource, RouteListResource,
+    TicketLaiu8Resource,
 )
 from myapi.api.schemas import UserSchema
 
@@ -19,18 +21,20 @@ blueprint = Blueprint("api", __name__, url_prefix="/westhide/api")
 api = Api(blueprint)
 
 api.add_resource(RootPage, "/", endpoint="rootpage")
+api.add_resource(SQLResource, "/sql", endpoint="api_sql")
 api.add_resource(UserResource, "/user", endpoint="api_user")
-api.add_resource(UserList, "/userList", endpoint="api_userList")
+api.add_resource(UserListResource, "/userList", endpoint="api_userList")
 api.add_resource(PermitCodeResource, "/permitCode", endpoint="api_role_permitCode")
 api.add_resource(RouteResource, "/route", endpoint="api_route")
-api.add_resource(CreateRouteResource, "/createRoute", endpoint="api_createRoute")
+api.add_resource(RouteListResource, "/createRoute", endpoint="api_routeList")
+api.add_resource(TicketLaiu8Resource, "/ticketLaiu8", endpoint="api_ticketLaiu8")
 
 
 @blueprint.before_app_first_request
 def register_views():
     apispec.spec.components.schema("UserSchema", schema=UserSchema)
     apispec.spec.path(view=UserResource, app=current_app)
-    apispec.spec.path(view=UserList, app=current_app)
+    apispec.spec.path(view=UserListResource, app=current_app)
 
 
 @blueprint.errorhandler(ValidationError)

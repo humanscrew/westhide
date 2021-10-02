@@ -87,6 +87,9 @@ class UserResource(Resource):
         return {**userSchema.dump(user)}
 
     def post(self):
+        if not request.is_json:
+            return {"message": "Missing JSON in request"}, 405
+
         userSchema = UserSchema()
         user = userSchema.load(request.json)
 
@@ -114,7 +117,7 @@ class UserResource(Resource):
         return {"message": "user deleted"}
 
 
-class UserList(Resource):
+class UserListResource(Resource):
     """Creation and get_all
 
     ---

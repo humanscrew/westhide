@@ -49,7 +49,7 @@ class RouteResource(Resource):
         return {"routesList": routeTreeList}
 
 
-class CreateRouteResource(Resource):
+class RouteListResource(Resource):
 
     def post(self):
         if not request.is_json:
