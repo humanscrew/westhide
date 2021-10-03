@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, json
 from flask_cors import CORS
 
 from myapi import api, auth, utils
@@ -11,6 +11,7 @@ def create_app(testing=False):
     app.config.from_object("myapi.config")
 
     CORS(app, supports_credentials=True)
+    app.json_encoder = MyJSONEncoder
 
     if testing is True:
         app.config["TESTING"] = True
@@ -69,3 +70,12 @@ def init_celery(app=None):
 
     celery.Task = ContextTask
     return celery
+
+
+class MyJSONEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        from decimal import Decimal
+        if isinstance(obj, Decimal):
+            return float(obj)
+        return super(MyJSONEncoder, self).default(obj)
