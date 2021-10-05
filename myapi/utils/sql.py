@@ -1,5 +1,5 @@
 import pymysql
-import os
+from flask import current_app as app
 
 
 class SQL:
@@ -10,12 +10,12 @@ class SQL:
         "db": None, "charset": None
     }):
         self.sqlConfig = sqlConfig
-        self.sqlConfig["host"] = sqlConfig["host"] or os.getenv("DATABASE_HOST")
-        self.sqlConfig["port"] = int(sqlConfig["port"] or os.getenv("DATABASE_PORT"))
-        self.sqlConfig["user"] = sqlConfig["user"] or os.getenv("DATABASE_USERNAME")
-        self.sqlConfig["password"] = sqlConfig["password"] or os.getenv("DATABASE_PASSWORD")
-        self.sqlConfig["db"] = sqlConfig["db"] or os.getenv("DATABASE_DATABASE")
-        self.sqlConfig["charset"] = sqlConfig["charset"] or os.getenv("DATABASE_CHARSET")
+        self.sqlConfig["host"] = sqlConfig["host"] or app.config.get("DATABASE_HOST")
+        self.sqlConfig["port"] = int(sqlConfig["port"] or app.config.get("DATABASE_PORT"))
+        self.sqlConfig["user"] = sqlConfig["user"] or app.config.get("DATABASE_USERNAME")
+        self.sqlConfig["password"] = sqlConfig["password"] or app.config.get("DATABASE_PASSWORD")
+        self.sqlConfig["db"] = sqlConfig["db"] or app.config.get("DATABASE_DATABASE")
+        self.sqlConfig["charset"] = sqlConfig["charset"] or app.config.get("DATABASE_CHARSET")
 
     def make_connection(self):
         connection = pymysql.connect(**self.sqlConfig)

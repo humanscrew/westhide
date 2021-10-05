@@ -16,3 +16,4 @@ gunicorn
 
 pycryptodome==3.10.1
 Flask-Cors==3.0.10
+pymysql

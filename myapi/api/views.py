@@ -12,6 +12,7 @@ from myapi.api.resources import (
     PermitCodeResource,
     RouteResource, RouteListResource,
     TicketLaiu8Resource,
+    CompanyGroupResource,
 )
 from myapi.api.schemas import UserSchema
 
@@ -28,6 +29,7 @@ api.add_resource(PermitCodeResource, "/permitCode", endpoint="api_role_permitCod
 api.add_resource(RouteResource, "/route", endpoint="api_route")
 api.add_resource(RouteListResource, "/createRoute", endpoint="api_routeList")
 api.add_resource(TicketLaiu8Resource, "/ticketLaiu8", endpoint="api_ticketLaiu8")
+api.add_resource(CompanyGroupResource, "/companyGroup", endpoint="api_companyGroup")
 
 
 @blueprint.before_app_first_request

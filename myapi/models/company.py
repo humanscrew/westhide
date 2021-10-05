@@ -3,18 +3,37 @@ from myapi.models import Map_User_CompanyGroup, Map_User_SubsidiaryCompany
 
 from datetime import datetime
 
+Map_CompanyGroup_SubsidiaryCompany = db.Table(
+    "map_company_group2subsidiary_company",
+    db.Column("id", db.Integer, primary_key=True),
+    db.Column("company_group_id", db.Integer, db.ForeignKey('company_group.id')),
+    db.Column("subsidiary_company_id", db.Integer, db.ForeignKey('subsidiary_company.id'))
+)
+
 
 class CompanyGroup(db.Model):
     __tablename__ = "company_group"
     id = db.Column(db.Integer, primary_key=True)
     financial_code = db.Column(db.String(20))
     name = db.Column(db.String(80))
+    desc = db.Column(db.String(80))
+    icon = db.Column(db.String(80))
+    color = db.Column(db.String(80))
+    address = db.Column(db.String(80))
+    location = db.Column(db.String(80))
 
     user = db.relationship(
         "User",
         secondary=Map_User_CompanyGroup,
         back_populates="company_group",
         lazy="dynamic"
+    )
+
+    subsidiary_company = db.relationship(
+        'SubsidiaryCompany',
+        secondary=Map_CompanyGroup_SubsidiaryCompany,
+        back_populates="company_group",
+        lazy='dynamic'
     )
 
 
@@ -30,6 +49,13 @@ class SubsidiaryCompany(db.Model):
         secondary=Map_User_SubsidiaryCompany,
         back_populates="subsidiary_company",
         lazy="dynamic"
+    )
+
+    company_group = db.relationship(
+        'CompanyGroup',
+        secondary=Map_CompanyGroup_SubsidiaryCompany,
+        back_populates="subsidiary_company",
+        lazy='dynamic'
     )
 
 

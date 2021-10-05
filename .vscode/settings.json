@@ -4,6 +4,7 @@
   "python.linting.enabled": true,
   "cSpell.words": [
     "abcdsxyzhkj",
+    "amqp",
     "getenv",
     "jsonify",
     "laiu",
@@ -13,6 +14,7 @@
     "prefered",
     "pymysql",
     "sqla",
+    "ubpb",
     "unpad"
   ]
 }
