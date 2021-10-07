@@ -15,25 +15,25 @@ def extract_pagination(page=None, per_page=None, **request_args):
 def paginate(query, schema):
     page, per_page, other_request_args = extract_pagination(**request.args)
     page_obj = query.paginate(page=page, per_page=per_page)
-    next_ = url_for(
-        request.endpoint,
-        page=page_obj.next_num if page_obj.has_next else page_obj.page,
-        per_page=per_page,
-        **other_request_args,
-        **request.view_args
-    )
-    prev = url_for(
-        request.endpoint,
-        page=page_obj.prev_num if page_obj.has_prev else page_obj.page,
-        per_page=per_page,
-        **other_request_args,
-        **request.view_args
-    )
+    # next_ = url_for(
+    #     request.endpoint,
+    #     page=page_obj.next_num if page_obj.has_next else page_obj.page,
+    #     per_page=per_page,
+    #     **other_request_args,
+    #     **request.view_args
+    # )
+    # prev = url_for(
+    #     request.endpoint,
+    #     page=page_obj.prev_num if page_obj.has_prev else page_obj.page,
+    #     per_page=per_page,
+    #     **other_request_args,
+    #     **request.view_args
+    # )
 
     return {
         "total": page_obj.total,
         "pages": page_obj.pages,
-        "next": next_,
-        "prev": prev,
+        # "next": next_,
+        # "prev": prev,
         "results": schema.dump(page_obj.items),
     }

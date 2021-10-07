@@ -1,5 +1,4 @@
-from flask import request
-from flask_restful import Resource
+from flask_restful import request, Resource
 from flask_jwt_extended import get_jwt_identity
 
 from myapi.api.schemas import UserSchema

@@ -1,32 +1,59 @@
-from flask_restful import Resource
+from flask_restful import Resource, request
 from flask_restful.reqparse import RequestParser
 
-from myapi.models import TicketLaiu8
-from myapi.api.schemas import TicketLaiu8Schema
+from myapi.commons.pagination import paginate
+from myapi.models import TicketLaiu8, Laiu8Client
+from myapi.api.schemas import TicketLaiu8Schema, Laiu8ClientSchema
 
-from sqlalchemy.sql.expression import and_
-
-import time
+from myapi.utils import Lib
 
 
 class TicketLaiu8Resource(Resource):
 
     def get(self):
-        parser = RequestParser()
-        parser.add_argument('startTime')
-        parser.add_argument('endTime')
-        args = parser.parse_args()
+        requestData = request.args
+        sortName = requestData.pop('field', None)
+        order = requestData.pop('order', None)
 
-        startTime = time.strptime(args.startTime, "%Y-%m-%d  %H:%M:%S")
-        endTime = time.strptime(args.endTime, "%Y-%m-%d %H:%M:%S")
+        columns = TicketLaiu8.__table__.columns.keys()
 
-        ticketLaiu8 = TicketLaiu8.query.filter(
-            and_(
-                TicketLaiu8.departure_datetime >= startTime,
-                TicketLaiu8.departure_datetime <= endTime
-            )
-        ).all()
+        sortColumnName = Lib.camel2UnderScore(sortName) if sortName else None
+        if sortColumnName in columns and order:
+            ticketLaiu8 = TicketLaiu8.query.order_by(getattr(getattr(TicketLaiu8, sortColumnName), order)())
+        else:
+            # ticketLaiu8 = TicketLaiu8.query.order_by(TicketLaiu8.is_lock.desc(), TicketLaiu8.create_time.desc())
+            ticketLaiu8 = TicketLaiu8.query
+
+        for key in requestData:
+            filterColumnName = Lib.camel2UnderScore(key)
+            filterItems = requestData[key]
+            if filterColumnName in columns and filterItems:
+                ticketLaiu8 = ticketLaiu8.filter(getattr(TicketLaiu8, filterColumnName).in_(filterItems))
 
         ticketLaiu8Schema = TicketLaiu8Schema(many=True)
-        ticketLaiu8 = ticketLaiu8Schema.dump(ticketLaiu8)
-        return {"ticketLaiu8": ticketLaiu8}
+        return paginate(ticketLaiu8, ticketLaiu8Schema)
+
+
+class Laiu8ClientResource(Resource):
+
+    def get(self):
+        requestData = request.args
+        sortName = requestData.pop('field', None)
+        order = requestData.pop('order', None)
+
+        columns = Laiu8Client.__table__.columns.keys()
+
+        sortColumnName = Lib.camel2UnderScore(sortName) if sortName else None
+        if sortColumnName in columns and order:
+            laiu8Client = Laiu8Client.query.order_by(getattr(getattr(Laiu8Client, sortColumnName), order)())
+        else:
+            laiu8Client = Laiu8Client.query.order_by(Laiu8Client.sales.desc())
+
+        for key in requestData:
+            filterColumnName = Lib.camel2UnderScore(key)
+            filterItems = requestData[key]
+            if filterColumnName in columns and filterItems:
+                laiu8Client = laiu8Client.filter(getattr(Laiu8Client, filterColumnName).in_(filterItems))
+
+        laiu8ClientSchema = Laiu8ClientSchema(many=True)
+        return paginate(laiu8Client, laiu8ClientSchema)

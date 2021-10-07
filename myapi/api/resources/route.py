@@ -1,5 +1,4 @@
-from flask import request
-from flask_restful import Resource
+from flask_restful import Resource, request
 from flask_jwt_extended import get_jwt_identity
 
 from myapi.api.schemas import RouteClosureTableSchema, RouteSchema, RouteTreeSchema
@@ -22,6 +21,24 @@ defaultRoutes = [
             {"name": "MenuManagement"},
         ]
     },
+    {
+        "name": "TicketManagement",
+        "children": [
+            {
+                "name": "Laiu8TicketSystem",
+                "children": [
+                    {"name": "ClientManagement"},
+                    {"name": "TicketSalesDetail"},
+                ]
+            },
+        ]
+    },
+    {
+        "name": "Voucher",
+        "children": [
+            {"name": "VoucherGenerate"},
+        ]
+    },
 ]
 
 
@@ -29,6 +46,10 @@ class RouteResource(Resource):
 
     def get(self):
         user_id = get_jwt_identity()
+
+        # ClosureTable(
+        #     RouteTree, Route, RouteClosureTable, RouteSchema, RouteClosureTableSchema
+        # ).createTree(defaultRoutes)
 
         routeTreeIds = User.query.get(user_id).route_tree.with_entities(RouteTree.id).all()
         routeTreeSchema = RouteTreeSchema(many=True)

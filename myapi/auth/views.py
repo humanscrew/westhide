@@ -70,12 +70,12 @@ def login():
         return {"message": "用户名错误"}, 401
 
     user_id = user.id
-    aesKeyWithRSA = requestData.pop("aesKey", None)
-    aesIVWithRSA = requestData.pop("aesIV", None)
+    aesKeyWithRSA = request.headers.get('aesKey', None)
+    aesIVWithRSA = request.headers.get("aesIV", None)
     if not aesKeyWithRSA or not aesIVWithRSA:
         return {"message": "密钥缺失"}, 401
     password,  __aesKey, __aesIV = RSA().decryptWithRSA(passwordWithAES, aesKeyWithRSA, aesIVWithRSA, user_id)
-    requestData.update(aesKey=__aesKey, aesIV=__aesIV)
+    requestData.update(__aesKey=__aesKey, __aesIV=__aesIV)
 
     if not pwd_context.verify(password, user.password):
         return {"message": "密码错误"}, 401

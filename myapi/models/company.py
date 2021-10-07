@@ -69,6 +69,7 @@ class CooperateCompany(db.Model):
     create_time = db.Column(db.DATETIME, default=datetime.now)
     create_user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
+    update_user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     confirm_time = db.Column(db.DATETIME)
     confirm_user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     status = db.Column(
@@ -78,6 +79,7 @@ class CooperateCompany(db.Model):
     )
 
     create_user = db.relationship("User", foreign_keys=[create_user_id])
+    update_user = db.relationship("User", foreign_keys=[update_user_id])
     confirm_user = db.relationship("User", foreign_keys=[confirm_user_id])
 
 

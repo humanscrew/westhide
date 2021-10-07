@@ -18,7 +18,7 @@ class TicketLaiu8(db.Model):
     product_type = db.Column(db.String(80), comment="产品类型")
     ticket_status = db.Column(db.String(80), comment="船票状态=已取消/出票成功/一检/二检/改签废票/已退款/已改签/已升舱...")
     departure_datetime = db.Column(db.DATETIME, comment="航班时间")
-    linename = db.Column(db.String(80), comment="航线名称=北海-涠洲/涠洲-北海/北海-海口...")
+    line_name = db.Column(db.String(80), comment="航线名称=北海-涠洲/涠洲-北海/北海-海口...")
     ship_name = db.Column(db.String(80), comment="船舶名称")
     cabin_name = db.Column(db.String(80), comment="船舱名称")
     seat_memo = db.Column(db.String(80), comment="座位号")
@@ -57,3 +57,19 @@ class TicketLaiu8Refund(db.Model):
     refund_amount = db.Column(db.Integer, comment="退款金额")
 
     ticket_laiu8 = db.relationship("TicketLaiu8", back_populates="ticket_laiu8_refund")
+
+
+class Laiu8Client(db.Model):
+    __tablename__ = "ticket_laiu8_client"
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.String(20))
+    uniform_social_credit_code = db.Column(db.String(20))
+    type = db.Column(db.String(20))
+    name = db.Column(db.String(80))
+    company_name = db.Column(db.String(80))
+    mobile = db.Column(db.String(80))
+    address = db.Column(db.String(80))
+    cooperate_start_time = db.Column(db.DATETIME)
+    cooperate_end_time = db.Column(db.DATETIME)
+    manager = db.Column(db.String(80))
+    sales = db.Column(db.Integer)

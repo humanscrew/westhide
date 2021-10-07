@@ -78,8 +78,11 @@ class RSA:
             for key in cipherVar:
                 encryptText = cipherVar[key]
                 text = AES(__aesKey, __aesIV).decrypt(encryptText)
-                cipherVar[key] = json.loads(text)
-        else:
+                if text:
+                    cipherVar[key] = json.loads(text)
+                else:
+                    cipherVar[key] = None
+        elif isinstance(cipherVar, (str)):
             text = AES(__aesKey, __aesIV).decrypt(cipherVar)
             cipherVar = json.loads(text)
         return cipherVar, __aesKey, __aesIV
