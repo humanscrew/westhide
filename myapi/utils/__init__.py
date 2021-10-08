@@ -4,6 +4,7 @@ from myapi.utils.cipher_hook import CipherHook
 from myapi.utils.closure_table import ClosureTable
 from myapi.utils.sql import SQL
 from myapi.utils.lib import Lib
+from myapi.utils.handle_resource import HandleQuery
 from myapi.utils import views
 
 __all__ = [
@@ -13,5 +14,6 @@ __all__ = [
     "ClosureTable",
     "SQL",
     "Lib",
+    "HandleQuery",
     "views",
 ]

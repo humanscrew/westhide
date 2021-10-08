@@ -1,59 +1,33 @@
 from flask_restful import Resource, request
-from flask_restful.reqparse import RequestParser
 
-from myapi.commons.pagination import paginate
 from myapi.models import TicketLaiu8, Laiu8Client
 from myapi.api.schemas import TicketLaiu8Schema, Laiu8ClientSchema
 
-from myapi.utils import Lib
+from myapi.utils import HandleQuery
 
 
 class TicketLaiu8Resource(Resource):
 
     def get(self):
         requestData = request.args
-        sortName = requestData.pop('field', None)
-        order = requestData.pop('order', None)
+        sorter = requestData.get('sorter', [])
+        filter = requestData.get('filterIn', [])
 
-        columns = TicketLaiu8.__table__.columns.keys()
-
-        sortColumnName = Lib.camel2UnderScore(sortName) if sortName else None
-        if sortColumnName in columns and order:
-            ticketLaiu8 = TicketLaiu8.query.order_by(getattr(getattr(TicketLaiu8, sortColumnName), order)())
-        else:
-            # ticketLaiu8 = TicketLaiu8.query.order_by(TicketLaiu8.is_lock.desc(), TicketLaiu8.create_time.desc())
-            ticketLaiu8 = TicketLaiu8.query
-
-        for key in requestData:
-            filterColumnName = Lib.camel2UnderScore(key)
-            filterItems = requestData[key]
-            if filterColumnName in columns and filterItems:
-                ticketLaiu8 = ticketLaiu8.filter(getattr(TicketLaiu8, filterColumnName).in_(filterItems))
+        ticketLaiu8 = HandleQuery(TicketLaiu8).sort(sorter).filterIn(filter)
 
         ticketLaiu8Schema = TicketLaiu8Schema(many=True)
-        return paginate(ticketLaiu8, ticketLaiu8Schema)
+        return ticketLaiu8.paginate(ticketLaiu8Schema)
 
 
 class Laiu8ClientResource(Resource):
 
     def get(self):
+
         requestData = request.args
-        sortName = requestData.pop('field', None)
-        order = requestData.pop('order', None)
+        sorter = requestData.get('sorter', [])
+        filter = requestData.get('filterIn', [])
 
-        columns = Laiu8Client.__table__.columns.keys()
-
-        sortColumnName = Lib.camel2UnderScore(sortName) if sortName else None
-        if sortColumnName in columns and order:
-            laiu8Client = Laiu8Client.query.order_by(getattr(getattr(Laiu8Client, sortColumnName), order)())
-        else:
-            laiu8Client = Laiu8Client.query.order_by(Laiu8Client.sales.desc())
-
-        for key in requestData:
-            filterColumnName = Lib.camel2UnderScore(key)
-            filterItems = requestData[key]
-            if filterColumnName in columns and filterItems:
-                laiu8Client = laiu8Client.filter(getattr(Laiu8Client, filterColumnName).in_(filterItems))
+        laiu8Client = HandleQuery(Laiu8Client).sort(sorter).filterIn(filter)
 
         laiu8ClientSchema = Laiu8ClientSchema(many=True)
-        return paginate(laiu8Client, laiu8ClientSchema)
+        return laiu8Client.paginate(laiu8ClientSchema)
