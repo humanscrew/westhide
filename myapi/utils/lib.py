@@ -12,5 +12,12 @@ class LibABC(object):
         underScore: str = "".join(camelstrList).lower()
         return underScore
 
+    def delNoneInList(self, rawlist):
+        if isinstance(rawlist, list):
+            dealList = [item for item in rawlist if item]
+            return dealList
+        else:
+            return rawlist
+
 
 Lib = LibABC()

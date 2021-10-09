@@ -11,12 +11,19 @@ class TicketLaiu8Resource(Resource):
     def get(self):
         requestData = request.args
         sorter = requestData.get('sorter', [])
-        filter = requestData.get('filterIn', [])
-
-        ticketLaiu8 = HandleQuery(TicketLaiu8).sort(sorter).filterIn(filter)
+        filterIn = requestData.get('filterIn', [])
+        filterLike = requestData.get('filterLike', [])
+        withEntities = requestData.get('withEntities', [])
+        distinct = requestData.get('distinct', [])
+        limit = requestData.get('limit', [])
+        offset = requestData.get('offset', [])
 
         ticketLaiu8Schema = TicketLaiu8Schema(many=True)
-        return ticketLaiu8.paginate(ticketLaiu8Schema)
+        ticketLaiu8 = HandleQuery(TicketLaiu8, ticketLaiu8Schema).deal(
+            sorter, filterIn, filterLike, withEntities, distinct, limit, offset
+        )
+
+        return ticketLaiu8.paginate()
 
 
 class Laiu8ClientResource(Resource):
@@ -25,9 +32,16 @@ class Laiu8ClientResource(Resource):
 
         requestData = request.args
         sorter = requestData.get('sorter', [])
-        filter = requestData.get('filterIn', [])
-
-        laiu8Client = HandleQuery(Laiu8Client).sort(sorter).filterIn(filter)
+        filterIn = requestData.get('filterIn', [])
+        filterLike = requestData.get('filterLike', [])
+        withEntities = requestData.get('withEntities', [])
+        distinct = requestData.get('distinct', [])
+        limit = requestData.get('limit', [])
+        offset = requestData.get('offset', [])
 
         laiu8ClientSchema = Laiu8ClientSchema(many=True)
-        return laiu8Client.paginate(laiu8ClientSchema)
+        laiu8Client = HandleQuery(Laiu8Client, laiu8ClientSchema).deal(
+            sorter, filterIn, filterLike, withEntities, distinct, limit, offset
+        )
+
+        return laiu8Client.paginate()
