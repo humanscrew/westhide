@@ -14,7 +14,7 @@ Map_CompanyGroup_SubsidiaryCompany = db.Table(
 class CompanyGroup(db.Model):
     __tablename__ = "company_group"
     id = db.Column(db.Integer, primary_key=True)
-    financial_code = db.Column(db.String(20))
+    code = db.Column(db.String(20))
     name = db.Column(db.String(80))
     desc = db.Column(db.String(80))
     icon = db.Column(db.String(80))
@@ -41,7 +41,7 @@ class SubsidiaryCompany(db.Model):
     __tablename__ = "subsidiary_company"
     id = db.Column(db.Integer, primary_key=True)
     uniform_social_credit_code = db.Column(db.String(20))
-    financial_code = db.Column(db.String(10), unique=True)
+    code = db.Column(db.String(10), unique=True)
     name = db.Column(db.String(80))
 
     user = db.relationship(
@@ -63,7 +63,7 @@ class CooperateCompany(db.Model):
     __tablename__ = "cooperate_company"
     id = db.Column(db.Integer, primary_key=True)
     uniform_social_credit_code = db.Column(db.String(20))
-    financial_code = db.Column(db.String(10))
+    code = db.Column(db.String(10))
     name = db.Column(db.String(80), nullable=False)
     alias = db.Column(db.String(80))
     create_time = db.Column(db.DATETIME, default=datetime.now)

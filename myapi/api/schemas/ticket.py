@@ -13,7 +13,7 @@ class TicketLaiu8RefundSchema(ma.SQLAlchemyAutoSchema):
 
 class TicketLaiu8Schema(ma.SQLAlchemyAutoSchema):
 
-    ticket_laiu8_refund = ma.Nested(TicketLaiu8RefundSchema, many=True, data_key="ticket_laiu8_refund")
+    ticket_laiu8_refund = ma.Nested(TicketLaiu8RefundSchema, many=True)
 
     class Meta:
         model = TicketLaiu8
