@@ -15,7 +15,7 @@ from myapi.commons.apispec import APISpecExt
 
 
 db = SQLAlchemy()
-mongodb = MongoEngine()
+mdb = MongoEngine()
 jwt = JWTManager()
 ma = Marshmallow()
 migrate = Migrate()

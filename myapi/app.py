@@ -2,7 +2,7 @@ from flask import Flask, json
 from flask_cors import CORS
 
 from myapi import api, auth, utils
-from myapi.extensions import apispec, celery, db, mongodb, jwt, migrate
+from myapi.extensions import apispec, celery, db, mdb, jwt, migrate
 
 
 def create_app(testing=False):
@@ -27,7 +27,7 @@ def create_app(testing=False):
 def configure_extensions(app):
     """configure flask extensions"""
     db.init_app(app)
-    mongodb.init_app(app)
+    mdb.init_app(app)
     jwt.init_app(app)
     migrate.init_app(app, db)
 
