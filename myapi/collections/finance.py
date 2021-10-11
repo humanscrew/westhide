@@ -23,7 +23,7 @@ class FinanceAccount(mdb.Document):
     auxiliaryGroup = mdb.ReferenceField('AuxiliaryGroup', reverse_delete_rule=mdb.DENY)
 
 
-class Payment(mdb.Document):
+class PaymentType(mdb.Document):
 
     code = mdb.StringField(required=True, primary_key=True)
     name = mdb.StringField()

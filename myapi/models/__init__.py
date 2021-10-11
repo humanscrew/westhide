@@ -14,12 +14,7 @@ from myapi.models.company import (
 from myapi.models.role import Role, PermitCode
 from myapi.models.route import Route, RouteMeta, RouteTree, RouteClosureTable
 from myapi.models.ticket import TicketLaiu8, TicketLaiu8Refund, Laiu8Client
-# from myapi.models.finance import (
-#     FinanceAccount, FinanceAccountTree, FinanceAccountClosureTable,
-#     AuxiliaryGroup, AuxiliaryAccount,
-#     PaymentType, TicketSeller, ShipLine, Ship, BankAccount, Employee, Department,
-#     BookkeepingTemplate,
-# )
+
 
 __all__ = [
     "TokenBlocklist",
@@ -34,9 +29,4 @@ __all__ = [
     "Role", "PermitCode",
     "Route", "RouteMeta", "RouteTree", "RouteClosureTable",
     "TicketLaiu8", "TicketLaiu8Refund", "Laiu8Client",
-    # "FinanceAccount", "FinanceAccountTree", "FinanceAccountClosureTable",
-    # "AuxiliaryGroup", "AuxiliaryAccount",
-    # "PaymentType", "TicketSeller", "ShipLine", "Ship", "BankAccount", "Employee", "Department",
-    # "BookkeepingTemplate",
-    # "FinanceVoucher",
 ]

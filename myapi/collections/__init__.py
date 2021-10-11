@@ -1,7 +1,7 @@
 from myapi.collections.finance import (
     AuxiliaryAccount, AuxiliaryGroup,
     FinanceAccount,
-    Payment, ShipLine, Ship, BankAccount, Employee, Department,
+    PaymentType, ShipLine, Ship, BankAccount, Employee, Department,
     BookkeepingTemplate,
     FinanceVoucher,
 )
@@ -9,7 +9,7 @@ from myapi.collections.finance import (
 __all__ = [
     "AuxiliaryAccount", "AuxiliaryGroup",
     "FinanceAccount",
-    "Payment", "ShipLine", "Ship", "BankAccount", "Employee", "Department",
+    "PaymentType", "ShipLine", "Ship", "BankAccount", "Employee", "Department",
     "BookkeepingTemplate",
     "FinanceVoucher",
 ]
