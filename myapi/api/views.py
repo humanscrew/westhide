@@ -5,6 +5,7 @@ from flask_jwt_extended import jwt_required
 from marshmallow import ValidationError
 
 from myapi.extensions import apispec
+
 from myapi.api.resources import (
     RootPage,
     SQLResource,
@@ -13,7 +14,9 @@ from myapi.api.resources import (
     RouteResource, RouteListResource,
     TicketLaiu8Resource, Laiu8ClientResource,
     CompanyGroupResource,
+    BookkeepingTemplateResource,
 )
+
 from myapi.api.schemas import UserSchema
 
 from myapi.utils import CipherHook
@@ -31,6 +34,7 @@ api.add_resource(RouteListResource, "/createRoute", endpoint="api_routeList")
 api.add_resource(TicketLaiu8Resource, "/ticketLaiu8", endpoint="api_ticketLaiu8")
 api.add_resource(Laiu8ClientResource, "/laiu8Client", endpoint="api_laiu8Client")
 api.add_resource(CompanyGroupResource, "/companyGroup", endpoint="api_companyGroup")
+api.add_resource(BookkeepingTemplateResource, "/bookkeepingTemplate", endpoint="api_bookkeepingTemplate")
 
 
 @blueprint.before_app_first_request

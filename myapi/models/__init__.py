@@ -16,8 +16,9 @@ from myapi.models.route import Route, RouteMeta, RouteTree, RouteClosureTable
 from myapi.models.ticket import TicketLaiu8, TicketLaiu8Refund, Laiu8Client
 from myapi.models.finance import (
     FinanceAccount, FinanceAccountTree, FinanceAccountClosureTable,
-    AuxiliaryAccount,
-    PaymentType, TicketSeller, ShipLine, Ship
+    AuxiliaryGroup, AuxiliaryAccount,
+    PaymentType, TicketSeller, ShipLine, Ship, BankAccount, Employee, Department,
+    BookkeepingTemplate,
 )
 
 __all__ = [
@@ -34,6 +35,7 @@ __all__ = [
     "Route", "RouteMeta", "RouteTree", "RouteClosureTable",
     "TicketLaiu8", "TicketLaiu8Refund", "Laiu8Client",
     "FinanceAccount", "FinanceAccountTree", "FinanceAccountClosureTable",
-    "AuxiliaryAccount",
-    "PaymentType", "TicketSeller", "ShipLine", "Ship"
+    "AuxiliaryGroup", "AuxiliaryAccount",
+    "PaymentType", "TicketSeller", "ShipLine", "Ship", "BankAccount", "Employee", "Department",
+    "BookkeepingTemplate",
 ]

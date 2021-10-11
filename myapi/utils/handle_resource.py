@@ -5,13 +5,15 @@ from sqlalchemy.sql.expression import or_
 
 class HandleQuery:
 
-    def __init__(self, model, schema=None):
+    def __init__(self, model, schema=None, request={}):
         self.model = model
         self.query = model.query
         self.columns = model.__table__.columns.keys()
         self.schema = schema
+        self.request = request.args or request.json
 
-    def sort(self, sorter):
+    def sort(self, sorter=None):
+        sorter = sorter or self.request.get('sorter')
         if not sorter:
             return self
         for item in sorter:
@@ -24,7 +26,8 @@ class HandleQuery:
 
         return self
 
-    def filterIn(self, filter):
+    def filterIn(self, filter=None):
+        filter = filter or self.request.get('filterIn')
         if not filter:
             return self
         for item in filter:
@@ -37,7 +40,8 @@ class HandleQuery:
 
         return self
 
-    def filterLike(self, filter):
+    def filterLike(self, filter=None):
+        filter = filter or self.request.get('filterLike')
         if not filter:
             return self
         for item in filter:
@@ -52,7 +56,8 @@ class HandleQuery:
 
         return self
 
-    def withEntities(self, withEntities):
+    def withEntities(self, withEntities=None):
+        withEntities = withEntities or self.request.get('withEntities')
         if not withEntities:
             return self
         for field in withEntities:
@@ -63,7 +68,8 @@ class HandleQuery:
 
         return self
 
-    def distinct(self, distinct):
+    def distinct(self, distinct=None):
+        distinct = distinct or self.request.get('distinct')
         if not distinct:
             return self
         self.query = self.query.distinct()
@@ -71,11 +77,13 @@ class HandleQuery:
         return self
 
     def limit(self, limit):
+        limit = limit or self.request.get('limit')
         if not limit:
             return self
         self.query = self.query.limit(limit)
 
     def offset(self, offset):
+        offset = offset or self.request.get('limit')
         if not offset:
             return self
         self.query = self.query.offset(offset)

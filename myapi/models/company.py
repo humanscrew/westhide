@@ -105,15 +105,6 @@ class Map_Cooperate_Company(db.Model):
     cooperate_company_id = db.Column(db.Integer, db.ForeignKey("cooperate_company.id"))
     cooperate_type_id = db.Column(db.Integer, db.ForeignKey("cooperate_type.id"))
 
-    subsidiary_company = db.relationship(
-        "SubsidiaryCompany",
-        foreign_keys=[subsidiary_company_id]
-    )
-    cooperate_company = db.relationship(
-        "CooperateCompany",
-        foreign_keys=[cooperate_company_id]
-    )
-    cooperate_type = db.relationship(
-        "CooperateType",
-        foreign_keys=[cooperate_type_id]
-    )
+    subsidiary_company = db.relationship("SubsidiaryCompany", foreign_keys=[subsidiary_company_id])
+    cooperate_company = db.relationship("CooperateCompany", foreign_keys=[cooperate_company_id])
+    cooperate_type = db.relationship("CooperateType", foreign_keys=[cooperate_type_id])

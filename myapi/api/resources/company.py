@@ -12,4 +12,4 @@ class CompanyGroupResource(Resource):
         companyGroups = User.query.get_or_404(user_id).company_group.with_entities(
             CompanyGroup.name, CompanyGroup.icon, CompanyGroup.color, CompanyGroup.desc, CompanyGroup.location
         )
-        return {"companyGroup": companyGroupSchema.dump(companyGroups)}
+        return {"companyGroups": companyGroupSchema.dump(companyGroups)}

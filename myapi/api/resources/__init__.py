@@ -5,6 +5,7 @@ from myapi.api.resources.role import PermitCodeResource
 from myapi.api.resources.route import RouteResource, RouteListResource
 from myapi.api.resources.ticket import TicketLaiu8Resource, Laiu8ClientResource
 from myapi.api.resources.company import CompanyGroupResource
+from myapi.api.resources.finance import BookkeepingTemplateResource
 
 __all__ = [
     "RootPage",
@@ -14,4 +15,5 @@ __all__ = [
     "RouteResource", "RouteListResource",
     "TicketLaiu8Resource", "Laiu8ClientResource",
     "CompanyGroupResource",
+    "BookkeepingTemplateResource",
 ]

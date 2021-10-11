@@ -5,7 +5,7 @@ class FinanceAccount(db.Model):
     __tablename__ = "finance_account"
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(80), nullable=False, unique=True)
-    caption = db.Column(db.String(80))
+    name = db.Column(db.String(80))
     direction = db.Column(db.String(1), comment="1=debit;0=credit")
     auxiliary_group_code = db.Column(db.String(80), db.ForeignKey("auxiliary_group.code"))
 
@@ -60,7 +60,7 @@ class AuxiliaryAccount(db.Model):
     __tablename__ = "auxiliary_account"
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(80), nullable=False, unique=True)
-    title = db.Column(db.String(80), nullable=False)
+    name = db.Column(db.String(80), nullable=False)
     detail_table_name = db.Column(db.String(80))
 
     auxiliary_group = db.relationship(
@@ -141,6 +141,7 @@ class BookkeepingTemplate(db.Model):
     abstract = db.Column(db.String(80))
     currency_type = db.Column(db.String(10), default="BB01")
     currency_rate = db.Column(db.Float, default=1)
+    currency_amount = db.Column(db.Float, default=1)
     direction = db.Column(db.String(1), comment="1=debit;0=credit")
     amount = db.Column(db.Integer, default=0)
     unit_price = db.Column(db.Float, default=0)
@@ -152,7 +153,7 @@ class BookkeepingTemplate(db.Model):
     credit_amount = db.Column(db.Float)
 
     lister = db.Column(db.String(10))
-    auditer = db.Column(db.String(10))
+    auditor = db.Column(db.String(10))
     confirmor = db.Column(db.String(10))
     attach_count = db.Column(db.Integer)
     is_confirm = db.Column(db.Boolean)
@@ -168,11 +169,5 @@ class BookkeepingTemplate(db.Model):
     pay_no = db.Column(db.String(80))
     due_date = db.Column(db.Date)
 
-    debit_finance_account = db.relationship(
-        "FinanceAccount",
-        foreign_keys=[debit_finance_account_code]
-    )
-    credit_finance_account = db.relationship(
-        "FinanceAccount",
-        foreign_keys=[credit_finance_account_code]
-    )
+    debit_finance_account = db.relationship("FinanceAccount", foreign_keys=[debit_finance_account_code])
+    credit_finance_account = db.relationship("FinanceAccount", foreign_keys=[credit_finance_account_code])
