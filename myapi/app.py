@@ -4,6 +4,8 @@ from flask_cors import CORS
 from myapi import api, auth, utils
 from myapi.extensions import apispec, celery, db, mdb, jwt, migrate
 
+from datetime import datetime, date
+
 
 def create_app(testing=False):
     """Application factory, used to create application"""
@@ -79,4 +81,8 @@ class MyJSONEncoder(json.JSONEncoder):
         from decimal import Decimal
         if isinstance(obj, Decimal):
             return float(obj)
+        if isinstance(obj, datetime):
+            return obj.strftime("%Y-%m-%d %H:%M:%S")
+        if isinstance(obj, date):
+            return obj.strftime("%Y-%m-%d")
         return super(MyJSONEncoder, self).default(obj)

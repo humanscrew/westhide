@@ -1,4 +1,4 @@
-from flask import request, jsonify, Blueprint, current_app as app
+from flask import request, g, jsonify, Blueprint, current_app as app
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -74,8 +74,7 @@ def login():
     aesIVWithRSA = request.headers.get("aesIV", None)
     if not aesKeyWithRSA or not aesIVWithRSA:
         return {"message": "密钥缺失"}, 401
-    password,  __aesKey, __aesIV = RSA().decryptWithRSA(passwordWithAES, aesKeyWithRSA, aesIVWithRSA, user_id)
-    requestData.update(__aesKey=__aesKey, __aesIV=__aesIV)
+    password,  g.aesKey, g.aesIV = RSA().decryptWithRSA(passwordWithAES, aesKeyWithRSA, aesIVWithRSA, user_id)
 
     if not pwd_context.verify(password, user.password):
         return {"message": "密码错误"}, 401
