@@ -13,7 +13,7 @@ from myapi.models.company import (
 )
 from myapi.models.role import Role, PermitCode
 from myapi.models.route import Route, RouteMeta, RouteTree, RouteClosureTable
-from myapi.models.ticket import TicketLaiu8, TicketLaiu8Refund, Laiu8Client
+from myapi.models.ticket import TicketLaiu8, TicketLaiu8Refund, Laiu8Client, Ticket2Finance
 
 
 __all__ = [
@@ -28,5 +28,5 @@ __all__ = [
     "Map_Cooperate_Company",
     "Role", "PermitCode",
     "Route", "RouteMeta", "RouteTree", "RouteClosureTable",
-    "TicketLaiu8", "TicketLaiu8Refund", "Laiu8Client",
+    "TicketLaiu8", "TicketLaiu8Refund", "Laiu8Client", "Ticket2Finance",
 ]

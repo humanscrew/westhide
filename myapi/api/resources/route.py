@@ -29,6 +29,7 @@ defaultRoutes = [
                 "children": [
                     {"name": "ClientManagement"},
                     {"name": "TicketSalesDetail"},
+                    {"name": "TicketSales2Finance"},
                 ]
             },
         ]
@@ -36,6 +37,7 @@ defaultRoutes = [
     {
         "name": "Voucher",
         "children": [
+            {"name": "BookkeepingTemplate"},
             {"name": "VoucherGenerate"},
         ]
     },

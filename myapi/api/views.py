@@ -12,7 +12,7 @@ from myapi.api.resources import (
     UserResource, UserListResource,
     PermitCodeResource,
     RouteResource, RouteListResource,
-    TicketLaiu8Resource, Laiu8ClientResource,
+    TicketLaiu8Resource, Laiu8ClientResource, Ticket2FinanceResource,
     CompanyGroupResource,
     BookkeepingTemplateResource,
 )
@@ -33,6 +33,7 @@ api.add_resource(RouteResource, "/route", endpoint="api_route")
 api.add_resource(RouteListResource, "/createRoute", endpoint="api_routeList")
 api.add_resource(TicketLaiu8Resource, "/ticketLaiu8", endpoint="api_ticketLaiu8")
 api.add_resource(Laiu8ClientResource, "/laiu8Client", endpoint="api_laiu8Client")
+api.add_resource(Ticket2FinanceResource, "/ticket2Finance", endpoint="api_ticket2Finance")
 api.add_resource(CompanyGroupResource, "/companyGroup", endpoint="api_companyGroup")
 api.add_resource(BookkeepingTemplateResource, "/bookkeepingTemplate", endpoint="api_bookkeepingTemplate")
 
