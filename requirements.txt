@@ -19,3 +19,5 @@ Flask-Cors==3.0.10
 flask-mongoengine
 marshmallow-mongoengine
 pymysql
+sqlalchemy-clickhouse
+clickhouse-driver

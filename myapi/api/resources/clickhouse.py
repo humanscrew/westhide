@@ -1,10 +1,10 @@
 from flask import jsonify
 from flask_restful import Resource, request
 
-from myapi.utils import SQL
+from myapi.utils import Clickhouse
 
 
-class SQLResource(Resource):
+class ClickhouseResource(Resource):
 
     def post(self):
         if not request.is_json:
@@ -16,18 +16,17 @@ class SQLResource(Resource):
         port = request.json.get('port')
         user = request.json.get('user')
         password = request.json.get('password')
-        db = request.json.get('db')
-        charset = request.json.get('charset')
+        database = request.json.get('database')
         statement = requestData.get('statement')
 
-        if not host and not user and not password and not db:
-            sqlInstance = SQL(config={
+        if not host and not user and not password and not database:
+            clickhouse = Clickhouse(config={
                 "host": host, "port": port,
                 "user": user, "password": password,
-                "db": db, "charset": charset
+                "database": database
             })
         else:
-            sqlInstance = SQL()
+            clickhouse = Clickhouse()
 
-        result = sqlInstance.execute(statement)
+        result = clickhouse.execute(statement)
         return jsonify({**result})

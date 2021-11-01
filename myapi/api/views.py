@@ -9,6 +9,7 @@ from myapi.extensions import apispec
 from myapi.api.resources import (
     RootPage,
     SQLResource,
+    ClickhouseResource,
     UserResource, UserListResource,
     PermitCodeResource,
     RouteResource, RouteListResource,
@@ -26,6 +27,7 @@ api = Api(blueprint)
 
 api.add_resource(RootPage, "/", endpoint="rootpage")
 api.add_resource(SQLResource, "/sql", endpoint="api_sql")
+api.add_resource(ClickhouseResource, "/clickhouse", endpoint="api_clickhouse")
 api.add_resource(UserResource, "/user", endpoint="api_user")
 api.add_resource(UserListResource, "/userList", endpoint="api_userList")
 api.add_resource(PermitCodeResource, "/permitCode", endpoint="api_role_permitCode")

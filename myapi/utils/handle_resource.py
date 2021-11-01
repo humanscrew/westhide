@@ -1,3 +1,4 @@
+from flask import jsonify
 from myapi.utils import Lib
 from myapi.commons import paginate as rawPaginate
 from sqlalchemy.sql.expression import or_
@@ -105,7 +106,7 @@ class HandleQuery:
         if isDelUrl:
             del paginateResult["prev"]
             del paginateResult["next"]
-        return paginateResult
+        return jsonify(paginateResult)
 
 
 class HandleObjects:
