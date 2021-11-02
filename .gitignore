@@ -88,8 +88,10 @@ ENV/
 # Rope project settings
 .ropeproject
 
-# .flaskenv hide MySQL Link
+# .flaskenv hide MySQL config
 .flaskenv
-.vscode
+.vscode/
 
 myapi/config.py
+
+myapi/utils/pay/tenpay/apiclient/

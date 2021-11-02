@@ -1,5 +1,6 @@
 from clickhouse_driver import connect
 from flask import current_app as app
+import pandas
 
 
 class Clickhouse():
@@ -17,7 +18,6 @@ class Clickhouse():
         self.config["database"] = config["database"] or app.config.get("CLICKHOUSE_DATABASE")
 
     def make_connection(self):
-        print(self.config)
         connection = connect(**self.config)
         return connection
 
@@ -31,7 +31,11 @@ class Clickhouse():
         try:
             cursor.execute(statement)
             result = cursor.fetchall()
+            columns = cursor.columns_with_types
             connection.commit()
+
+            df = pandas.DataFrame(result, columns=[column[0] for column in columns])
+            result = df.to_dict(orient='records')
             return {'result': result, 'status': True, 'message': '数据库操作成功！'}
         except:
             connection.rollback()

@@ -21,3 +21,5 @@ marshmallow-mongoengine
 pymysql
 sqlalchemy-clickhouse
 clickhouse-driver
+pandas
+wechatpayv3
