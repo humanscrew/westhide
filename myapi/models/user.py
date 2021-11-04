@@ -51,14 +51,16 @@ class User(db.Model):
     """Basic user model"""
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    username = db.Column(db.String(80), unique=True, nullable=False, index=True)
+    nickname = db.Column(db.String(80))
     mobile = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(80), unique=True)
-    _password = db.Column("password", db.String(255), nullable=False)
+    _password = db.Column("password", db.String(255), nullable=False, index=True)
     active = db.Column(db.Boolean, default=True)
     create_time = db.Column(db.DATETIME, default=datetime.now)
     update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
     real_name = db.Column(db.String(80))
+    remark = db.Column(db.String(80))
 
     company_group = db.relationship(
         'CompanyGroup',

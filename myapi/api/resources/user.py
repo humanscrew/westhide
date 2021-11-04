@@ -6,6 +6,8 @@ from myapi.models import User
 from myapi.extensions import db
 from myapi.commons.pagination import paginate
 
+from myapi.utils import HandleQuery
+
 
 class UserResource(Resource):
     """Single object resource
@@ -160,6 +162,8 @@ class UserListResource(Resource):
     # method_decorators = [jwt_required()]
 
     def get(self):
+
         userSchema = UserSchema(many=True)
-        query = User.query
-        return paginate(query, userSchema)
+        user = HandleQuery(User, userSchema, request).deal()
+
+        return user.paginate()

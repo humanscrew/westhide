@@ -47,6 +47,12 @@ defaultRoutes = [
 class RouteResource(Resource):
 
     def get(self):
+        pass
+
+
+class RouteListResource(Resource):
+
+    def get(self):
         user_id = get_jwt_identity()
 
         # ClosureTable(
@@ -69,10 +75,7 @@ class RouteResource(Resource):
         for item in routeTreeList:
             item["path"] = "/" + item["path"]
 
-        return {"routesList": routeTreeList}
-
-
-class RouteListResource(Resource):
+        return {"result": routeTreeList}
 
     def post(self):
         if not request.is_json:

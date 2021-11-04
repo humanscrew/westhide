@@ -1,5 +1,7 @@
 from myapi.extensions import db
 
+from datetime import datetime
+
 
 class TicketLaiu8(db.Model):
     __tablename__ = "ticket_laiu8"
@@ -24,15 +26,15 @@ class TicketLaiu8(db.Model):
     seat_memo = db.Column(db.String(80), index=True, comment="座位号")
     passenger_name = db.Column(db.String(80), index=True, comment="乘客姓名")
     passenger_id_no = db.Column(db.String(80), index=True, comment="乘客身份证号")
-    full_ticket_price = db.Column(db.DECIMAL(10,3), index=True, comment="原价")
-    discount_price = db.Column(db.DECIMAL(10,3), index=True, comment="票价折扣")
-    ticket_price = db.Column(db.DECIMAL(10,3), index=True, comment="实际票价=原价-票价折扣")
-    get_voucher = db.Column(db.DECIMAL(10,3), index=True, comment="产生的积分")
-    use_voucher = db.Column(db.DECIMAL(10,3), index=True, comment="使用的积分")
+    full_ticket_price = db.Column(db.DECIMAL(10, 3), index=True, comment="原价")
+    discount_price = db.Column(db.DECIMAL(10, 3), index=True, comment="票价折扣")
+    ticket_price = db.Column(db.DECIMAL(10, 3), index=True, comment="实际票价=原价-票价折扣")
+    get_voucher = db.Column(db.DECIMAL(10, 3), index=True, comment="产生的积分")
+    use_voucher = db.Column(db.DECIMAL(10, 3), index=True, comment="使用的积分")
     payment_time = db.Column(db.DATETIME, index=True, comment="支付时间")
     payment_method = db.Column(db.String(80), index=True, comment="支付方式=现金/POS机/微信/支付宝/来游吧OTA预存款/转账")
     pay_id = db.Column(db.String(80), index=True, comment="支付ID=<微信订单号>/<支付宝业务流水号>")
-    real_price = db.Column(db.DECIMAL(10,3), index=True, comment="实际支付价格=实际票价-使用的积分=<微信订单金额>/<支付宝收入金额>")
+    real_price = db.Column(db.DECIMAL(10, 3), index=True, comment="实际支付价格=实际票价-使用的积分=<微信订单金额>/<支付宝收入金额>")
     change_type = db.Column(db.String(80), index=True, comment="票状态变更=已退款/已改签/已升舱...")
     ticket_no_new = db.Column(db.String(80), index=True, comment="[链接表]状态变更产生新票的票号/未产生为NULL")
     change_time = db.Column(db.DATETIME, index=True, comment="操作时间")
@@ -50,8 +52,8 @@ class TicketLaiu8Refund(db.Model):
     ticket_refund_method = db.Column(db.String(80), index=True, comment="退款方式=/")
     ticket_refund_finish_time = db.Column(db.DATETIME, index=True, comment="实际退款时间")
     refund_id = db.Column(db.String(80), index=True, comment="退款ID=<微信商户退款单号>/<支付宝商户订单号>")
-    fee = db.Column(db.DECIMAL(10,3), index=True, comment="手续费")
-    refund_amount = db.Column(db.DECIMAL(10,3), index=True, comment="退款金额")
+    fee = db.Column(db.DECIMAL(10, 3), index=True, comment="手续费")
+    refund_amount = db.Column(db.DECIMAL(10, 3), index=True, comment="退款金额")
 
     ticket_laiu8 = db.relationship("TicketLaiu8", back_populates="ticket_laiu8_refund")
 
@@ -69,7 +71,9 @@ class Laiu8Client(db.Model):
     cooperate_start_time = db.Column(db.DATETIME)
     cooperate_end_time = db.Column(db.DATETIME)
     manager = db.Column(db.String(80))
-    sales = db.Column(db.DECIMAL(10,3))
+    sales = db.Column(db.DECIMAL(10, 3))
+    create_time = db.Column(db.DATETIME, default=datetime.now)
+    update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
 
 
 class Ticket2Finance(db.Model):
@@ -81,6 +85,8 @@ class Ticket2Finance(db.Model):
     user_type = db.Column(db.String(80), comment="用户类型=OTA/VIP/窗口/散客")
     user_name = db.Column(db.String(80), comment="用户名称/下单人名称")
     product_type = db.Column(db.String(80), comment="产品类型")
-    ticket_price = db.Column(db.DECIMAL(10,3), comment="实际票价=原价-票价折扣")
-    get_voucher = db.Column(db.DECIMAL(10,3), comment="产生的积分")
-    use_voucher = db.Column(db.DECIMAL(10,3), comment="使用的积分")
+    ticket_price = db.Column(db.DECIMAL(10, 3), comment="实际票价=原价-票价折扣")
+    get_voucher = db.Column(db.DECIMAL(10, 3), comment="产生的积分")
+    use_voucher = db.Column(db.DECIMAL(10, 3), comment="使用的积分")
+    create_time = db.Column(db.DATETIME, default=datetime.now)
+    update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)

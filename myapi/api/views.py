@@ -8,7 +8,7 @@ from myapi.extensions import apispec
 
 from myapi.api.resources import (
     RootPage,
-    SQLResource,
+    MysqlResource,
     ClickhouseResource,
     UserResource, UserListResource,
     PermitCodeResource,
@@ -26,13 +26,13 @@ blueprint = Blueprint("api", __name__, url_prefix="/westhide/api")
 api = Api(blueprint)
 
 api.add_resource(RootPage, "/", endpoint="rootpage")
-api.add_resource(SQLResource, "/sql", endpoint="api_sql")
+api.add_resource(MysqlResource, "/mysql", endpoint="api_mysql")
 api.add_resource(ClickhouseResource, "/clickhouse", endpoint="api_clickhouse")
 api.add_resource(UserResource, "/user", endpoint="api_user")
 api.add_resource(UserListResource, "/userList", endpoint="api_userList")
 api.add_resource(PermitCodeResource, "/permitCode", endpoint="api_role_permitCode")
 api.add_resource(RouteResource, "/route", endpoint="api_route")
-api.add_resource(RouteListResource, "/createRoute", endpoint="api_routeList")
+api.add_resource(RouteListResource, "/routeList", endpoint="api_routeList")
 api.add_resource(TicketLaiu8Resource, "/ticketLaiu8", endpoint="api_ticketLaiu8")
 api.add_resource(Laiu8ClientResource, "/laiu8Client", endpoint="api_laiu8Client")
 api.add_resource(Ticket2FinanceResource, "/ticket2Finance", endpoint="api_ticket2Finance")

@@ -2,7 +2,7 @@ import pymysql
 from flask import current_app as app
 
 
-class SQL:
+class Mysql:
 
     def __init__(self, config={
         "host": None, "port": None,

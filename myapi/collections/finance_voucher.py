@@ -1,22 +1,31 @@
 from myapi.extensions import mdb
-from myapi.collections import BookkeepingTemplate
+from myapi.collections import onupdate, BookkeepingTemplate
+
+from datetime import datetime
 
 
+@onupdate.apply
 class AuxiliaryAccountEmbed(mdb.EmbeddedDocument):
 
     code = mdb.StringField()
     name = mdb.StringField()
     value = mdb.StringField()
+    createTime = mdb.DateTimeField(default=datetime.utcnow)
+    updateTime = mdb.DateTimeField(default=datetime.utcnow)
 
 
+@onupdate.apply
 class FinanceAccountEmbed(mdb.EmbeddedDocument):
 
     code = mdb.StringField()
     name = mdb.StringField()
     direction = mdb.StringField(max_length=1)
     auxiliaryAccounts = mdb.EmbeddedDocumentListField(AuxiliaryAccountEmbed, default=[AuxiliaryAccountEmbed()])
+    createTime = mdb.DateTimeField(default=datetime.utcnow)
+    updateTime = mdb.DateTimeField(default=datetime.utcnow)
 
 
+@onupdate.apply
 class FinanceVoucher(mdb.Document):
 
     code = mdb.StringField(required=True, unique=True)
@@ -60,3 +69,6 @@ class FinanceVoucher(mdb.Document):
     payment = mdb.StringField()
     payNo = mdb.StringField()
     dueDate = mdb.DateTimeField()
+
+    createTime = mdb.DateTimeField(default=datetime.utcnow)
+    updateTime = mdb.DateTimeField(default=datetime.utcnow)

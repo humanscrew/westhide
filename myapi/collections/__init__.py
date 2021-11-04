@@ -1,3 +1,4 @@
+from myapi.collections.singals import onupdate
 from myapi.collections.bookkeeping_template import (
     AuxiliaryAccount, AuxiliaryGroup,
     FinanceAccount,
@@ -9,6 +10,7 @@ from myapi.collections.finance_voucher import (
 )
 
 __all__ = [
+    "onupdate",
     "AuxiliaryAccount", "AuxiliaryGroup",
     "FinanceAccount",
     "PaymentType", "ShipLine", "Ship", "BankAccount", "Employee", "Department", "FinanceClient",

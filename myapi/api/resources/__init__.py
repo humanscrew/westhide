@@ -1,5 +1,5 @@
 from myapi.api.resources.rootpage import RootPage
-from myapi.api.resources.sql import SQLResource
+from myapi.api.resources.mysql import MysqlResource
 from myapi.api.resources.clickhouse import ClickhouseResource
 from myapi.api.resources.user import UserResource, UserListResource
 from myapi.api.resources.role import PermitCodeResource
@@ -10,7 +10,7 @@ from myapi.api.resources.finance import BookkeepingTemplateResource
 
 __all__ = [
     "RootPage",
-    "SQLResource",
+    "MysqlResource",
     "ClickhouseResource",
     "UserResource", "UserListResource",
     "PermitCodeResource",

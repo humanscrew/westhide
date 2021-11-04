@@ -21,6 +21,8 @@ class CompanyGroup(db.Model):
     color = db.Column(db.String(80))
     address = db.Column(db.String(80))
     location = db.Column(db.String(80))
+    create_time = db.Column(db.DATETIME, default=datetime.now)
+    update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
 
     user = db.relationship(
         "User",
@@ -43,6 +45,8 @@ class SubsidiaryCompany(db.Model):
     uniform_social_credit_code = db.Column(db.String(20))
     code = db.Column(db.String(10), unique=True)
     name = db.Column(db.String(80))
+    create_time = db.Column(db.DATETIME, default=datetime.now)
+    update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
 
     user = db.relationship(
         "User",
@@ -87,6 +91,8 @@ class CooperateType(db.Model):
     __tablename__ = "cooperate_type"
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(20))
+    create_time = db.Column(db.DATETIME, default=datetime.now)
+    update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
 
 
 class CompanyNameHistory(db.Model):
@@ -104,6 +110,8 @@ class Map_Cooperate_Company(db.Model):
     subsidiary_company_id = db.Column(db.Integer, db.ForeignKey("subsidiary_company.id"))
     cooperate_company_id = db.Column(db.Integer, db.ForeignKey("cooperate_company.id"))
     cooperate_type_id = db.Column(db.Integer, db.ForeignKey("cooperate_type.id"))
+    create_time = db.Column(db.DATETIME, default=datetime.now)
+    update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
 
     subsidiary_company = db.relationship("SubsidiaryCompany", foreign_keys=[subsidiary_company_id])
     cooperate_company = db.relationship("CooperateCompany", foreign_keys=[cooperate_company_id])

@@ -4,6 +4,8 @@ from Crypto import Random
 # import Crypto.Signature.PKCS1_v1_5 as sign_PKCS1_v1_5 # 用于签名/验签
 import base64
 
+from datetime import datetime
+
 from myapi.extensions import db, ma
 from myapi.models import User
 
@@ -94,6 +96,8 @@ class RSAModel(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, unique=True)
     public_key = db.Column(db.Text, nullable=False)
     private_key = db.Column(db.Text, nullable=False)
+    create_time = db.Column(db.DATETIME, default=datetime.now)
+    update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
 
     user = db.relationship('User', backref=db.backref("utils_rsa", uselist=False),  uselist=False, lazy='joined')
 
@@ -129,6 +133,8 @@ class DefaultRSAModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     public_key = db.Column(db.Text, nullable=False)
     private_key = db.Column(db.Text, nullable=False)
+    create_time = db.Column(db.DATETIME, default=datetime.now)
+    update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
 
 
 class DefaultRSASchema(ma.SQLAlchemyAutoSchema):

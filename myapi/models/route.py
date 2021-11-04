@@ -2,18 +2,24 @@ from myapi.extensions import db
 
 from myapi.models import Map_User_Route, Map_User_Route_Tree
 
+from datetime import datetime
+
 
 class Route(db.Model):
     __tablename__ = "route"
     id = db.Column(db.Integer, primary_key=True)
     path = db.Column(db.String(80))
-    name = db.Column(db.String(80), unique=True)
+    name = db.Column(db.String(80), unique=True, index=True)
     alias = db.Column(db.String(80))
+    permission = db.Column(db.String(80))
     component = db.Column(db.String(255))
     redirect = db.Column(db.String(255))
     before_enter = db.Column(db.String(255))
     props = db.Column(db.String(255))
     route_meta_id = db.Column(db.Integer, db.ForeignKey("route_meta.id"))
+    status = db.Column(db.String(2), default="1")
+    create_time = db.Column(db.DATETIME, default=datetime.now)
+    update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
 
     route_meta = db.relationship("RouteMeta", lazy="joined")
 
@@ -45,12 +51,16 @@ class RouteMeta(db.Model):
     order_no = db.Column(db.Integer)
     ignore_route = db.Column(db.Boolean)
     hide_path_for_children = db.Column(db.Boolean)
+    create_time = db.Column(db.DATETIME, default=datetime.now)
+    update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
 
 
 class RouteTree(db.Model):
     __tablename__ = "route_tree"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
+    create_time = db.Column(db.DATETIME, default=datetime.now)
+    update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
 
     user = db.relationship(
         "User",

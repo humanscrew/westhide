@@ -1,46 +1,68 @@
 from myapi.extensions import mdb
+from myapi.collections import onupdate
+
+from datetime import datetime
 
 
+@onupdate.apply
 class AuxiliaryAccount(mdb.Document):
 
     code = mdb.StringField(required=True, unique=True)
     name = mdb.StringField(required=True)
     items = mdb.ListField(mdb.GenericLazyReferenceField())
+    createTime = mdb.DateTimeField(default=datetime.utcnow)
+    updateTime = mdb.DateTimeField(default=datetime.utcnow)
 
 
+@onupdate.apply
 class AuxiliaryGroup(mdb.Document):
 
     code = mdb.StringField(required=True, unique=True)
     name = mdb.StringField(required=True)
     auxiliaryAccounts = mdb.ListField(mdb.ReferenceField("AuxiliaryAccount", reverse_delete_rule=mdb.DENY))
+    createTime = mdb.DateTimeField(default=datetime.utcnow)
+    updateTime = mdb.DateTimeField(default=datetime.utcnow)
 
 
+@onupdate.apply
 class FinanceAccount(mdb.Document):
 
     code = mdb.StringField(required=True, unique=True)
     name = mdb.StringField(required=True)
     direction = mdb.StringField(max_length=1)
     auxiliaryGroup = mdb.ReferenceField('AuxiliaryGroup', reverse_delete_rule=mdb.DENY)
+    createTime = mdb.DateTimeField(default=datetime.utcnow)
+    updateTime = mdb.DateTimeField(default=datetime.utcnow)
 
 
+@onupdate.apply
 class PaymentType(mdb.Document):
 
     code = mdb.StringField(required=True, unique=True)
     name = mdb.StringField(required=True)
+    createTime = mdb.DateTimeField(default=datetime.utcnow)
+    updateTime = mdb.DateTimeField(default=datetime.utcnow)
 
 
+@onupdate.apply
 class ShipLine(mdb.Document):
 
     code = mdb.StringField(required=True, unique=True)
     name = mdb.StringField(required=True)
+    createTime = mdb.DateTimeField(default=datetime.utcnow)
+    updateTime = mdb.DateTimeField(default=datetime.utcnow)
 
 
+@onupdate.apply
 class Ship(mdb.Document):
 
     code = mdb.StringField(required=True, unique=True)
     name = mdb.StringField(required=True)
+    createTime = mdb.DateTimeField(default=datetime.utcnow)
+    updateTime = mdb.DateTimeField(default=datetime.utcnow)
 
 
+@onupdate.apply
 class BankAccount(mdb.Document):
 
     code = mdb.StringField(required=True, unique=True)
@@ -51,26 +73,38 @@ class BankAccount(mdb.Document):
     bankBranchAddress = mdb.StringField()
     createDate = mdb.DateTimeField()
     cancelDate = mdb.DateTimeField()
+    createTime = mdb.DateTimeField(default=datetime.utcnow)
+    updateTime = mdb.DateTimeField(default=datetime.utcnow)
 
 
+@onupdate.apply
 class Employee(mdb.Document):
 
     code = mdb.StringField(required=True, unique=True)
     name = mdb.StringField(required=True)
+    createTime = mdb.DateTimeField(default=datetime.utcnow)
+    updateTime = mdb.DateTimeField(default=datetime.utcnow)
 
 
+@onupdate.apply
 class Department(mdb.Document):
 
     code = mdb.StringField(required=True, unique=True)
     name = mdb.StringField(required=True)
+    createTime = mdb.DateTimeField(default=datetime.utcnow)
+    updateTime = mdb.DateTimeField(default=datetime.utcnow)
 
 
+@onupdate.apply
 class FinanceClient(mdb.Document):
 
     code = mdb.StringField(required=True, unique=True)
     name = mdb.StringField(required=True)
+    createTime = mdb.DateTimeField(default=datetime.utcnow)
+    updateTime = mdb.DateTimeField(default=datetime.utcnow)
 
 
+@onupdate.apply
 class BookkeepingTemplate(mdb.Document):
 
     code = mdb.StringField(required=True, unique=True)
@@ -113,3 +147,6 @@ class BookkeepingTemplate(mdb.Document):
     payment = mdb.StringField()
     payNo = mdb.StringField()
     dueDate = mdb.DateTimeField()
+
+    createTime = mdb.DateTimeField(default=datetime.utcnow)
+    updateTime = mdb.DateTimeField(default=datetime.utcnow)
