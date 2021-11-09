@@ -57,6 +57,21 @@ class HandleQuery:
 
         return self
 
+    def between(self, between=None):
+        between = between or self.request.get('between')
+        if not between:
+            return self
+        for item in between:
+            field = item.get("field")
+            field = Lib.camel2UnderScore(field)
+            left = item.get("left")
+            right = item.get("right")
+            print(field, left, right)
+            if field in self.columns and left and right:
+                self.query = self.query.filter(getattr(self.model, field).between(left, right))
+
+        return self
+
     def withEntities(self, withEntities=None):
         withEntities = withEntities or self.request.get('withEntities')
         if not withEntities:
@@ -89,23 +104,21 @@ class HandleQuery:
             return self
         self.query = self.query.offset(offset)
 
-    def deal(self, sorter=None, filterIn=None, filterLike=None, withEntities=None, distinct=None, limit=None, offset=None):
+    def deal(self, sorter=None, filterIn=None, filterLike=None, between=None, withEntities=None, distinct=None, limit=None, offset=None):
         self.sort(sorter)
         self.filterIn(filterIn)
         self.filterLike(filterLike)
+        self.between(between)
         self.withEntities(withEntities)
         self.distinct(distinct)
         self.limit(limit)
         self.offset(offset)
         return self
 
-    def paginate(self, schema=None, isDelUrl=True):
+    def paginate(self, schema=None, link=None):
         if not schema:
             schema = self.schema
-        paginateResult = rawPaginate(self.query, schema)
-        if isDelUrl:
-            del paginateResult["prev"]
-            del paginateResult["next"]
+        paginateResult = rawPaginate(self.query, schema, link)
         return jsonify(paginateResult)
 
 
