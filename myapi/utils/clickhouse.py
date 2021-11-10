@@ -23,7 +23,7 @@ class Clickhouse():
 
     def execute(self, statement=''):
         if not (statement):
-            return {'result': [], 'status': False, 'message': 'clickhouse语句为空！'}
+            return {'result': [], 'code': 400, 'message': 'SQL语句为空！'}
 
         connection = self.make_connection()
         cursor = connection.cursor()
@@ -36,10 +36,10 @@ class Clickhouse():
 
             df = pandas.DataFrame(result, columns=[column[0] for column in columns])
             result = df.to_dict(orient='records')
-            return {'result': result, 'status': True, 'message': '数据库操作成功！'}
+            return {'result': result, 'code': 200, 'message': '数据库操作成功！'}
         except:
             connection.rollback()
-            return {'result': [], 'status': False, 'message': '数据库操作失败！'}
+            return {'result': [], 'code': 400, 'message': '数据库操作失败！'}
         finally:
             cursor.close()
             connection.close()

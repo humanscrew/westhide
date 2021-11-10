@@ -5,6 +5,7 @@ from myapi.api.schemas.ticket import TicketLaiu8Schema, TicketLaiu8RefundSchema,
 from myapi.api.schemas.company import CompanyGroupSchema
 from myapi.api.schemas.bookkeeping_template import BookkeepingTemplateSchema
 from myapi.api.schemas.finance_voucher import FinanceVoucherSchema
+from myapi.api.schemas.sms import SmsAliyunSchema, SmsAliyunDetailSchema
 
 
 __all__ = [
@@ -15,4 +16,5 @@ __all__ = [
     "CompanyGroupSchema",
     "BookkeepingTemplateSchema",
     "FinanceVoucherSchema",
+    "SmsAliyunSchema", "SmsAliyunDetailSchema"
 ]

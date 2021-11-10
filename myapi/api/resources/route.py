@@ -78,8 +78,7 @@ class RouteListResource(Resource):
         return {"result": routeTreeList}
 
     def post(self):
-        if not request.is_json:
-            return {"message": "Missing JSON in request"}, 405
+
         routes = request.json.get("routes")
         ClosureTable(
             RouteTree, Route, RouteClosureTable, RouteSchema, RouteClosureTableSchema

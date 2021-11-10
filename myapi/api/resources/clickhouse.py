@@ -7,11 +7,8 @@ from myapi.utils import Clickhouse
 class ClickhouseResource(Resource):
 
     def post(self):
-        if not request.is_json:
-            return {"message": "Missing JSON in request"}, 405
 
         requestData = request.json
-
         host = request.json.get('host')
         port = request.json.get('port')
         user = request.json.get('user')

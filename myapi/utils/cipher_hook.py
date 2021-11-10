@@ -18,6 +18,8 @@ class CipherHook:
             return response
         responseData = response.json
         for key in responseData:
+            if key == "message":
+                continue
             text = responseData[key]
             text = json.dumps(text)
             encryption = AES(__aesKey, __aesIV)

@@ -7,8 +7,6 @@ from myapi.utils import Mysql
 class MysqlResource(Resource):
 
     def post(self):
-        if not request.is_json:
-            return {"message": "Missing JSON in request"}, 405
 
         requestData = request.json
 

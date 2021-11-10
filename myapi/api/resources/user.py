@@ -4,7 +4,6 @@ from flask_jwt_extended import get_jwt_identity
 from myapi.api.schemas import UserSchema
 from myapi.models import User
 from myapi.extensions import db
-from myapi.commons.pagination import paginate
 
 from myapi.utils import HandleQuery
 
@@ -88,8 +87,6 @@ class UserResource(Resource):
         return {**userSchema.dump(user)}
 
     def post(self):
-        if not request.is_json:
-            return {"message": "Missing JSON in request"}, 405
 
         userSchema = UserSchema()
         user = userSchema.load(request.json)

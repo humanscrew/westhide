@@ -14,6 +14,7 @@ from myapi.models.company import (
 from myapi.models.role import Role, PermitCode
 from myapi.models.route import Route, RouteMeta, RouteTree, RouteClosureTable
 from myapi.models.ticket import TicketLaiu8, TicketLaiu8Refund, Laiu8Client, Ticket2Finance
+from myapi.models.sms import SmsAliyun, SmsAliyunDetail
 
 
 __all__ = [
@@ -29,4 +30,5 @@ __all__ = [
     "Role", "PermitCode",
     "Route", "RouteMeta", "RouteTree", "RouteClosureTable",
     "TicketLaiu8", "TicketLaiu8Refund", "Laiu8Client", "Ticket2Finance",
+    "SmsAliyun", "SmsAliyunDetail",
 ]

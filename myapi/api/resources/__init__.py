@@ -7,6 +7,7 @@ from myapi.api.resources.route import RouteResource, RouteListResource
 from myapi.api.resources.ticket import TicketLaiu8Resource, Laiu8ClientResource, Ticket2FinanceResource
 from myapi.api.resources.company import CompanyGroupResource
 from myapi.api.resources.finance import BookkeepingTemplateResource
+from myapi.api.resources.sms import SmsAliyunResource
 
 __all__ = [
     "RootPage",
@@ -18,4 +19,5 @@ __all__ = [
     "TicketLaiu8Resource", "Laiu8ClientResource", "Ticket2FinanceResource",
     "CompanyGroupResource",
     "BookkeepingTemplateResource",
+    "SmsAliyunResource",
 ]

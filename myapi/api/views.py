@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, jsonify
+from flask import Blueprint, current_app, request, jsonify
 from flask_restful import Api
 from flask_jwt_extended import jwt_required
 
@@ -16,6 +16,7 @@ from myapi.api.resources import (
     TicketLaiu8Resource, Laiu8ClientResource, Ticket2FinanceResource,
     CompanyGroupResource,
     BookkeepingTemplateResource,
+    SmsAliyunResource,
 )
 
 from myapi.api.schemas import UserSchema
@@ -38,6 +39,7 @@ api.add_resource(Laiu8ClientResource, "/laiu8Client", endpoint="api_laiu8Client"
 api.add_resource(Ticket2FinanceResource, "/ticket2Finance", endpoint="api_ticket2Finance")
 api.add_resource(CompanyGroupResource, "/companyGroup", endpoint="api_companyGroup")
 api.add_resource(BookkeepingTemplateResource, "/bookkeepingTemplate", endpoint="api_bookkeepingTemplate")
+api.add_resource(SmsAliyunResource, "/smsAliyun", endpoint="api_smsAliyun")
 
 
 @blueprint.before_app_first_request
@@ -60,6 +62,8 @@ def handle_marshmallow_error(e):
 @blueprint.before_request
 @jwt_required()
 def before_request():
+    if request.method == "POST" and not request.is_json:
+        return {"message": "Missing JSON in request"}, 405
     return CipherHook().decryptRequest()
 
 

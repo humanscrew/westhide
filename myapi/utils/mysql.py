@@ -23,7 +23,7 @@ class Mysql:
 
     def execute(self, statement=''):
         if not (statement):
-            return {'result': [], 'status': False, 'message': 'sql语句为空！'}
+            return {'result': [], 'code': 400, 'message': 'SQL语句为空！'}
 
         connection = self.make_connection()
         cursor = connection.cursor(pymysql.cursors.DictCursor)  # pymysql.cursors.SSCursor
@@ -32,10 +32,10 @@ class Mysql:
             cursor.execute(statement)
             result = cursor.fetchall()
             connection.commit()
-            return {'result': result, 'status': True, 'message': '数据库操作成功！'}
+            return {'result': result, 'code': 200, 'message': '数据库操作成功！'}
         except:
             connection.rollback()
-            return {'result': [], 'status': False, 'message': '数据库操作失败！'}
+            return {'result': [], 'code': 400, 'message': '数据库操作失败！'}
         finally:
             cursor.close()
             connection.close()

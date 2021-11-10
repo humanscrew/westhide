@@ -73,11 +73,11 @@ def login():
     aesKeyWithRSA = request.headers.get('aesKey', None)
     aesIVWithRSA = request.headers.get("aesIV", None)
     if not aesKeyWithRSA or not aesIVWithRSA:
-        return {"message": "密钥缺失"}, 401
+        return {"message": "请求密钥缺失"}, 400
     password,  g.aesKey, g.aesIV = RSA().decryptWithRSA(passwordWithAES, aesKeyWithRSA, aesIVWithRSA, user_id)
 
     if not pwd_context.verify(password, user.password):
-        return {"message": "密码错误"}, 401
+        return {"message": "密码错误"}, 400
 
     access_token = create_access_token(identity=user.id)
     refresh_token = create_refresh_token(identity=user.id)
@@ -96,13 +96,13 @@ def register():
     requestData = request.json
     username = requestData.pop('username', None)
     if username and User.query.with_entities(User.id).filter_by(username=username).first():
-        return {"message": "该用户名已被注册"}, 422
+        return {"message": "该用户名已被注册"}, 400
     mobile = requestData.get('mobile')
     if mobile and User.query.with_entities(User.id).filter_by(mobile=mobile).first():
-        return {"message": "该手机号已被注册"}, 422
+        return {"message": "该手机号已被注册"}, 400
     email = requestData.get('email')
     if email and User.query.with_entities(User.id).filter_by(email=email).first():
-        return {"message": "该邮箱已被注册"}, 422
+        return {"message": "该邮箱已被注册"}, 400
 
     defaultPrivateKey = RSA().getDefaultRSA().get("privateKey")
     CipherHook().decryptRequest(None, defaultPrivateKey)

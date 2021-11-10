@@ -1,6 +1,7 @@
 from myapi.api.schemas import RoleSchema
 from myapi.models import User
 from myapi.extensions import ma, db
+# from marshmallow import INCLUDE
 
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
@@ -16,5 +17,5 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         exclude = ("_password", "id")
         # include_fk = False
         # include_relationships = True
-        # unknown = ma.INCLUDE
+        # unknown = INCLUDE
         # transient = True
