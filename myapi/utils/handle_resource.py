@@ -66,7 +66,6 @@ class HandleQuery:
             field = Lib.camel2UnderScore(field)
             left = item.get("left")
             right = item.get("right")
-            print(field, left, right)
             if field in self.columns and left and right:
                 self.query = self.query.filter(getattr(self.model, field).between(left, right))
 
