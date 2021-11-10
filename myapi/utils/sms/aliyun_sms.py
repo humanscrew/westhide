@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from flask import json
+from flask import json, jsonify
+from flask_restful import Resource, request
 from myapi.config import ALIYUN_SMS
 from myapi.utils.sms import smsTemplate
 
@@ -58,26 +59,6 @@ class AliyunSms:
         )
         send_date = datetime.now().strftime('%Y%m%d')
         send_resp = client.send_sms(send_req)
-        # Resquest Response Format
-        # send_resp = {
-        #     "headers": {
-        #         "date": "Wed, 10 Nov 2021 02:29:22 GMT",
-        #         "content-type": "application/json;charset=utf-8",
-        #         "content-length": "110",
-        #         "connection": "keep-alive",
-        #         "access-control-allow-origin": "*",
-        #         "access-control-allow-methods": "POST, GET, OPTIONS, PUT, DELETE",
-        #         "access-control-allow-headers": "X-Requested-With, X-Sequence, _aop_secret, _aop_signature, x-acs-action, x-acs-version, x-acs-date, Content-Type",
-        #         "access-control-max-age": "172800",
-        #         "x-acs-request-id": "9EDDD03F-E460-56C1-9BCB-C142DD13D38E"
-        #     },
-        #     "body": {
-        #         "BizId": "143307836511361915^0",
-        #         "Code": "OK",
-        #         "Message": "OK",
-        #         "RequestId": "9EDDD03F-E460-56C1-9BCB-C142DD13D38E"
-        #     }
-        # }
 
         code = send_resp.body.code
         request_id = send_resp.body.request_id
@@ -115,40 +96,12 @@ class AliyunSms:
                 current_page=1
             )
             query_resp = client.query_send_details(query_req)
-            # Query Response Format
-            # {
-            #     "headers": {
-            #         "date": "Wed, 10 Nov 2021 03:56:12 GMT",
-            #         "content-type": "application/json;charset=utf-8",
-            #         "content-length": "419",
-            #         "connection": "keep-alive",
-            #         "access-control-allow-origin": "*",
-            #         "access-control-allow-methods": "POST, GET, OPTIONS, PUT, DELETE",
-            #         "access-control-allow-headers": "X-Requested-With, X-Sequence, _aop_secret, _aop_signature, x-acs-action, x-acs-version, x-acs-date, Content-Type",
-            #         "access-control-max-age": "172800",
-            #         "x-acs-request-id": "6BC6A8BE-D546-5415-A48A-FD14E9C050CA"
-            #     },
-            #     "body": {
-            #         "Code": "OK",
-            #         "Message": "OK",
-            #         "RequestId": "6BC6A8BE-D546-5415-A48A-FD14E9C050CA",
-            #         "result": {
-            #             "SmsSendDetailDTO": [{
-            #                 "Content": "【westhide平台】您的验证码704057，该验证码5分钟内有效，请确认是否本人操作。",
-            #                 "ErrCode": "DELIVERED",
-            #                 "PhoneNum": "#",
-            #                 "ReceiveDate": "2021-11-10 10:29:28",
-            #                 "SendDate": "2021-11-10 10:29:22",
-            #                 "SendStatus": 3,
-            #                 "TemplateCode": "SMS_224280228"
-            #             }]
-            #         },
-            #         "TotalCount": 1
-            #     }
-            # }
             result = query_resp.body.sms_send_detail_dtos.to_map().get("SmsSendDetailDTO")[0]
+
             request_id = query_resp.body.request_id
             smsAliyun = SmsAliyun.query.filter_by(biz_id=biz_id).first_or_404()
+            params = json.loads(smsAliyun.template_param)
+            result.update(params=params)
             smsAliyunDetail = SmsAliyunDetail.query.filter_by(biz_id=biz_id).first()
             if not biz_id:
                 smsAliyunDetailMeta = {
@@ -168,3 +121,23 @@ class AliyunSms:
                 return {"result": result, "code": 200, "message": "查询成功"}
             else:
                 return {"result": {}, "code": 400, "message": query_resp.body.message}
+
+
+class SmsAliyunResource(Resource):
+
+    def get(self):
+
+        if not request.args:
+            return {"message": "请求参数不能为空"}, 405
+
+        smsQuery = AliyunSms().query(**request.args)
+        return jsonify(smsQuery)
+
+    def post(self):
+
+        phoneNumbers = request.json.get("phoneNumbers")
+        if phoneNumbers:
+            smsSend = AliyunSms().send(phoneNumbers)
+            return jsonify(smsSend)
+        else:
+            return {"message": "手机号不能为空"}, 405

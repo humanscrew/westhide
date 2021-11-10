@@ -6,7 +6,7 @@ from myapi.utils.mysql import Mysql
 from myapi.utils.clickhouse import Clickhouse
 from myapi.utils.lib import Lib
 from myapi.utils.handle_resource import HandleQuery, HandleObjects
-from myapi.utils.sms import AliyunSms
+from myapi.utils.sms import AliyunSms, SmsAliyunResource
 from myapi.utils import views
 
 
@@ -19,6 +19,6 @@ __all__ = [
     "Clickhouse",
     "Lib",
     "HandleQuery", "HandleObjects",
-    "AliyunSms",
+    "AliyunSms", "SmsAliyunResource",
     "views",
 ]

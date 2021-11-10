@@ -10,7 +10,7 @@ from flask_jwt_extended import (
 from myapi.models import User
 from myapi.extensions import pwd_context, jwt, apispec, db
 from myapi.auth.helpers import revoke_token, is_token_revoked, add_token_to_database
-from myapi.utils import RSA, CipherHook
+from myapi.utils import RSA, CipherHook, AliyunSms
 from myapi.api.schemas import UserSchema
 from marshmallow import INCLUDE, ValidationError
 
@@ -67,7 +67,7 @@ def login():
 
     user = User.query.filter_by(username=username).first()
     if not user:
-        return {"message": "用户名错误"}, 401
+        return {"message": "用户名错误"}, 400
 
     user_id = user.id
     aesKeyWithRSA = request.headers.get('aesKey', None)
@@ -84,8 +84,7 @@ def login():
     add_token_to_database(access_token, app.config["JWT_IDENTITY_CLAIM"])
     add_token_to_database(refresh_token, app.config["JWT_IDENTITY_CLAIM"])
 
-    ret = {"accessToken": access_token, "refreshToken": refresh_token, "message": "登录成功"}
-    return ret
+    return {"accessToken": access_token, "refreshToken": refresh_token, "message": "登录成功"}
 
 
 @blueprint.route("/register", methods=["POST"])
@@ -95,17 +94,25 @@ def register():
 
     requestData = request.json
     username = requestData.pop('username', None)
+
+    defaultPrivateKey = RSA().getDefaultRSA().get("privateKey")
+    CipherHook().decryptRequest(None, defaultPrivateKey)
+
     if username and User.query.with_entities(User.id).filter_by(username=username).first():
         return {"message": "该用户名已被注册"}, 400
+
     mobile = requestData.get('mobile')
     if mobile and User.query.with_entities(User.id).filter_by(mobile=mobile).first():
         return {"message": "该手机号已被注册"}, 400
+
     email = requestData.get('email')
     if email and User.query.with_entities(User.id).filter_by(email=email).first():
         return {"message": "该邮箱已被注册"}, 400
 
-    defaultPrivateKey = RSA().getDefaultRSA().get("privateKey")
-    CipherHook().decryptRequest(None, defaultPrivateKey)
+    sms = requestData.get('sms')
+    aliyunSms = AliyunSms().query(**sms.get("callback"))
+    if not sms.get("code") == aliyunSms["result"]["params"]["code"]:
+        return {"message": "验证码错误"}, 400
 
     requestData.update(username=username)
     userSchema = UserSchema(unknown=INCLUDE)

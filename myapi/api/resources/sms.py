@@ -1,9 +1,6 @@
 from flask import jsonify
 from flask_restful import Resource, request
 
-from myapi.models import SmsAliyun, SmsAliyunDetail
-from myapi.api.schemas import SmsAliyunSchema, SmsAliyunDetailSchema
-
 from myapi.utils import AliyunSms
 
 
