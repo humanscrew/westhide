@@ -1,5 +1,5 @@
 from clickhouse_driver import connect
-from flask import current_app as app
+from myapi.config import CLICKHOUSE_SETTINGS
 import pandas
 
 
@@ -11,11 +11,11 @@ class Clickhouse():
         "database": None
     }):
         self.config = config
-        self.config["host"] = config["host"] or app.config.get("CLICKHOUSE_HOST")
-        self.config["port"] = int(config["port"] or app.config.get("CLICKHOUSE_PORT"))
-        self.config["user"] = config["user"] or app.config.get("CLICKHOUSE_USERNAME")
-        self.config["password"] = config["password"] or app.config.get("CLICKHOUSE_PASSWORD")
-        self.config["database"] = config["database"] or app.config.get("CLICKHOUSE_DATABASE")
+        self.config["host"] = config["host"] or CLICKHOUSE_SETTINGS.get("host")
+        self.config["port"] = int(config["port"] or CLICKHOUSE_SETTINGS.get("port"))
+        self.config["user"] = config["user"] or CLICKHOUSE_SETTINGS.get("username")
+        self.config["password"] = config["password"] or CLICKHOUSE_SETTINGS.get("password")
+        self.config["database"] = config["database"] or CLICKHOUSE_SETTINGS.get("database")
 
     def make_connection(self):
         connection = connect(**self.config)

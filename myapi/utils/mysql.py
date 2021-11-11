@@ -1,5 +1,5 @@
 import pymysql
-from flask import current_app as app
+from myapi.config import MYSQL_SETTINGS
 
 
 class Mysql:
@@ -10,12 +10,12 @@ class Mysql:
         "db": None, "charset": None
     }):
         self.config = config
-        self.config["host"] = config["host"] or app.config.get("DATABASE_HOST")
-        self.config["port"] = int(config["port"] or app.config.get("DATABASE_PORT"))
-        self.config["user"] = config["user"] or app.config.get("DATABASE_USERNAME")
-        self.config["password"] = config["password"] or app.config.get("DATABASE_PASSWORD")
-        self.config["db"] = config["db"] or app.config.get("DATABASE_DATABASE")
-        self.config["charset"] = config["charset"] or app.config.get("DATABASE_CHARSET")
+        self.config["host"] = config["host"] or MYSQL_SETTINGS.get("host")
+        self.config["port"] = int(config["port"] or MYSQL_SETTINGS.get("port"))
+        self.config["user"] = config["user"] or MYSQL_SETTINGS.get("username")
+        self.config["password"] = config["password"] or MYSQL_SETTINGS.get("password")
+        self.config["db"] = config["db"] or MYSQL_SETTINGS.get("db")
+        self.config["charset"] = config["charset"] or MYSQL_SETTINGS.get("charset")
 
     def make_connection(self):
         connection = pymysql.connect(**self.config)

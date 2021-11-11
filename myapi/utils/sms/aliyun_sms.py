@@ -98,25 +98,28 @@ class AliyunSms:
             query_resp = client.query_send_details(query_req)
             result = query_resp.body.sms_send_detail_dtos.to_map().get("SmsSendDetailDTO")[0]
 
-            request_id = query_resp.body.request_id
             smsAliyun = SmsAliyun.query.filter_by(biz_id=biz_id).first_or_404()
+            smsAliyun.total_count = query_resp.body.total_count
+
+            smsAliyunDetail = SmsAliyunDetail.query.filter_by(biz_id=biz_id).first()
+
+            smsAliyunDetailMeta = {
+                "biz_id": biz_id,
+                'request_id': query_resp.body.request_id,
+                "phone_num": result["PhoneNum"], "context": result["Content"], "send_status": result["SendStatus"],
+                "err_code": result["ErrCode"], "template_code": result["TemplateCode"],
+                "receive_date": result["ReceiveDate"], "send_date": result["SendDate"],
+                "out_id": result.get("OutId"),
+            }
+            smsAliyunDetailSchema = SmsAliyunDetailSchema(partial=True)
+            smsAliyunDetail = smsAliyunDetailSchema.load(smsAliyunDetailMeta)
+
+            db.session.add(smsAliyun)
+            db.session.add(smsAliyunDetail)
+            db.session.commit()
+
             params = json.loads(smsAliyun.template_param)
             result.update(params=params)
-            smsAliyunDetail = SmsAliyunDetail.query.filter_by(biz_id=biz_id).first()
-            if not biz_id:
-                smsAliyunDetailMeta = {
-                    "biz_id": biz_id,
-                    'request_id': request_id,
-                    "phone_num": result["PhoneNum"], "context": result["Content"], "send_status": result["SendStatus"],
-                    "err_code": result["ErrCode"], "template_code": result["TemplateCode"],
-                    "receive_date": result["ReceiveDate"], "send_date": result["SendDate"],
-                    "out_id": result.get("OutId"),
-                }
-                smsAliyunDetailSchema = SmsAliyunDetailSchema(partial=True)
-                smsAliyunDetail = smsAliyunDetailSchema.load(smsAliyunDetailMeta)
-                db.session.add(smsAliyunDetail)
-                db.session.commit()
-
             if UtilClient.equal_string(query_resp.body.code, 'OK'):
                 return {"result": result, "code": 200, "message": "查询成功"}
             else:
