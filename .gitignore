@@ -91,6 +91,7 @@ ENV/
 # .flaskenv hide MySQL config
 .flaskenv
 .vscode/
+.idea/
 
 myapi/config.py
 

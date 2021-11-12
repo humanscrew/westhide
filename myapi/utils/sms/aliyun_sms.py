@@ -19,7 +19,8 @@ from myapi.api.schemas import SmsAliyunSchema, SmsAliyunDetailSchema
 
 
 class AliyunSms:
-    def __init__(self, access_key_id=None, access_key_secret=None, sign_name=None, template_code=None, template_param={}):
+    def __init__(self, access_key_id=None, access_key_secret=None, sign_name=None, template_code=None,
+                 template_param=None):
         self.access_key_id = access_key_id or ALIYUN_SMS.get("access_key_id")
         self.access_key_secret = access_key_secret or ALIYUN_SMS.get("access_key_secret")
         self.sign_name = sign_name or smsTemplate["auth"]["signName"]
@@ -78,7 +79,8 @@ class AliyunSms:
         db.session.commit()
 
         if UtilClient.equal_string(code, 'OK'):
-            return {"phoneNumbers": phone_numbers, "bizId": biz_id, "sendDate": send_date, "code": 200, "message": "短信验证已发送"}
+            return {"phoneNumbers": phone_numbers, "bizId": biz_id, "sendDate": send_date, "code": 200,
+                    "message": "短信验证已发送"}
         else:
             return {"code": 400, "message": message}
 
@@ -112,7 +114,7 @@ class AliyunSms:
                 "out_id": result.get("OutId"),
             }
             smsAliyunDetailSchema = SmsAliyunDetailSchema(partial=True)
-            smsAliyunDetail = smsAliyunDetailSchema.load(smsAliyunDetailMeta)
+            smsAliyunDetail = smsAliyunDetailSchema.load(smsAliyunDetailMeta, instance=smsAliyunDetail)
 
             db.session.add(smsAliyun)
             db.session.add(smsAliyunDetail)
