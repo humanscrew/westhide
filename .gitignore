@@ -96,3 +96,7 @@ ENV/
 myapi/config.py
 
 myapi/utils/pay/tenpay/apiclient/
+
+myapi/logs
+!myapi/logs/logs.py
+!myapi/logs/__init__.py
