@@ -1,4 +1,5 @@
-from flask_restful import Resource, request
+from flask import jsonify, request
+from flask_restful import Resource
 
 from myapi.utils import Tenpay
 
@@ -13,12 +14,9 @@ class TenPayResource(Resource):
     # smsQuery = AliyunSms().query(**request.args)
     # return jsonify(smsQuery)
 
-    def post(self):
-        result = Tenpay().transfer_bill2db("2021-11-10")
-        return result
-        # phoneNumbers = request.json.get("phoneNumbers")
-        # if phoneNumbers:
-        #     smsSend = AliyunSms().send(phoneNumbers)
-        #     return jsonify(smsSend)
-        # else:
-        #     return {"message": "手机号不能为空"}, 405
+    @staticmethod
+    def post():
+        bill_date = request.json.get('billDate')
+
+        result = Tenpay(bill_date).transfer_bill2db()
+        return jsonify(result)

@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 import os
 from random import sample
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from string import digits, ascii_letters
 
 import pandas as pd
 
 from myapi.extensions import db
+from sqlalchemy.sql.expression import func
+from myapi.models import TenPay
 
 from flask import jsonify, request, json
 from wechatpayv3 import WeChatPay, WeChatPayType
@@ -27,7 +29,7 @@ DIRPATH = os.path.dirname(os.path.realpath(__file__))
 
 class Tenpay:
 
-    def __init__(self):
+    def __init__(self, bill_date=None):
         self.tenpay = WeChatPay(
             wechatpay_type=WeChatPayType.NATIVE,
             mchid=MCHID,
@@ -39,7 +41,7 @@ class Tenpay:
             cert_dir=CERT_DIR,
             # logger=LOGGER
         )
-        self.bill_date = None
+        self.bill_date = bill_date
         self.download_url = None
 
     def pay_native(self):
@@ -188,7 +190,7 @@ class Tenpay:
 
     def trade_bill(self, bill_date=None):
         # 微信在次日9点启动生成前一天的对账单，建议商户10点后再获取
-        self.bill_date = bill_date or (date.today() + timedelta(days=-1)).strftime("%Y-%m-%d")
+        self.bill_date = bill_date or self.bill_date or (date.today() + timedelta(days=-1)).strftime("%Y-%m-%d")
         code, message = self.tenpay.trade_bill(bill_date=self.bill_date)
         result = json.loads(message)
         if code in range(200, 300):
@@ -210,9 +212,17 @@ class Tenpay:
             result = json.loads(message)
             return {'code': code, 'result': {}, 'message': result.get("message")}
 
-    def transfer_bill2db(self, bill_date):
+    def transfer_bill2db(self, bill_date=None):
         try:
             self.bill_date = bill_date or self.bill_date
+            if TenPay.query.first():
+                ten_pay = TenPay.query.filter(TenPay.trade_time.like(self.bill_date + "%")).first()
+                if ten_pay:
+                    return {'code': 400, 'message': '已存在该日账单明细'}
+
+            self.trade_bill()
+            self.download_bill()
+
             bill_file_path = os.path.join(DIRPATH, 'bill_file', f"tenpay_bill_{self.bill_date}.csv.gz")
             df = pd.read_csv(bill_file_path, compression='gzip', header=0, sep=',')
             # df.columns.values = [BillFieldLabel(col).name for col in df.columns.values]
@@ -221,16 +231,14 @@ class Tenpay:
             for col in df.columns.values:
                 # df[col] = df[col].apply(lambda x: x[1:])
                 df[col] = df[col].str.strip(r'`')
+
+            df['create_time'] = datetime.now()
+            df['update_time'] = datetime.now()
             df.to_sql(name='tenpay_bill', con=db.get_engine(), chunksize=500, if_exists='append',
                       index=False)
-            return {'code': 200, 'billDataframe': df}
+            return {'code': 200, 'bill': df.to_dict(orient='records')}
         except Exception:
             return {'code': 400, 'message': '账单传输失败'}
-
-# url = Tenpay().trade_bill("2021-11-10").get("result").get("download_url")
-# resp = Tenpay().download_bill(url, "2021-11-10").get("bill")
-
-# Tenpay().transfer_bill2db("2021-11-10")
 
 # from io import BytesIO
 # import gzip
