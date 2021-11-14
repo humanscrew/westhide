@@ -101,3 +101,5 @@ myapi/utils/pay/tenpay/bill_file/
 myapi/logs/*
 !myapi/logs/logs.py
 !myapi/logs/__init__.py
+
+migrations/
