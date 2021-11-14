@@ -2,7 +2,7 @@ from flask import Flask, json
 from flask_cors import CORS
 
 from myapi import api, auth, utils
-from myapi.extensions import apispec, celery, db, mdb, jwt, migrate
+from myapi.extensions import apispec, celery, db, mdb, jwt, migrate, logger
 
 from datetime import datetime, date
 
@@ -32,6 +32,7 @@ def configure_extensions(app):
     mdb.init_app(app)
     jwt.init_app(app)
     migrate.init_app(app, db)
+    # logger.init_app(app)
 
 
 def configure_apispec(app):

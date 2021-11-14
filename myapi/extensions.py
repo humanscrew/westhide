@@ -13,6 +13,7 @@ from celery import Celery
 
 from myapi.commons.apispec import APISpecExt
 
+from myapi.logs import Logger
 
 db = SQLAlchemy()
 mdb = MongoEngine()
@@ -22,6 +23,8 @@ migrate = Migrate()
 apispec = APISpecExt()
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 celery = Celery()
+
+logger = Logger()
 
 
 def camelCase(self, field_name, field_obj):

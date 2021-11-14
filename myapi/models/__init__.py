@@ -1,21 +1,21 @@
-from myapi.models.blocklist import TokenBlocklist
-from myapi.models.user import (
+from .blocklist import TokenBlocklist
+from .user import (
     Map_User_CompanyGroup, Map_User_SubsidiaryCompany,
     Map_User_Role, Map_User_PermitCode,
     Map_User_Route, Map_User_Route_Tree,
     User
 )
-from myapi.models.company import (
+from .company import (
     CompanyGroup, SubsidiaryCompany,
     CooperateCompany, CooperateType,
     CompanyNameHistory,
     Map_Cooperate_Company
 )
-from myapi.models.role import Role, PermitCode
-from myapi.models.route import Route, RouteMeta, RouteTree, RouteClosureTable
-from myapi.models.ticket import TicketLaiu8, TicketLaiu8Refund, Laiu8Client, Ticket2Finance
-from myapi.models.sms import SmsAliyun, SmsAliyunDetail
-
+from .role import Role, PermitCode
+from .route import Route, RouteMeta, RouteTree, RouteClosureTable
+from .ticket import TicketLaiu8, TicketLaiu8Refund, Laiu8Client, Ticket2Finance
+from .sms import SmsAliyun, SmsAliyunDetail
+from .pay import TenPay
 
 __all__ = [
     "TokenBlocklist",
@@ -31,4 +31,5 @@ __all__ = [
     "Route", "RouteMeta", "RouteTree", "RouteClosureTable",
     "TicketLaiu8", "TicketLaiu8Refund", "Laiu8Client", "Ticket2Finance",
     "SmsAliyun", "SmsAliyunDetail",
+    "TenPay",
 ]

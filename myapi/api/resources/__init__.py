@@ -1,13 +1,14 @@
-from myapi.api.resources.rootpage import RootPage
-from myapi.api.resources.mysql import MysqlResource
-from myapi.api.resources.clickhouse import ClickhouseResource
-from myapi.api.resources.user import UserResource, UserListResource
-from myapi.api.resources.role import PermitCodeResource
-from myapi.api.resources.route import RouteResource, RouteListResource
-from myapi.api.resources.ticket import TicketLaiu8Resource, Laiu8ClientResource, Ticket2FinanceResource
-from myapi.api.resources.company import CompanyGroupResource
-from myapi.api.resources.finance import BookkeepingTemplateResource
-from myapi.api.resources.sms import SmsAliyunResource
+from .rootpage import RootPage
+from .mysql import MysqlResource
+from .clickhouse import ClickhouseResource
+from .user import UserResource, UserListResource
+from .role import PermitCodeResource
+from .route import RouteResource, RouteListResource
+from .ticket import TicketLaiu8Resource, Laiu8ClientResource, Ticket2FinanceResource
+from .company import CompanyGroupResource
+from .finance import BookkeepingTemplateResource
+from .sms import SmsAliyunResource
+from .pay import TenPayResource
 
 __all__ = [
     "RootPage",
@@ -20,4 +21,5 @@ __all__ = [
     "CompanyGroupResource",
     "BookkeepingTemplateResource",
     "SmsAliyunResource",
+    "TenPayResource",
 ]

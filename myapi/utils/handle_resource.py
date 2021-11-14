@@ -1,6 +1,6 @@
 from flask import jsonify
 from myapi.utils import Lib
-from myapi.commons import paginate as rawPaginate
+from myapi.commons import paginate as raw_paginate
 from sqlalchemy.sql.expression import or_
 
 
@@ -53,7 +53,7 @@ class HandleQuery:
 
             if field in self.columns and values:
                 self.query = self.query.filter(
-                    or_(*[getattr(self.model, field).like("%"+val+"%") for val in values]),)
+                    or_(*[getattr(self.model, field).like("%" + val + "%") for val in values]), )
 
         return self
 
@@ -97,13 +97,18 @@ class HandleQuery:
             return self
         self.query = self.query.limit(limit)
 
+        return self
+
     def offset(self, offset):
         offset = offset or self.request.get('offset')
         if not offset:
             return self
         self.query = self.query.offset(offset)
 
-    def deal(self, sorter=None, filterIn=None, filterLike=None, between=None, withEntities=None, distinct=None, limit=None, offset=None):
+        return self
+
+    def deal(self, sorter=None, filterIn=None, filterLike=None, between=None, withEntities=None, distinct=None,
+             limit=None, offset=None):
         self.sort(sorter)
         self.filterIn(filterIn)
         self.filterLike(filterLike)
@@ -117,7 +122,7 @@ class HandleQuery:
     def paginate(self, schema=None, link=None):
         if not schema:
             schema = self.schema
-        paginateResult = rawPaginate(self.query, schema, link)
+        paginateResult = raw_paginate(self.query, schema, link)
         return jsonify(paginateResult)
 
 
@@ -139,7 +144,7 @@ class HandleObjects:
             type = item.get("type")
 
             if field in self.documents and type:
-                order = "+"+field if type == "asc" else "-"+field
+                order = "+" + field if type == "asc" else "-" + field
                 self.objects = self.objects.order_by(order)
 
         return self
@@ -153,7 +158,7 @@ class HandleObjects:
             values = item.get("values")
 
             if field in self.documents and values:
-                field = field+"__in"
+                field = field + "__in"
                 self.objects = self.objects(**{field: values})
 
         return self
@@ -168,7 +173,7 @@ class HandleObjects:
             values = Lib.delNoneInList(values)
 
             if field in self.documents and values:
-                field = field+"__contains"
+                field = field + "__contains"
                 for value in values:
                     self.objects = self.objects(**{field: value})
 
@@ -199,13 +204,18 @@ class HandleObjects:
             return self
         self.objects = self.objects.limit(limit)
 
+        return self
+
     def offset(self, offset):
         offset = offset or self.request.get('offset')
         if not offset:
             return self
         self.objects = self.objects.skip(offset)
 
-    def deal(self, sorter=None, filterIn=None, filterLike=None, withEntities=None, distinct=None, limit=None, offset=None):
+        return self
+
+    def deal(self, sorter=None, filterIn=None, filterLike=None, withEntities=None, distinct=None, limit=None,
+             offset=None):
         self.sort(sorter)
         self.filterIn(filterIn)
         self.filterLike(filterLike)
@@ -220,8 +230,8 @@ class HandleObjects:
             schema = self.schema
         page = page or self.request.get('page')
         per_page = per_page or self.request.get('per_page')
+        total = self.objects.count()
         if page and per_page:
-            total = self.objects.count()
-            self.offset((page-1)*per_page)
+            self.offset((page - 1) * per_page)
             self.limit(per_page)
-        return {"pages": page, "result": self.schema.dump(self.objects), "total": total}
+        return {"pages": page, "result": schema.dump(self.objects), "total": total}

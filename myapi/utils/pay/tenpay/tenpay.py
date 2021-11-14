@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
+import os
 from random import sample
+from datetime import date, timedelta
 from string import digits, ascii_letters
+
+import pandas as pd
+
+from myapi.extensions import db
 
 from flask import jsonify, request, json
 from wechatpayv3 import WeChatPay, WeChatPayType
 
-from apiclient.config import TenPayConfig
+from .apiclient.config import TenPayConfig, BillFieldLabel
 
 MCHID = TenPayConfig.MCHID.value
 CERT_DIR = TenPayConfig.CERT_DIR.value
@@ -16,8 +22,10 @@ APPID = TenPayConfig.APPID.value
 NOTIFY_URL = TenPayConfig.NOTIFY_URL.value
 LOGGER = TenPayConfig.LOGGER.value
 
+DIRPATH = os.path.dirname(os.path.realpath(__file__))
 
-class TenPay:
+
+class Tenpay:
 
     def __init__(self):
         self.tenpay = WeChatPay(
@@ -29,7 +37,10 @@ class TenPay:
             appid=APPID,
             notify_url=NOTIFY_URL,
             cert_dir=CERT_DIR,
-            logger=LOGGER)
+            # logger=LOGGER
+        )
+        self.bill_date = None
+        self.download_url = None
 
     def pay_native(self):
         # 以native下单为例，下单成功后即可获取到'code_url'，将'code_url'转换为二维码，并用微信扫码即可进行支付测试。
@@ -41,7 +52,8 @@ class TenPay:
             out_trade_no=out_trade_no,
             amount={'total': amount, "currency": "CNY"}
         )
-        return {'code': code, 'message': message}
+        result = json.loads(message)
+        return {'code': code, 'result': result}
 
     def pay_jsapi(self):
         # jsApi下单，tenpay初始化的时候，wechatpay_type设置为WeChatPayType.JSAPI。
@@ -88,7 +100,8 @@ class TenPay:
             amount={'total': amount, "currency": "CNY"},
             scene_info=scene_info
         )
-        return {'code': code, 'message': message}
+        result = json.loads(message)
+        return {'code': code, 'result': result}
 
     def pay_mini_program(self):
         # 小程序支付下单，tenpay初始化的时候，wechatpay_type设置为WeChatPayType.MINIPROG。
@@ -172,3 +185,55 @@ class TenPay:
             return {'code': '200', 'message': '支付接口回调成功'}
         else:
             return {'code': '400', 'message': '支付接口回调失败'}
+
+    def trade_bill(self, bill_date=None):
+        # 微信在次日9点启动生成前一天的对账单，建议商户10点后再获取
+        self.bill_date = bill_date or (date.today() + timedelta(days=-1)).strftime("%Y-%m-%d")
+        code, message = self.tenpay.trade_bill(bill_date=self.bill_date)
+        result = json.loads(message)
+        if code in range(200, 300):
+            self.download_url = result.get('download_url')
+            return {'code': code, 'result': result}
+        else:
+            return {'code': code, 'result': {}, 'message': result.get("message")}
+
+    def download_bill(self, download_url=None, bill_date=None):
+        self.download_url = download_url or self.download_url
+        self.bill_date = bill_date or self.bill_date
+        code, message = self.tenpay.download_bill(self.download_url)
+        if code in range(200, 300) and isinstance(message, bytes):
+            bill_file_path = os.path.join(DIRPATH, 'bill_file', f"tenpay_bill_{self.bill_date}.csv.gz")
+            with open(bill_file_path, 'wb') as f:
+                f.write(message)
+            return {'code': code, 'bill': message}
+        else:
+            result = json.loads(message)
+            return {'code': code, 'result': {}, 'message': result.get("message")}
+
+    def transfer_bill2db(self, bill_date):
+        try:
+            self.bill_date = bill_date or self.bill_date
+            bill_file_path = os.path.join(DIRPATH, 'bill_file', f"tenpay_bill_{self.bill_date}.csv.gz")
+            df = pd.read_csv(bill_file_path, compression='gzip', header=0, sep=',')
+            # df.columns.values = [BillFieldLabel(col).name for col in df.columns.values]
+            df.rename(columns=lambda x: BillFieldLabel(x).name, inplace=True)
+            df = df[:-2]
+            for col in df.columns.values:
+                # df[col] = df[col].apply(lambda x: x[1:])
+                df[col] = df[col].str.strip(r'`')
+            df.to_sql(name='tenpay_bill', con=db.get_engine(), chunksize=500, if_exists='append',
+                      index=False)
+            return {'code': 200, 'billDataframe': df}
+        except Exception:
+            return {'code': 400, 'message': '账单传输失败'}
+
+# url = Tenpay().trade_bill("2021-11-10").get("result").get("download_url")
+# resp = Tenpay().download_bill(url, "2021-11-10").get("bill")
+
+# Tenpay().transfer_bill2db("2021-11-10")
+
+# from io import BytesIO
+# import gzip
+# buff = BytesIO(resp)
+# gf = gzip.GzipFile(fileobj=buff)
+# content = gf.read().decode('utf-8')

@@ -17,6 +17,7 @@ from myapi.api.resources import (
     CompanyGroupResource,
     BookkeepingTemplateResource,
     SmsAliyunResource,
+    TenPayResource,
 )
 
 from myapi.api.schemas import UserSchema
@@ -40,6 +41,7 @@ api.add_resource(Ticket2FinanceResource, "/ticket2Finance", endpoint="api_ticket
 api.add_resource(CompanyGroupResource, "/companyGroup", endpoint="api_companyGroup")
 api.add_resource(BookkeepingTemplateResource, "/bookkeepingTemplate", endpoint="api_bookkeepingTemplate")
 api.add_resource(SmsAliyunResource, "/smsAliyun", endpoint="api_smsAliyun")
+api.add_resource(TenPayResource, "/transferTenPayBill", endpoint="api_transferTenPayBill")
 
 
 @blueprint.before_app_first_request

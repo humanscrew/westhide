@@ -1,11 +1,11 @@
-from myapi.api.schemas.role import RoleSchema, PermitCodeSchema
-from myapi.api.schemas.route import RouteSchema, RouteClosureTableSchema, RouteTreeSchema
-from myapi.api.schemas.user import UserSchema
-from myapi.api.schemas.ticket import TicketLaiu8Schema, TicketLaiu8RefundSchema, Laiu8ClientSchema, Ticket2FinanceSchema
-from myapi.api.schemas.company import CompanyGroupSchema
-from myapi.api.schemas.bookkeeping_template import BookkeepingTemplateSchema
-from myapi.api.schemas.finance_voucher import FinanceVoucherSchema
-from myapi.api.schemas.sms import SmsAliyunSchema, SmsAliyunDetailSchema
+from .role import RoleSchema, PermitCodeSchema
+from .route import RouteSchema, RouteClosureTableSchema, RouteTreeSchema
+from .user import UserSchema
+from .ticket import TicketLaiu8Schema, TicketLaiu8RefundSchema, Laiu8ClientSchema, Ticket2FinanceSchema
+from .company import CompanyGroupSchema
+from .bookkeeping_template import BookkeepingTemplateSchema
+from .finance_voucher import FinanceVoucherSchema
+from .sms import SmsAliyunSchema, SmsAliyunDetailSchema
 
 
 __all__ = [

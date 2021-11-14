@@ -1,4 +1,4 @@
-from myapi.commons.pagination import paginate
+from .pagination import paginate
 
 __all__ = [
     "paginate",

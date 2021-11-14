@@ -22,7 +22,7 @@ class Mysql:
         return connection
 
     def execute(self, statement=''):
-        if not (statement):
+        if not statement:
             return {'result': [], 'code': 400, 'message': 'SQL语句为空！'}
 
         connection = self.make_connection()
