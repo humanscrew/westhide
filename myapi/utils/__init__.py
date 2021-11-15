@@ -5,7 +5,7 @@ from .lib import Lib
 from .handle_resource import HandleQuery, HandleObjects
 from .sms import AliyunSms, SmsAliyunResource
 from .pay import Tenpay
-# from .stream import
+from .stream import Kafka
 from myapi.utils import views
 
 __all__ = [
@@ -16,5 +16,6 @@ __all__ = [
     "HandleQuery", "HandleObjects",
     "AliyunSms", "SmsAliyunResource",
     "Tenpay",
+    "Kafka",
     "views",
 ]

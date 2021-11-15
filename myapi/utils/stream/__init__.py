@@ -1,5 +1,5 @@
-# from .kafka import *
-#
-# __all__ = [
-#
-# ]
+from .kafka import Kafka
+
+__all__ = [
+    "Kafka",
+]
