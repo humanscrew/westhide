@@ -9,11 +9,11 @@ from logging import StreamHandler
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# LOG_PATH = os.path.join(BASE_DIR, 'logs')
+LOG_PATH = os.path.join(BASE_DIR, 'log')
 
-LOG_PATH_ERROR = os.path.join(BASE_DIR, 'error.log')
-LOG_PATH_INFO = os.path.join(BASE_DIR, 'info.log')
-LOG_PATH_ALL = os.path.join(BASE_DIR, 'all.log')
+LOG_PATH_ERROR = os.path.join(LOG_PATH, 'error.log')
+LOG_PATH_INFO = os.path.join(LOG_PATH, 'info.log')
+LOG_PATH_ALL = os.path.join(LOG_PATH, 'all.log')
 
 # 日志文件最大 100MB
 LOG_FILE_MAX_BYTES = 100 * 1024 * 1024

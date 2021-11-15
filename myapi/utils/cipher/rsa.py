@@ -13,7 +13,7 @@ from flask import request, json, jsonify
 from flask_restful import Resource
 
 
-from myapi.utils import AES
+from .aes import AES
 
 
 class RSA:

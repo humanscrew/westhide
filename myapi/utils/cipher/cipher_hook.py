@@ -2,7 +2,8 @@
 from flask import g, json, request
 from flask_jwt_extended import get_jwt_identity
 
-from myapi.utils import AES, RSA
+from .aes import AES
+from .rsa import RSA
 
 
 class CipherHook:
