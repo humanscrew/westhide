@@ -11,7 +11,7 @@ class Mysql:
     }):
         self.config = config
         self.config["host"] = config["host"] or MYSQL_SETTINGS.get("host")
-        self.config["port"] = int(config["port"] or MYSQL_SETTINGS.get("port"))
+        self.config["port"] = config["port"] or MYSQL_SETTINGS.get("port")
         self.config["user"] = config["user"] or MYSQL_SETTINGS.get("username")
         self.config["password"] = config["password"] or MYSQL_SETTINGS.get("password")
         self.config["db"] = config["db"] or MYSQL_SETTINGS.get("db")

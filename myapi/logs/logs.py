@@ -53,8 +53,8 @@ class Logger(object):
         for logger in (
                 # 这里自己还可以添加更多的日志模块，具体请参阅Flask官方文档
                 app.logger,
-                logging.getLogger('sqlalchemy'),
-                logging.getLogger('werkzeug'),
+                # logging.getLogger('sqlalchemy'),
+                # logging.getLogger('werkzeug'),
                 # logging.getLogger('tenpay')
         ):
             logger.addHandler(file_handler)

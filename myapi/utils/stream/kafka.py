@@ -3,23 +3,26 @@ from kafka.errors import kafka_errors
 import traceback
 import json
 
+from myapi.config import KAFKA_SETTINGS
+
 
 class Kafka:
 
-    def __init__(self, bootstrap_servers: list, topic=None, key_serializer=None, value_serializer=None, partition=None,
+    def __init__(self, bootstrap_servers: list = None, topic=None, key_serializer=None, value_serializer=None,
+                 partition=None,
                  group_id=None):
-        self.bootstrap_servers = bootstrap_servers
+        self.bootstrap_servers = bootstrap_servers or KAFKA_SETTINGS.get("bootstrap_servers")
         self.topic = topic
         self.key_serializer = key_serializer if key_serializer else lambda k: json.dumps(k).encode()
         self.value_serializer = value_serializer if value_serializer else lambda v: json.dumps(v).encode()
         self.partition = partition
         self.group_id = group_id
         self.producer = KafkaProducer(
-            bootstrap_servers=bootstrap_servers,  # ['localhost:9092'],
+            bootstrap_servers=self.bootstrap_servers,
             key_serializer=self.key_serializer,
             value_serializer=self.value_serializer
         )
-        self.consumer = self.get_consumer(group_id)
+        self.consumer = self.get_consumer()
 
     def get_consumer(self, topic=None, group_id=None):
         topic = topic or self.topic

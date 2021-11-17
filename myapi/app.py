@@ -86,4 +86,4 @@ class MyJSONEncoder(json.JSONEncoder):
             return obj.strftime("%Y-%m-%d %H:%M:%S")
         if isinstance(obj, date):
             return obj.strftime("%Y-%m-%d")
-        return super(MyJSONEncoder, self).default(obj)
+        return super().default(obj)

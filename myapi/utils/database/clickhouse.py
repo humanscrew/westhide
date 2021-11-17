@@ -12,7 +12,7 @@ class Clickhouse():
     }):
         self.config = config
         self.config["host"] = config["host"] or CLICKHOUSE_SETTINGS.get("host")
-        self.config["port"] = int(config["port"] or CLICKHOUSE_SETTINGS.get("port"))
+        self.config["port"] = config["port"] or CLICKHOUSE_SETTINGS.get("port")
         self.config["user"] = config["user"] or CLICKHOUSE_SETTINGS.get("username")
         self.config["password"] = config["password"] or CLICKHOUSE_SETTINGS.get("password")
         self.config["database"] = config["database"] or CLICKHOUSE_SETTINGS.get("database")
