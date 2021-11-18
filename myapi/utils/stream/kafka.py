@@ -47,7 +47,7 @@ class Kafka:
         )
         try:
             future.get(timeout=10)
-        except kafka_errors:
+        except Exception as e:
             traceback.format_exc()
 
     def consumer(self, topic=None, group_id=None):
