@@ -230,15 +230,15 @@ class Tenpay:
     def transfer_bill2db(self, bill_date=None):
         try:
             self.bill_date = bill_date or self.bill_date
-            if TenPay.query.first():
-                ten_pay = TenPay.query.filter(
-                    getattr(TenPay, "trade_time").like(self.bill_date + "%")
-                ).first()
-                if ten_pay:
-                    return {"code": 400, "message": "已存在该日账单明细"}
 
             self.trade_bill()
             self.download_bill()
+
+            ten_pay = TenPay.query.filter(
+                getattr(TenPay, "trade_time").like(self.bill_date + "%")
+            ).first()
+            if ten_pay:
+                return {"code": 400, "message": "已存在该日账单明细"}
 
             bill_file_path = os.path.join(
                 DIRPATH, "bill_file", f"tenpay_bill_{self.bill_date}.csv.gz"

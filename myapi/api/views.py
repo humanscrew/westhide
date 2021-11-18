@@ -48,9 +48,7 @@ api.add_resource(
     "/bookkeepingTemplate",
     endpoint="api_bookkeepingTemplate",
 )
-api.add_resource(
-    TenPayResource, "/transferTenPayBill", endpoint="api_transferTenPayBill"
-)
+api.add_resource(TenPayResource, "/tenPay", endpoint="api_tenPay")
 
 
 @blueprint.before_app_first_request
