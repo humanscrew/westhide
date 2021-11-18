@@ -103,3 +103,4 @@ myapi/logs/*
 !myapi/logs/__init__.py
 
 migrations/
+/gunicorn_log/

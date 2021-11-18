@@ -6,17 +6,19 @@
 # for celery: docker run --env-file=.flaskenv image celery worker -A myapi.celery_app:app
 #
 # note that celery will require a running broker and result backend
-FROM python:3.8
 
-RUN mkdir /code
-WORKDIR /code
+FROM python:3.10-slim
+#RUN useradd westhide
+#USER westhide
+RUN mkdir /app
+WORKDIR /app
 
-COPY requirements.txt setup.py tox.ini ./
-RUN pip install -U pip
-RUN pip install -r requirements.txt
-RUN pip install -e .
+COPY requirements.txt  ./
+RUN pip install -U pip -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com && \
+    pip install -r requirements.txt -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
 
-COPY myapi myapi/
-COPY migrations migrations/
+COPY myapi ./
+COPY gunicorn.conf.py ./
 
-EXPOSE 5000
+CMD gunicorn -c gunicorn.conf.py myapi.wsgi:app
+EXPOSE 9701
