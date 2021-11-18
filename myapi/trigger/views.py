@@ -6,7 +6,7 @@ from .resources import (
     RSAResource,
     DefaultRSAResource,
     SmsAliyunResource,
-    TransferTenPayBillResource,
+    TenPayBillResource,
 )
 
 blueprint = Blueprint("trigger", __name__, url_prefix="/westhide/trigger")
@@ -16,7 +16,7 @@ api.add_resource(RSAResource, "/RSA", endpoint="trigger_RSA")
 api.add_resource(DefaultRSAResource, "/defaultRSA", endpoint="trigger_defaultRSA")
 api.add_resource(SmsAliyunResource, "/smsAliyun", endpoint="trigger_smsAliyun")
 api.add_resource(
-    TransferTenPayBillResource,
-    "/transferTenPayBill",
-    endpoint="trigger_transferTenPayBill",
+    TenPayBillResource,
+    "/tenPayBill",
+    endpoint="trigger_tenPayBill",
 )

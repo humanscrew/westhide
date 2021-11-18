@@ -4,7 +4,7 @@ from flask_restful import Resource
 from myapi.utils import Tenpay
 
 
-class TenPayResource(Resource):
+class TenPayBillResource(Resource):
 
     # def get(self):
     #

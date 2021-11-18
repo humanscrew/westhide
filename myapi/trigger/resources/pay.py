@@ -4,7 +4,7 @@ from flask_restful import Resource
 from myapi.utils import Tenpay
 
 
-class TransferTenPayBillResource(Resource):
+class TenPayBillResource(Resource):
     @staticmethod
     def post():
         bill_date = request.json.get("billDate")

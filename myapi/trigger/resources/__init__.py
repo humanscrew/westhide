@@ -1,10 +1,10 @@
 from .rsa import RSAResource, DefaultRSAResource
 from .sms import SmsAliyunResource
-from .pay import TransferTenPayBillResource
+from .pay import TenPayBillResource
 
 __all__ = [
     "RSAResource",
     "DefaultRSAResource",
     "SmsAliyunResource",
-    "TransferTenPayBillResource",
+    "TenPayBillResource",
 ]

@@ -7,7 +7,7 @@ from .route import RouteResource, RouteListResource
 from .ticket import TicketLaiu8Resource, Laiu8ClientResource, Ticket2FinanceResource
 from .company import CompanyGroupResource
 from .finance import BookkeepingTemplateResource
-from .pay import TenPayResource
+from .pay import TenPayBillResource
 
 __all__ = [
     "RootPage",
@@ -23,5 +23,5 @@ __all__ = [
     "Ticket2FinanceResource",
     "CompanyGroupResource",
     "BookkeepingTemplateResource",
-    "TenPayResource",
+    "TenPayBillResource",
 ]
