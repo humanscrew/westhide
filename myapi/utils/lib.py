@@ -6,17 +6,17 @@ class Lib(object):
         pass
 
     @staticmethod
-    def camel2UnderScore(camelCase: str) -> str:
-        if not isinstance(camelCase, str):
-            return camelCase
-        camelstrList: list = ["_" + item if item.isupper() else item for item in camelCase]
-        underScore: str = "".join(camelstrList).lower()
-        return underScore
+    def camel2under_score(camel_case: str) -> str:
+        if not isinstance(camel_case, str):
+            return camel_case
+        camel_str_list: list = ["_" + item if item.isupper() else item for item in camel_case]
+        under_score: str = "".join(camel_str_list).lower()
+        return under_score
 
     @staticmethod
-    def delNoneInList(rawlist):
-        if isinstance(rawlist, list):
-            dealList = [item for item in rawlist if item]
-            return dealList
+    def del_none_in_list(raw_list):
+        if isinstance(raw_list, list):
+            deal_list = [item for item in raw_list if item]
+            return deal_list
         else:
-            return rawlist
+            return raw_list

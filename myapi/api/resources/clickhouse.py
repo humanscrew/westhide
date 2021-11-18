@@ -1,20 +1,20 @@
-from flask import jsonify
-from flask_restful import Resource, request
+from flask import jsonify, request
+from flask_restful import Resource
 
 from myapi.utils import Clickhouse
 
 
 class ClickhouseResource(Resource):
 
-    def post(self):
-
-        requestData = request.json
+    @staticmethod
+    def post():
+        request_data = request.json
         host = request.json.get('host')
         port = request.json.get('port')
         user = request.json.get('user')
         password = request.json.get('password')
         database = request.json.get('database')
-        statement = requestData.get('statement')
+        statement = request_data.get('statement')
 
         if not host and not user and not password and not database:
             clickhouse = Clickhouse(config={
@@ -26,4 +26,5 @@ class ClickhouseResource(Resource):
             clickhouse = Clickhouse()
 
         result = clickhouse.execute(statement)
+
         return jsonify({**result})

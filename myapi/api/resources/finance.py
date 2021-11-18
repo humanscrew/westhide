@@ -1,5 +1,5 @@
-from flask import jsonify
-from flask_restful import Resource, request
+from flask import jsonify, request
+from flask_restful import Resource
 
 from myapi.utils import HandleObjects
 
@@ -9,19 +9,19 @@ from myapi.api.schemas import BookkeepingTemplateSchema, FinanceVoucherSchema
 
 class BookkeepingTemplateResource(Resource):
 
-    def get(self):
+    @staticmethod
+    def get():
+        bookkeeping_template_schema = BookkeepingTemplateSchema(many=True)
+        bookkeeping_template = HandleObjects(BookkeepingTemplate, bookkeeping_template_schema, request).deal()
 
-        bookkeepingTemplateSchema = BookkeepingTemplateSchema(many=True)
-        bookkeepingTemplate = HandleObjects(BookkeepingTemplate, bookkeepingTemplateSchema, request).deal()
-
-        return jsonify(bookkeepingTemplate.paginate())
+        return jsonify(bookkeeping_template.paginate())
 
 
 class FinanceVoucherResource(Resource):
 
-    def get(self):
+    @staticmethod
+    def get():
+        finance_voucher_schema = FinanceVoucherSchema(many=True)
+        finance_voucher = HandleObjects(FinanceVoucher, finance_voucher_schema, request).deal()
 
-        financeVoucherSchema = FinanceVoucherSchema(many=True)
-        financeVoucher = HandleObjects(FinanceVoucher, financeVoucherSchema, request).deal()
-
-        return jsonify(financeVoucher.paginate())
+        return jsonify(finance_voucher.paginate())

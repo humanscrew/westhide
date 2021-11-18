@@ -4,11 +4,13 @@ from myapi.config import MYSQL_SETTINGS
 
 class Mysql:
 
-    def __init__(self, config={
-        "host": None, "port": None,
-        "user": None, "password": None,
-        "db": None, "charset": None
-    }):
+    def __init__(self, config=None):
+        if config is None:
+            config = {
+                "host": None, "port": None,
+                "user": None, "password": None,
+                "db": None, "charset": None
+            }
         self.config = config
         self.config["host"] = config["host"] or MYSQL_SETTINGS.get("host")
         self.config["port"] = config["port"] or MYSQL_SETTINGS.get("port")

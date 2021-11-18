@@ -3,13 +3,15 @@ from myapi.config import CLICKHOUSE_SETTINGS
 import pandas
 
 
-class Clickhouse():
+class Clickhouse:
 
-    def __init__(self, config={
-        "host": None, "port": None,
-        "user": None, "password": None,
-        "database": None
-    }):
+    def __init__(self, config=None):
+        if config is None:
+            config = {
+                "host": None, "port": None,
+                "user": None, "password": None,
+                "database": None
+            }
         self.config = config
         self.config["host"] = config["host"] or CLICKHOUSE_SETTINGS.get("host")
         self.config["port"] = config["port"] or CLICKHOUSE_SETTINGS.get("port")

@@ -19,50 +19,13 @@ blueprint = Blueprint("auth", __name__, url_prefix="/westhide/auth")
 
 @blueprint.route("/login", methods=["POST"])
 def login():
-    """Authenticate user and return tokens
-
-    ---
-    post:
-      tags:
-        - auth
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                  example: myUser
-                  required: true
-                password:
-                  type: string
-                  example: P4$$w0rd!
-                  required: true
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  access_token:
-                    type: string
-                    example: myAccessToken
-                  refresh_token:
-                    type: string
-                    example: myRefreshToken
-        400:
-          description: bad request
-      security: []
-    """
     if not request.is_json:
         return {"message": "Missing JSON in request"}, 405
 
-    requestData = request.json
-    username = requestData.get("username", None)
-    passwordWithAES = requestData.get("password", None)
-    if not username or not passwordWithAES:
+    request_data = request.json
+    username = request_data.get("username", None)
+    password_with_aes = request_data.get("password", None)
+    if not username or not password_with_aes:
         return {"message": "Missing username or password"}, 401
 
     user = User.query.filter_by(username=username).first()
@@ -70,11 +33,11 @@ def login():
         return {"message": "用户名错误"}, 400
 
     user_id = user.id
-    aesKeyWithRSA = request.headers.get('aesKey', None)
-    aesIVWithRSA = request.headers.get("aesIV", None)
-    if not aesKeyWithRSA or not aesIVWithRSA:
+    aes_key_with_rsa = request.headers.get('aesKey', None)
+    aes_iv_with_rsa = request.headers.get("aesIV", None)
+    if not aes_key_with_rsa or not aes_iv_with_rsa:
         return {"message": "请求密钥缺失"}, 400
-    password,  g.aesKey, g.aesIV = RSA().decryptWithRSA(passwordWithAES, aesKeyWithRSA, aesIVWithRSA, user_id)
+    password, g.aesKey, g.aesIV = RSA().decrypt_with_rsa(password_with_aes, aes_key_with_rsa, aes_iv_with_rsa, user_id)
 
     if not pwd_context.verify(password, user.password):
         return {"message": "密码错误"}, 400
@@ -92,65 +55,39 @@ def register():
     if not request.is_json:
         return {"message": "Missing JSON in request"}, 405
 
-    requestData = request.json
-    username = requestData.pop('username', None)
+    request_data = request.json
+    username = request_data.pop('username', None)
 
-    defaultPrivateKey = RSA().getDefaultRSA().get("privateKey")
-    CipherHook().decryptRequest(None, defaultPrivateKey)
+    default_private_key = RSA().getDefaultRSA().get("privateKey")
+    CipherHook().decrypt_request(None, default_private_key)
 
     if username and User.query.with_entities(User.id).filter_by(username=username).first():
         return {"message": "该用户名已被注册"}, 400
 
-    mobile = requestData.get('mobile')
+    mobile = request_data.get('mobile')
     if mobile and User.query.with_entities(User.id).filter_by(mobile=mobile).first():
         return {"message": "该手机号已被注册"}, 400
 
-    email = requestData.get('email')
+    email = request_data.get('email')
     if email and User.query.with_entities(User.id).filter_by(email=email).first():
         return {"message": "该邮箱已被注册"}, 400
 
-    sms = requestData.get('sms')
-    aliyunSms = AliyunSms().query(**sms.get("callback"))
-    if not sms.get("code") == aliyunSms["result"]["params"]["code"]:
+    sms = request_data.get('sms')
+    aliyun_sms = AliyunSms().query(**sms.get("callback"))
+    if not sms.get("code") == aliyun_sms["result"]["params"]["code"]:
         return {"message": "验证码错误"}, 400
 
-    requestData.update(username=username)
-    userSchema = UserSchema(unknown=INCLUDE)
-    user = userSchema.load(requestData)
+    request_data.update(username=username)
+    user_schema = UserSchema(unknown=INCLUDE)
+    user = user_schema.load(request_data)
     db.session.add(user)
     db.session.commit()
-    return {**userSchema.dump(user), "message": "注册成功"}, 201
+    return {**user_schema.dump(user), "message": "注册成功"}, 201
 
 
 @blueprint.route("/refresh", methods=["POST"])
 @jwt_required(refresh=True)
 def refresh():
-    """Get an access token from a refresh token
-
-    ---
-    post:
-      tags:
-        - auth
-      parameters:
-        - in: header
-          name: Authorization
-          required: true
-          description: valid refresh token
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  access_token:
-                    type: string
-                    example: myAccessToken
-        400:
-          description: bad request
-        401:
-          description: unauthorized
-    """
     current_user = get_jwt_identity()
     access_token = create_access_token(identity=current_user)
     ret = {"accessToken": access_token}
@@ -161,27 +98,6 @@ def refresh():
 @blueprint.route("/revoke_access", methods=["DELETE"])
 @jwt_required()
 def revoke_access_token():
-    """Revoke an access token
-
-    ---
-    delete:
-      tags:
-        - auth
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: token revoked
-        400:
-          description: bad request
-        401:
-          description: unauthorized
-    """
     jti = get_jwt()["jti"]
     user_identity = get_jwt_identity()
     revoke_token(jti, user_identity)
@@ -191,27 +107,6 @@ def revoke_access_token():
 @blueprint.route("/revoke_refresh", methods=["DELETE"])
 @jwt_required(refresh=True)
 def revoke_refresh_token():
-    """Revoke a refresh token, used mainly for logout
-
-    ---
-    delete:
-      tags:
-        - auth
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: token revoked
-        400:
-          description: bad request
-        401:
-          description: unauthorized
-    """
     jti = get_jwt()["jti"]
     user_identity = get_jwt_identity()
     revoke_token(jti, user_identity)
@@ -239,7 +134,7 @@ def register_views():
 
 @blueprint.after_request
 def after_request(response):
-    return CipherHook().encryptResponse(response)
+    return CipherHook().encrypt_response(response)
 
 
 @blueprint.errorhandler(ValidationError)

@@ -19,4 +19,5 @@ class TenPayResource(Resource):
         bill_date = request.json.get('billDate')
 
         result = Tenpay(bill_date).transfer_bill2db()
+
         return jsonify(result)

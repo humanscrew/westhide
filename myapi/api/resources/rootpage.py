@@ -2,6 +2,7 @@ from flask_restful import Resource
 
 
 class RootPage(Resource):
-    
-    def get(self):
+
+    @staticmethod
+    def get():
         return "westhideAPI success!"

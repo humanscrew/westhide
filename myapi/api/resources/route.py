@@ -1,4 +1,5 @@
-from flask_restful import Resource, request
+from flask import request
+from flask_restful import Resource
 from flask_jwt_extended import get_jwt_identity
 
 from myapi.api.schemas import RouteClosureTableSchema, RouteSchema, RouteTreeSchema
@@ -52,35 +53,37 @@ class RouteResource(Resource):
 
 class RouteListResource(Resource):
 
-    def get(self):
+    @staticmethod
+    def get():
         user_id = get_jwt_identity()
 
         # ClosureTable(
         #     RouteTree, Route, RouteClosureTable, RouteSchema, RouteClosureTableSchema
-        # ).createTree(defaultRoutes)
+        # ).create_tree(defaultRoutes)
 
-        routeTreeIds = User.query.get(user_id).route_tree.with_entities(RouteTree.id).all()
-        routeTreeSchema = RouteTreeSchema(many=True)
-        routeTreeIds = routeTreeSchema.dump(routeTreeIds)
-        routeTreeIdList = [item.get("id") for item in routeTreeIds]
+        route_tree_ids = User.query.get(user_id).route_tree.with_entities(RouteTree.id).all()
+        route_tree_schema = RouteTreeSchema(many=True)
+        route_tree_ids = route_tree_schema.dump(route_tree_ids)
+        route_tree_id_list = [item.get("id") for item in route_tree_ids]
 
-        routeSchema = RouteSchema(many=True)
+        route_schema = RouteSchema(many=True)
         routes = User.query.get(user_id).route
-        routes = routeSchema.dump(routes)
+        routes = route_schema.dump(routes)
 
-        routeTreeList = ClosureTable(
+        route_tree_list = ClosureTable(
             RouteTree, Route, RouteClosureTable, RouteSchema, RouteClosureTableSchema
-        ).getTreeList(routes, routeTreeIdList)
+        ).get_tree_list(routes, route_tree_id_list)
 
-        for item in routeTreeList:
+        for item in route_tree_list:
             item["path"] = "/" + item["path"]
 
-        return {"result": routeTreeList}
+        return {"result": route_tree_list}
 
-    def post(self):
-
+    @staticmethod
+    def post():
         routes = request.json.get("routes")
         ClosureTable(
             RouteTree, Route, RouteClosureTable, RouteSchema, RouteClosureTableSchema
-        ).createTree(routes)
+        ).create_tree(routes)
+
         return {"message": "路由树创建成功"}, 201

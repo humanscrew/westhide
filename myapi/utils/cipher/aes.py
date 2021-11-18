@@ -7,20 +7,20 @@ import base64
 
 class AES:
 
-    def __init__(self, aesKey, aesIV):
-        self.__aesKey = aesKey.encode()
-        self.__aesIV = aesIV.encode()
-        self.__cryptos = AESMod.new(self.__aesKey, AESMod.MODE_OFB, self.__aesIV)
+    def __init__(self, aes_key, aes_iv):
+        self.__aes_key = aes_key.encode()
+        self.__aes_iv = aes_iv.encode()
+        self.__cryptos = AESMod.new(self.__aes_key, AESMod.MODE_OFB, self.__aes_iv)
 
     def encrypt(self, text):
-        textPad = pad(text.encode(), 16, style='pkcs7')
-        encryptText = self.__cryptos.encrypt(textPad)
-        encryptText2Base64 = base64.b64encode(encryptText).decode()
-        # return b2a_hex(encryptText).decode()
-        return encryptText2Base64
+        text_pad = pad(text.encode(), 16, style='pkcs7')
+        encrypt_text = self.__cryptos.encrypt(text_pad)
+        encrypt_text2base64 = base64.b64encode(encrypt_text).decode()
+        # return b2a_hex(encrypt_text).decode()
+        return encrypt_text2base64
 
     def decrypt(self, text):
-        encryptText = base64.b64decode(text)
-        textPad = self.__cryptos.decrypt(encryptText)
-        decryptText = unpad(textPad, 16, style='pkcs7').decode()
-        return decryptText
+        encrypt_text = base64.b64decode(text)
+        text_pad = self.__cryptos.decrypt(encrypt_text)
+        decrypt_text = unpad(text_pad, 16, style='pkcs7').decode()
+        return decrypt_text

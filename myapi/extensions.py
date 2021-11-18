@@ -27,10 +27,10 @@ celery = Celery()
 logger = Logger()
 
 
-def camelCase(self, field_name, field_obj):
+def camel_case(self, field_name, field_obj):
     string = field_obj.data_key or field_name
     parts = iter(string.split("_"))
     field_obj.data_key = next(parts) + "".join(item.title() for item in parts)
 
 
-ma.SQLAlchemyAutoSchema.on_bind_field = camelCase
+ma.SQLAlchemyAutoSchema.on_bind_field = camel_case

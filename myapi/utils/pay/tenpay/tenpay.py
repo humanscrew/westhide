@@ -7,7 +7,6 @@ from string import digits, ascii_letters
 import pandas as pd
 
 from myapi.extensions import db
-from sqlalchemy.sql.expression import func
 from myapi.models import TenPay
 
 from flask import jsonify, request, json
@@ -216,7 +215,7 @@ class Tenpay:
         try:
             self.bill_date = bill_date or self.bill_date
             if TenPay.query.first():
-                ten_pay = TenPay.query.filter(TenPay.trade_time.like(self.bill_date + "%")).first()
+                ten_pay = TenPay.query.filter(getattr(TenPay, "trade_time").like(self.bill_date + "%")).first()
                 if ten_pay:
                     return {'code': 400, 'message': '已存在该日账单明细'}
 
@@ -237,7 +236,7 @@ class Tenpay:
             df.to_sql(name='tenpay_bill', con=db.get_engine(), chunksize=500, if_exists='append',
                       index=False)
             return {'code': 200, 'bill': df.to_dict(orient='records')}
-        except Exception:
+        except:
             return {'code': 400, 'message': '账单传输失败'}
 
 # from io import BytesIO

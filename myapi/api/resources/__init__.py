@@ -7,7 +7,6 @@ from .route import RouteResource, RouteListResource
 from .ticket import TicketLaiu8Resource, Laiu8ClientResource, Ticket2FinanceResource
 from .company import CompanyGroupResource
 from .finance import BookkeepingTemplateResource
-from .sms import SmsAliyunResource
 from .pay import TenPayResource
 
 __all__ = [
@@ -20,6 +19,5 @@ __all__ = [
     "TicketLaiu8Resource", "Laiu8ClientResource", "Ticket2FinanceResource",
     "CompanyGroupResource",
     "BookkeepingTemplateResource",
-    "SmsAliyunResource",
     "TenPayResource",
 ]

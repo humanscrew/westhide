@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from flask import json, jsonify
-from flask_restful import Resource, request
+from flask import json, jsonify, request
+from flask_restful import Resource
 from myapi.config import ALIYUN_SMS
 from myapi.utils.sms import smsTemplate
 
@@ -25,14 +25,14 @@ class AliyunSms:
         self.access_key_secret = access_key_secret or ALIYUN_SMS.get("access_key_secret")
         self.sign_name = sign_name or smsTemplate["auth"]["signName"]
         self.template_code = template_code or smsTemplate["auth"]["templateCode"]
+        self.template_param = template_code or {}
 
         if not template_param:
             for param in smsTemplate["auth"]["templateParam"]:
-                authCode = ""
+                auth_code = ""
                 for i in range(6):
-                    authCode += str(randint(0, 9))
-                template_param[param] = authCode
-        self.template_param = template_param
+                    auth_code += str(randint(0, 9))
+                self.template_param[param] = auth_code
 
     @staticmethod
     def value2str(value):
@@ -66,27 +66,27 @@ class AliyunSms:
         biz_id = send_resp.body.biz_id
         message = send_resp.body.message
 
-        smsAliyunMeta = {
+        sms_aliyun_meta = {
             'phone_numbers': phone_numbers_str,
             'sign_name': self.sign_name, "template_code": self.template_code, "template_param": template_param,
             'send_date': send_date,
             'request_id': request_id, "biz_id": biz_id,
             'code': code, "message": message,
         }
-        smsAliyunSchema = SmsAliyunSchema(partial=True)
-        smsAliyun = smsAliyunSchema.load(smsAliyunMeta)
-        db.session.add(smsAliyun)
+        sms_aliyun_schema = SmsAliyunSchema(partial=True)
+        sms_aliyun = sms_aliyun_schema.load(sms_aliyun_meta)
+        db.session.add(sms_aliyun)
         db.session.commit()
 
         if UtilClient.equal_string(code, 'OK'):
-            return {"phoneNumbers": phone_numbers, "bizId": biz_id, "sendDate": send_date, "code": 200,
+            return {"phone_numbers": phone_numbers, "bizId": biz_id, "sendDate": send_date, "code": 200,
                     "message": "短信验证已发送"}
         else:
             return {"code": 400, "message": message}
 
     def query(self, **kwargs):
         client = self.create_client()
-        phone_numbers = AliyunSms.value2str(kwargs.get("phoneNumbers")).split(',')
+        phone_numbers = AliyunSms.value2str(kwargs.get("phone_numbers")).split(',')
         biz_id = kwargs.get("bizId")
         send_date = kwargs.get("sendDate")
         for phone_num in phone_numbers:
@@ -100,12 +100,12 @@ class AliyunSms:
             query_resp = client.query_send_details(query_req)
             result = query_resp.body.sms_send_detail_dtos.to_map().get("SmsSendDetailDTO")[0]
 
-            smsAliyun = SmsAliyun.query.filter_by(biz_id=biz_id).first_or_404()
-            smsAliyun.total_count = query_resp.body.total_count
+            sms_aliyun = SmsAliyun.query.filter_by(biz_id=biz_id).first_or_404()
+            sms_aliyun.total_count = query_resp.body.total_count
 
-            smsAliyunDetail = SmsAliyunDetail.query.filter_by(biz_id=biz_id).first()
+            sms_aliyun_detail = SmsAliyunDetail.query.filter_by(biz_id=biz_id).first()
 
-            smsAliyunDetailMeta = {
+            sms_aliyun_detail_meta = {
                 "biz_id": biz_id,
                 'request_id': query_resp.body.request_id,
                 "phone_num": result["PhoneNum"], "context": result["Content"], "send_status": result["SendStatus"],
@@ -113,14 +113,14 @@ class AliyunSms:
                 "receive_date": result["ReceiveDate"], "send_date": result["SendDate"],
                 "out_id": result.get("OutId"),
             }
-            smsAliyunDetailSchema = SmsAliyunDetailSchema(partial=True)
-            smsAliyunDetail = smsAliyunDetailSchema.load(smsAliyunDetailMeta, instance=smsAliyunDetail)
+            sms_aliyun_detail_schema = SmsAliyunDetailSchema(partial=True)
+            sms_aliyun_detail = sms_aliyun_detail_schema.load(sms_aliyun_detail_meta, instance=sms_aliyun_detail)
 
-            db.session.add(smsAliyun)
-            db.session.add(smsAliyunDetail)
+            db.session.add(sms_aliyun)
+            db.session.add(sms_aliyun_detail)
             db.session.commit()
 
-            params = json.loads(smsAliyun.template_param)
+            params = json.loads(sms_aliyun.template_param)
             result.update(params=params)
             if UtilClient.equal_string(query_resp.body.code, 'OK'):
                 return {"result": result, "code": 200, "message": "查询成功"}
@@ -130,19 +130,21 @@ class AliyunSms:
 
 class SmsAliyunResource(Resource):
 
-    def get(self):
+    @staticmethod
+    def get():
 
         if not request.args:
             return {"message": "请求参数不能为空"}, 405
 
-        smsQuery = AliyunSms().query(**request.args)
-        return jsonify(smsQuery)
+        sms_query = AliyunSms().query(**request.args)
+        return jsonify(sms_query)
 
-    def post(self):
+    @staticmethod
+    def post():
 
-        phoneNumbers = request.json.get("phoneNumbers")
-        if phoneNumbers:
-            smsSend = AliyunSms().send(phoneNumbers)
-            return jsonify(smsSend)
+        phone_numbers = request.json.get("phoneNumbers")
+        if phone_numbers:
+            sms_send = AliyunSms().send(phone_numbers)
+            return jsonify(sms_send)
         else:
             return {"message": "手机号不能为空"}, 405

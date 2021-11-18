@@ -1,12 +1,12 @@
 from flask import jsonify
 from myapi.utils import Lib
-from myapi.commons import paginate as raw_paginate
+from myapi.commons import paginate as common_paginate
 from sqlalchemy.sql.expression import or_
 
 
 class HandleQuery:
 
-    def __init__(self, model, schema=None, request={}):
+    def __init__(self, model, schema=None, request=None):
         self.model = model
         self.query = model.query
         self.columns = model.__table__.columns.keys()
@@ -19,21 +19,21 @@ class HandleQuery:
             return self
         for item in sorter:
             field = item.get("field")
-            field = Lib.camel2UnderScore(field)
-            type = item.get("type")
+            field = Lib.camel2under_score(field)
+            sort_type = item.get("type")
 
             if field in self.columns and type:
-                self.query = self.query.order_by(getattr(getattr(self.model, field), type)())
+                self.query = self.query.order_by(getattr(getattr(self.model, field), sort_type)())
 
         return self
 
-    def filterIn(self, filter=None):
-        filter = filter or self.request.get('filterIn')
-        if not filter:
+    def filter_in(self, filter_in=None):
+        filter_in = filter_in or self.request.get('filterIn')
+        if not filter_in:
             return self
-        for item in filter:
+        for item in filter_in:
             field = item.get("field")
-            field = Lib.camel2UnderScore(field)
+            field = Lib.camel2under_score(field)
             values = item.get("values")
 
             if field in self.columns and values:
@@ -41,15 +41,15 @@ class HandleQuery:
 
         return self
 
-    def filterLike(self, filter=None):
-        filter = filter or self.request.get('filterLike')
-        if not filter:
+    def filter_like(self, filter_like=None):
+        filter_like = filter_like or self.request.get('filterLike')
+        if not filter_like:
             return self
-        for item in filter:
+        for item in filter_like:
             field = item.get("field")
-            field = Lib.camel2UnderScore(field)
+            field = Lib.camel2under_score(field)
             values = item.get("values")
-            values = Lib.delNoneInList(values)
+            values = Lib.del_none_in_list(values)
 
             if field in self.columns and values:
                 self.query = self.query.filter(
@@ -63,7 +63,7 @@ class HandleQuery:
             return self
         for item in between:
             field = item.get("field")
-            field = Lib.camel2UnderScore(field)
+            field = Lib.camel2under_score(field)
             left = item.get("left")
             right = item.get("right")
             if field in self.columns and left and right:
@@ -71,12 +71,12 @@ class HandleQuery:
 
         return self
 
-    def withEntities(self, withEntities=None):
-        withEntities = withEntities or self.request.get('withEntities')
-        if not withEntities:
+    def with_entities(self, with_entities=None):
+        with_entities = with_entities or self.request.get('withEntities')
+        if not with_entities:
             return self
-        for field in withEntities:
-            field = Lib.camel2UnderScore(field)
+        for field in with_entities:
+            field = Lib.camel2under_score(field)
 
             if field in self.columns:
                 self.query = self.query.with_entities(getattr(self.model, field))
@@ -107,13 +107,13 @@ class HandleQuery:
 
         return self
 
-    def deal(self, sorter=None, filterIn=None, filterLike=None, between=None, withEntities=None, distinct=None,
+    def deal(self, sorter=None, filter_in=None, filter_like=None, between=None, with_entities=None, distinct=None,
              limit=None, offset=None):
         self.sort(sorter)
-        self.filterIn(filterIn)
-        self.filterLike(filterLike)
+        self.filter_in(filter_in)
+        self.filter_like(filter_like)
         self.between(between)
-        self.withEntities(withEntities)
+        self.with_entities(with_entities)
         self.distinct(distinct)
         self.limit(limit)
         self.offset(offset)
@@ -122,13 +122,13 @@ class HandleQuery:
     def paginate(self, schema=None, link=None):
         if not schema:
             schema = self.schema
-        paginateResult = raw_paginate(self.query, schema, link)
-        return jsonify(paginateResult)
+        paginate = common_paginate(self.query, schema, link)
+        return jsonify(paginate)
 
 
 class HandleObjects:
 
-    def __init__(self, collection, schema=None, request={}):
+    def __init__(self, collection, schema=None, request=None):
         self.collection = collection
         self.objects = collection.objects
         self.documents = list(self.collection._fields.keys())
@@ -141,19 +141,19 @@ class HandleObjects:
             return self
         for item in sorter:
             field = item.get("field")
-            type = item.get("type")
+            sort_type = item.get("type")
 
-            if field in self.documents and type:
-                order = "+" + field if type == "asc" else "-" + field
+            if field in self.documents and sort_type:
+                order = "+" + field if sort_type == "asc" else "-" + field
                 self.objects = self.objects.order_by(order)
 
         return self
 
-    def filterIn(self, filter=None):
-        filter = filter or self.request.get('filterIn')
-        if not filter:
+    def filter_in(self, filter_in=None):
+        filter_in = filter_in or self.request.get('filterIn')
+        if not filter_in:
             return self
-        for item in filter:
+        for item in filter_in:
             field = item.get("field")
             values = item.get("values")
 
@@ -163,14 +163,14 @@ class HandleObjects:
 
         return self
 
-    def filterLike(self, filter=None):
-        filter = filter or self.request.get('filterLike')
-        if not filter:
+    def filter_like(self, filter_like=None):
+        filter_like = filter_like or self.request.get('filterLike')
+        if not filter_like:
             return self
-        for item in filter:
+        for item in filter_like:
             field = item.get("field")
             values = item.get("values")
-            values = Lib.delNoneInList(values)
+            values = Lib.del_none_in_list(values)
 
             if field in self.documents and values:
                 field = field + "__contains"
@@ -179,11 +179,11 @@ class HandleObjects:
 
         return self
 
-    def withEntities(self, withEntities=None):
-        withEntities = withEntities or self.request.get('withEntities')
-        if not withEntities:
+    def with_entities(self, with_entities=None):
+        with_entities = with_entities or self.request.get('withEntities')
+        if not with_entities:
             return self
-        for field in withEntities:
+        for field in with_entities:
             if field in self.documents:
                 self.objects = self.objects.only(field)
 
@@ -214,12 +214,12 @@ class HandleObjects:
 
         return self
 
-    def deal(self, sorter=None, filterIn=None, filterLike=None, withEntities=None, distinct=None, limit=None,
+    def deal(self, sorter=None, filter_in=None, filter_like=None, with_entities=None, distinct=None, limit=None,
              offset=None):
         self.sort(sorter)
-        self.filterIn(filterIn)
-        self.filterLike(filterLike)
-        self.withEntities(withEntities)
+        self.filter_in(filter_in)
+        self.filter_like(filter_like)
+        self.with_entities(with_entities)
         self.distinct(distinct)
         self.limit(limit)
         self.offset(offset)

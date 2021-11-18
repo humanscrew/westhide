@@ -12,82 +12,92 @@ from myapi.models import User
 from flask import request, json, jsonify
 from flask_restful import Resource
 
-
 from .aes import AES
 
 
 class RSA:
 
-    def createRSA(self):
-        RSAKey = RSAMod.generate(2048, Random.new().read)
-        publicKey = RSAKey.publickey().export_key().decode()
-        privateKey = RSAKey.export_key().decode()
-        return publicKey, privateKey
+    @staticmethod
+    def create_rsa():
+        rsa_key = RSAMod.generate(2048, Random.new().read)
+        public_key = rsa_key.publickey().export_key().decode()
+        private_key = rsa_key.export_key().decode()
 
-    def encrypt(self, text, publicKey):
-        publicCipher = PKCS1_v1_5.new(RSAMod.importKey(publicKey))
-        encryptText = publicCipher.encrypt(text.encode())
-        encryptText2Base64 = base64.b64encode(encryptText).decode()
-        return encryptText2Base64
+        return public_key, private_key
 
-    def decrypt(self, text, privateKey):
-        encryptText = base64.b64decode(text)
-        privateCipher = PKCS1_v1_5.new(RSAMod.importKey(privateKey))
-        decryptText = privateCipher.decrypt(encryptText, Random.new().read).decode()
-        return decryptText
+    @staticmethod
+    def encrypt(text, public_key):
+        public_cipher = PKCS1_v1_5.new(RSAMod.importKey(public_key))
+        encrypt_text = public_cipher.encrypt(text.encode())
+        encrypt_text2base64 = base64.b64encode(encrypt_text).decode()
 
-    def setRSAKey(self, username):
+        return encrypt_text2base64
+
+    @staticmethod
+    def decrypt(text, private_key):
+        encrypt_text = base64.b64decode(text)
+        private_cipher = PKCS1_v1_5.new(RSAMod.importKey(private_key))
+        decrypt_text = private_cipher.decrypt(encrypt_text, Random.new().read).decode()
+        return decrypt_text
+
+    def set_rsa_key(self, username):
         user = User.query.filter_by(username=username).first()
         if not user:
             return None
         user_id = user.id
         rsa = user.utils_rsa
-        publicKey, privateKey = self.createRSA()
+        public_key, private_key = self.create_rsa()
         if rsa:
-            rsaSchema = RSASchema(partial=True)
-            rsa = rsaSchema.load(
-                {"userId": user_id, "publicKey": publicKey, "privateKey": privateKey},
+            rsa_schema = RSASchema(partial=True)
+            rsa_schema.load(
+                {"userId": user_id, "publicKey": public_key, "privateKey": private_key},
                 instance=rsa
             )
         else:
-            rsa = RSAModel(user_id=user_id, public_key=publicKey, private_key=privateKey)
+            rsa = RSAModel(user_id=user_id, public_key=public_key, private_key=private_key)
             db.session.add(rsa)
         db.session.commit()
-        return publicKey
 
-    def getRSAKey(self, userInfo):
-        RSAKey = RSAModel.query.filter_by(user_id=userInfo).first() \
-            or User.query.filter_by(username=userInfo).first().utils_rsa
-        if not RSAKey:
+        return public_key
+
+    @staticmethod
+    def get_rsa_key(user_info):
+        rsa_key = RSAModel.query.filter_by(user_id=user_info).first() \
+                  or User.query.filter_by(username=user_info).first().utils_rsa
+        if not rsa_key:
             return jsonify({"message": "获取公钥失败"}), 401
-        rsaSchema = RSASchema(only=("public_key", "private_key",))
-        return rsaSchema.dump(RSAKey)
+        rsa_schema = RSASchema(only=("public_key", "private_key",))
 
-    def getDefaultRSA(self):
-        defaultRSASchema = DefaultRSASchema()
-        defaultRSA = DefaultRSAModel.query.first()
-        return {**defaultRSASchema.dump(defaultRSA)}
+        return rsa_schema.dump(rsa_key)
+
+    @staticmethod
+    def get_default_rsa():
+        default_rsa_schema = DefaultRSASchema()
+        default_rsa = DefaultRSAModel.query.first()
+
+        return {**default_rsa_schema.dump(default_rsa)}
 
     # 用RSA解密aesKey，用解密后的aesKey，解密AES加密的密文
-    def decryptWithRSA(self, cipherVar, aesKeyWithRSA, aesIVWithRSA, userInfo, privateKey=None):
-        if privateKey:
-            rsaPrivatekey = privateKey
+    def decrypt_with_rsa(self, cipher_var, aes_key_with_rsa, aes_iv_with_rsa, user_info, private_key=None):
+        if private_key:
+            rsa_private_key = private_key
         else:
-            rsaPrivatekey = self.getRSAKey(userInfo).get("privateKey")
-        __aesKey = self.decrypt(aesKeyWithRSA, rsaPrivatekey)
-        __aesIV = self.decrypt(aesIVWithRSA, rsaPrivatekey)
-        if isinstance(cipherVar, (dict)):
-            for key in cipherVar:
-                encryptText = cipherVar[key]
-                text = AES(__aesKey, __aesIV).decrypt(encryptText)
+            rsa_private_key = self.get_rsa_key(user_info).get("privateKey")
+        __aesKey = self.decrypt(aes_key_with_rsa, rsa_private_key)
+        __aesIV = self.decrypt(aes_iv_with_rsa, rsa_private_key)
+        if isinstance(cipher_var, (dict,)):
+            for key in cipher_var:
+                encrypt_text = cipher_var[key]
+                text = AES(__aesKey, __aesIV).decrypt(encrypt_text)
                 if text:
-                    cipherVar[key] = json.loads(text)
+                    cipher_var[key] = json.loads(text)
                 else:
-                    cipherVar[key] = None
-        elif isinstance(cipherVar, (str)):
-            text = AES(__aesKey, __aesIV).decrypt(cipherVar)
-            cipherVar = json.loads(text)
-        return cipherVar, __aesKey, __aesIV
+                    cipher_var[key] = None
+        elif isinstance(cipher_var, (str,)):
+            text = AES(__aesKey, __aesIV).decrypt(cipher_var)
+            cipher_var = json.loads(text)
+
+        return cipher_var, __aesKey, __aesIV
 
 
 class RSAModel(db.Model):
@@ -99,22 +109,22 @@ class RSAModel(db.Model):
     create_time = db.Column(db.DATETIME, default=datetime.now)
     update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
 
-    user = db.relationship('User', backref=db.backref("utils_rsa", uselist=False),  uselist=False, lazy='joined')
+    user = db.relationship('User', backref=db.backref("utils_rsa", uselist=False), uselist=False, lazy='joined')
 
 
 class RSASchema(ma.SQLAlchemyAutoSchema):
-
     class Meta:
         model = RSAModel
         sqla_session = db.session
         load_instance = True
         include_fk = True
-        exclude = (["id"])
+        exclude = ("id",)
 
 
 class RSAResource(Resource):
 
-    def post(self):
+    @staticmethod
+    def post():
         if not request.is_json:
             return {"message": "Missing JSON in request"}, 405
 
@@ -122,10 +132,11 @@ class RSAResource(Resource):
         if not username:
             return {"message": "用户名为空"}, 400
 
-        publicKey = RSA().setRSAKey(username)
-        if not publicKey:
+        public_key = RSA().set_rsa_key(username)
+        if not public_key:
             return {"message": "用户名错误"}, 400
-        return {"publicKey": publicKey}
+
+        return {"publicKey": public_key}
 
 
 class DefaultRSAModel(db.Model):
@@ -138,17 +149,18 @@ class DefaultRSAModel(db.Model):
 
 
 class DefaultRSASchema(ma.SQLAlchemyAutoSchema):
-
     class Meta:
         model = DefaultRSAModel
         sqla_session = db.session
         load_instance = True
-        exclude = (["id", ])
+        exclude = ("id",)
 
 
 class DefaultRSAResource(Resource):
 
-    def get(self):
-        defaultRSASchema = DefaultRSASchema(only=("public_key", ))
-        defaultRSA = DefaultRSAModel.query.first_or_404()
-        return {**defaultRSASchema.dump(defaultRSA)}
+    @staticmethod
+    def get():
+        default_rsa_schema = DefaultRSASchema(only=("public_key",))
+        default_rsa = DefaultRSAModel.query.first_or_404()
+
+        return {**default_rsa_schema.dump(default_rsa)}

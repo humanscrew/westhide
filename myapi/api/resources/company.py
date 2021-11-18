@@ -6,10 +6,12 @@ from myapi.models import User, CompanyGroup
 
 class CompanyGroupResource(Resource):
 
-    def get(self):
-        companyGroupSchema = CompanyGroupSchema(many=True)
+    @staticmethod
+    def get():
+        company_group_schema = CompanyGroupSchema(many=True)
         user_id = get_jwt_identity()
-        companyGroups = User.query.get_or_404(user_id).company_group.with_entities(
+        company_groups = User.query.get_or_404(user_id).company_group.with_entities(
             CompanyGroup.name, CompanyGroup.icon, CompanyGroup.color, CompanyGroup.desc, CompanyGroup.location
         )
-        return {"companyGroups": companyGroupSchema.dump(companyGroups)}
+
+        return {"companyGroups": company_group_schema.dump(company_groups)}

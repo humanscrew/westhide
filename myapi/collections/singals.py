@@ -3,8 +3,6 @@ from mongoengine import signals
 
 
 def handler(event):
-    """Signal decorator to allow use of callback functions as class decorators."""
-
     def decorator(fn):
         def apply(cls):
             event.connect(fn, sender=cls)

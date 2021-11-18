@@ -7,8 +7,9 @@ from .rsa import RSA
 
 
 class CipherHook:
-
-    def encryptResponse(self, response):
+    
+    @staticmethod
+    def encrypt_response(response):
         if request.method == "OPTIONS":
             return response
 
@@ -17,38 +18,39 @@ class CipherHook:
 
         if not __aesKey or not __aesIV or not response.json:
             return response
-        responseData = response.json
-        for key in responseData:
+        response_data = response.json
+        for key in response_data:
             if key == "message":
                 continue
-            text = responseData[key]
+            text = response_data[key]
             text = json.dumps(text)
             encryption = AES(__aesKey, __aesIV)
-            responseData[key] = encryption.encrypt(text)
-        response.data = json.dumps(responseData)
+            response_data[key] = encryption.encrypt(text)
+        response.data = json.dumps(response_data)
 
         return response
 
-    def decryptRequest(self, userInfo=None, privateKey=None):
+    def decrypt_request(self, user_info=None, private_key=None):
         if request.method == "OPTIONS":
             return None
 
-        if not privateKey and not userInfo:
-            userInfo = get_jwt_identity()
+        if not private_key and not user_info:
+            user_info = get_jwt_identity()
         if request.is_json:
-            self.handleRequestData(request.json, userInfo, privateKey)
+            self.decrypt_request_data(request.json, user_info, private_key)
         if request.args:
-            request.args = self.handleRequestData(request.args.to_dict(), userInfo, privateKey)
+            request.args = self.decrypt_request_data(request.args.to_dict(), user_info, private_key)
         if not request.json and not request.args:
-            self.handleRequestData({}, userInfo, privateKey)
+            self.decrypt_request_data({}, user_info, private_key)
 
         return None
-
-    def handleRequestData(self, args={}, userInfo=None, privateKey=None):
-        aesKeyWithRSA = request.headers.get('aesKey', None)
-        aesIVWithRSA = request.headers.get("aesIV", None)
-        if not aesKeyWithRSA or not aesIVWithRSA:
+    
+    @staticmethod
+    def decrypt_request_data(args=None, user_info=None, private_key=None):
+        aes_key_with_rsa = request.headers.get('aesKey', None)
+        aes_iv_with_rsa = request.headers.get("aesIV", None)
+        if not aes_key_with_rsa or not aes_iv_with_rsa:
             return None
-        args, g.aesKey, g.aesIV = RSA().decryptWithRSA(args, aesKeyWithRSA, aesIVWithRSA, userInfo, privateKey)
+        args, g.aesKey, g.aesIV = RSA().decrypt_with_rsa(args, aes_key_with_rsa, aes_iv_with_rsa, user_info, private_key)
 
         return args

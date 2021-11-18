@@ -3,6 +3,7 @@ from myapi.models import Map_User_Role, Map_User_PermitCode
 
 from datetime import datetime
 
+
 class Role(db.Model):
     __tablename__ = "role"
     id = db.Column(db.Integer, primary_key=True)
