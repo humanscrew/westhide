@@ -4,7 +4,6 @@ from marshmallow import INCLUDE
 
 
 class SmsAliyunDetailSchema(ma.SQLAlchemyAutoSchema):
-
     class Meta:
         model = SmsAliyunDetail
         sqla_session = db.session

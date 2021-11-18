@@ -1,7 +1,5 @@
-from .sms_template import smsTemplate
-from .aliyun_sms import AliyunSms, SmsAliyunResource
+from .aliyun_sms import AliyunSms
 
 __all__ = [
-    "smsTemplate",
-    "AliyunSms", "SmsAliyunResource",
+    "AliyunSms",
 ]

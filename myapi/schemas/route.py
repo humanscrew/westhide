@@ -1,9 +1,8 @@
-from myapi.models import Route, RouteClosureTable, RouteMeta, RouteTree
 from myapi.extensions import ma, db
+from myapi.models import Route, RouteClosureTable, RouteMeta, RouteTree
 
 
 class RouteMetaSchema(ma.SQLAlchemyAutoSchema):
-
     class Meta:
         model = RouteMeta
         sqla_session = db.session
@@ -23,7 +22,6 @@ class RouteSchema(ma.SQLAlchemyAutoSchema):
 
 
 class RouteClosureTableSchema(ma.SQLAlchemyAutoSchema):
-
     class Meta:
         model = RouteClosureTable
         sqla_session = db.session
@@ -33,7 +31,6 @@ class RouteClosureTableSchema(ma.SQLAlchemyAutoSchema):
 
 
 class RouteTreeSchema(ma.SQLAlchemyAutoSchema):
-
     class Meta:
         model = RouteTree
         sqla_session = db.session

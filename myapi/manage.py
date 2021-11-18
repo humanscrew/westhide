@@ -15,7 +15,12 @@ def init():
     from myapi.models import User
 
     click.echo("create user")
-    user = User(username="westhide", email="tibetourist@gmail.com", password="westhide", active=True)
+    user = User(
+        username="westhide",
+        email="tibetourist@gmail.com",
+        password="westhide",
+        active=True,
+    )
     db.session.add(user)
     db.session.commit()
     click.echo("created user admin")

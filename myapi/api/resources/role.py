@@ -1,11 +1,10 @@
 from flask_restful import Resource
 from flask_jwt_extended import get_jwt_identity
-from myapi.api.schemas import PermitCodeSchema
+from myapi.schemas import PermitCodeSchema
 from myapi.models import User
 
 
 class PermitCodeResource(Resource):
-
     @staticmethod
     def get():
         permit_code_schema = PermitCodeSchema(many=True)

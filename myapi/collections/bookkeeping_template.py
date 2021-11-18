@@ -19,7 +19,9 @@ class AuxiliaryGroup(mdb.Document):
 
     code = mdb.StringField(required=True, unique=True)
     name = mdb.StringField(required=True)
-    auxiliaryAccounts = mdb.ListField(mdb.ReferenceField("AuxiliaryAccount", reverse_delete_rule=mdb.DENY))
+    auxiliaryAccounts = mdb.ListField(
+        mdb.ReferenceField("AuxiliaryAccount", reverse_delete_rule=mdb.DENY)
+    )
     createTime = mdb.DateTimeField(default=datetime.utcnow)
     updateTime = mdb.DateTimeField(default=datetime.utcnow)
 
@@ -30,7 +32,7 @@ class FinanceAccount(mdb.Document):
     code = mdb.StringField(required=True, unique=True)
     name = mdb.StringField(required=True)
     direction = mdb.StringField(max_length=1)
-    auxiliaryGroup = mdb.ReferenceField('AuxiliaryGroup', reverse_delete_rule=mdb.DENY)
+    auxiliaryGroup = mdb.ReferenceField("AuxiliaryGroup", reverse_delete_rule=mdb.DENY)
     createTime = mdb.DateTimeField(default=datetime.utcnow)
     updateTime = mdb.DateTimeField(default=datetime.utcnow)
 
@@ -125,10 +127,14 @@ class BookkeepingTemplate(mdb.Document):
     count = mdb.IntField()
     unitPrice = mdb.DecimalField()
 
-    debitFinanceAccount = mdb.ReferenceField('FinanceAccount', reverse_delete_rule=mdb.DENY, required=True)
+    debitFinanceAccount = mdb.ReferenceField(
+        "FinanceAccount", reverse_delete_rule=mdb.DENY, required=True
+    )
     debitAmount = mdb.DecimalField()
 
-    creditFinanceAccount = mdb.ReferenceField('FinanceAccount', reverse_delete_rule=mdb.DENY, required=True)
+    creditFinanceAccount = mdb.ReferenceField(
+        "FinanceAccount", reverse_delete_rule=mdb.DENY, required=True
+    )
     creditAmount = mdb.DecimalField()
 
     lister = mdb.StringField()

@@ -4,24 +4,27 @@ from flask_jwt_extended import jwt_required
 
 from marshmallow import ValidationError
 
+from myapi.commons import CipherHook
 from myapi.extensions import apispec
 
-from myapi.api.resources import (
+from .resources import (
     RootPage,
     MysqlResource,
     ClickhouseResource,
-    UserResource, UserListResource,
+    UserResource,
+    UserListResource,
     PermitCodeResource,
-    RouteResource, RouteListResource,
-    TicketLaiu8Resource, Laiu8ClientResource, Ticket2FinanceResource,
+    RouteResource,
+    RouteListResource,
+    TicketLaiu8Resource,
+    Laiu8ClientResource,
+    Ticket2FinanceResource,
     CompanyGroupResource,
     BookkeepingTemplateResource,
     TenPayResource,
 )
 
-from myapi.api.schemas import UserSchema
-
-from myapi.utils import CipherHook
+from myapi.schemas import UserSchema
 
 blueprint = Blueprint("api", __name__, url_prefix="/westhide/api")
 api = Api(blueprint)
@@ -36,10 +39,18 @@ api.add_resource(RouteResource, "/route", endpoint="api_route")
 api.add_resource(RouteListResource, "/routeList", endpoint="api_routeList")
 api.add_resource(TicketLaiu8Resource, "/ticketLaiu8", endpoint="api_ticketLaiu8")
 api.add_resource(Laiu8ClientResource, "/laiu8Client", endpoint="api_laiu8Client")
-api.add_resource(Ticket2FinanceResource, "/ticket2Finance", endpoint="api_ticket2Finance")
+api.add_resource(
+    Ticket2FinanceResource, "/ticket2Finance", endpoint="api_ticket2Finance"
+)
 api.add_resource(CompanyGroupResource, "/companyGroup", endpoint="api_companyGroup")
-api.add_resource(BookkeepingTemplateResource, "/bookkeepingTemplate", endpoint="api_bookkeepingTemplate")
-api.add_resource(TenPayResource, "/transferTenPayBill", endpoint="api_transferTenPayBill")
+api.add_resource(
+    BookkeepingTemplateResource,
+    "/bookkeepingTemplate",
+    endpoint="api_bookkeepingTemplate",
+)
+api.add_resource(
+    TenPayResource, "/transferTenPayBill", endpoint="api_transferTenPayBill"
+)
 
 
 @blueprint.before_app_first_request

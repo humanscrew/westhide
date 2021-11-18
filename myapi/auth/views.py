@@ -10,8 +10,9 @@ from flask_jwt_extended import (
 from myapi.models import User
 from myapi.extensions import pwd_context, jwt, apispec, db
 from myapi.auth.helpers import revoke_token, is_token_revoked, add_token_to_database
-from myapi.utils import RSA, CipherHook, AliyunSms
-from myapi.api.schemas import UserSchema
+from myapi.commons import CipherHook
+from myapi.utils import RSA, AliyunSms
+from myapi.schemas import UserSchema
 from marshmallow import INCLUDE, ValidationError
 
 blueprint = Blueprint("auth", __name__, url_prefix="/westhide/auth")
@@ -33,11 +34,13 @@ def login():
         return {"message": "用户名错误"}, 400
 
     user_id = user.id
-    aes_key_with_rsa = request.headers.get('aesKey', None)
+    aes_key_with_rsa = request.headers.get("aesKey", None)
     aes_iv_with_rsa = request.headers.get("aesIV", None)
     if not aes_key_with_rsa or not aes_iv_with_rsa:
         return {"message": "请求密钥缺失"}, 400
-    password, g.aesKey, g.aesIV = RSA().decrypt_with_rsa(password_with_aes, aes_key_with_rsa, aes_iv_with_rsa, user_id)
+    password, g.aesKey, g.aesIV = RSA().decrypt_with_rsa(
+        password_with_aes, aes_key_with_rsa, aes_iv_with_rsa, user_id
+    )
 
     if not pwd_context.verify(password, user.password):
         return {"message": "密码错误"}, 400
@@ -47,7 +50,11 @@ def login():
     add_token_to_database(access_token, app.config["JWT_IDENTITY_CLAIM"])
     add_token_to_database(refresh_token, app.config["JWT_IDENTITY_CLAIM"])
 
-    return {"accessToken": access_token, "refreshToken": refresh_token, "message": "登录成功"}
+    return {
+        "accessToken": access_token,
+        "refreshToken": refresh_token,
+        "message": "登录成功",
+    }
 
 
 @blueprint.route("/register", methods=["POST"])
@@ -56,23 +63,26 @@ def register():
         return {"message": "Missing JSON in request"}, 405
 
     request_data = request.json
-    username = request_data.pop('username', None)
+    username = request_data.pop("username", None)
 
-    default_private_key = RSA().getDefaultRSA().get("privateKey")
+    default_private_key = RSA().get_default_rsa().get("privateKey")
     CipherHook().decrypt_request(None, default_private_key)
 
-    if username and User.query.with_entities(User.id).filter_by(username=username).first():
+    if (
+        username
+        and User.query.with_entities(User.id).filter_by(username=username).first()
+    ):
         return {"message": "该用户名已被注册"}, 400
 
-    mobile = request_data.get('mobile')
+    mobile = request_data.get("mobile")
     if mobile and User.query.with_entities(User.id).filter_by(mobile=mobile).first():
         return {"message": "该手机号已被注册"}, 400
 
-    email = request_data.get('email')
+    email = request_data.get("email")
     if email and User.query.with_entities(User.id).filter_by(email=email).first():
         return {"message": "该邮箱已被注册"}, 400
 
-    sms = request_data.get('sms')
+    sms = request_data.get("sms")
     aliyun_sms = AliyunSms().query(**sms.get("callback"))
     if not sms.get("code") == aliyun_sms["result"]["params"]["code"]:
         return {"message": "验证码错误"}, 400

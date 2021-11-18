@@ -7,48 +7,51 @@ from datetime import datetime
 Map_User_CompanyGroup = db.Table(
     "map_user2company_group",
     db.Column("id", db.Integer, primary_key=True),
-    db.Column("user_id", db.Integer, db.ForeignKey('user.id')),
-    db.Column("company_group_id", db.Integer, db.ForeignKey('company_group.id'))
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
+    db.Column("company_group_id", db.Integer, db.ForeignKey("company_group.id")),
 )
 
 Map_User_SubsidiaryCompany = db.Table(
     "map_user2subsidiary_company",
     db.Column("id", db.Integer, primary_key=True),
-    db.Column("user_id", db.Integer, db.ForeignKey('user.id')),
-    db.Column("subsidiary_company_id", db.Integer, db.ForeignKey('subsidiary_company.id'))
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
+    db.Column(
+        "subsidiary_company_id", db.Integer, db.ForeignKey("subsidiary_company.id")
+    ),
 )
 
 Map_User_Role = db.Table(
     "map_user2role",
     db.Column("id", db.Integer, primary_key=True),
-    db.Column("user_id", db.Integer, db.ForeignKey('user.id')),
-    db.Column("role_id", db.Integer, db.ForeignKey('role.id'))
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
+    db.Column("role_id", db.Integer, db.ForeignKey("role.id")),
 )
 
 Map_User_PermitCode = db.Table(
     "map_user2permit_code",
     db.Column("id", db.Integer, primary_key=True),
-    db.Column("user_id", db.Integer, db.ForeignKey('user.id')),
-    db.Column("permit_code_id", db.Integer, db.ForeignKey('permit_code.id'))
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
+    db.Column("permit_code_id", db.Integer, db.ForeignKey("permit_code.id")),
 )
 
 Map_User_Route = db.Table(
     "map_user2route",
     db.Column("id", db.Integer, primary_key=True),
-    db.Column("user_id", db.Integer, db.ForeignKey('user.id')),
-    db.Column("route_id", db.Integer, db.ForeignKey('route.id'))
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
+    db.Column("route_id", db.Integer, db.ForeignKey("route.id")),
 )
 
 Map_User_Route_Tree = db.Table(
     "map_user2route_tree",
     db.Column("id", db.Integer, primary_key=True),
-    db.Column("user_id", db.Integer, db.ForeignKey('user.id')),
-    db.Column("route_tree_id", db.Integer, db.ForeignKey('route_tree.id'))
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
+    db.Column("route_tree_id", db.Integer, db.ForeignKey("route_tree.id")),
 )
 
 
 class User(db.Model):
     """Basic user model"""
+
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False, index=True)
@@ -63,45 +66,39 @@ class User(db.Model):
     remark = db.Column(db.String(80))
 
     company_group = db.relationship(
-        'CompanyGroup',
+        "CompanyGroup",
         secondary=Map_User_CompanyGroup,
         back_populates="user",
-        lazy='dynamic'
+        lazy="dynamic",
     )
 
     subsidiary_company = db.relationship(
-        'SubsidiaryCompany',
+        "SubsidiaryCompany",
         secondary=Map_User_SubsidiaryCompany,
         back_populates="user",
-        lazy='dynamic'
+        lazy="dynamic",
     )
 
     role = db.relationship(
-        'Role',
-        secondary=Map_User_Role,
-        back_populates="user",
-        lazy='dynamic'
+        "Role", secondary=Map_User_Role, back_populates="user", lazy="dynamic"
     )
 
     permit_code = db.relationship(
-        'PermitCode',
+        "PermitCode",
         secondary=Map_User_PermitCode,
         back_populates="user",
-        lazy='dynamic'
+        lazy="dynamic",
     )
 
     route = db.relationship(
-        'Route',
-        secondary=Map_User_Route,
-        back_populates="user",
-        lazy='dynamic'
+        "Route", secondary=Map_User_Route, back_populates="user", lazy="dynamic"
     )
 
     route_tree = db.relationship(
-        'RouteTree',
+        "RouteTree",
         secondary=Map_User_Route_Tree,
         back_populates="user",
-        lazy='dynamic'
+        lazy="dynamic",
     )
 
     @hybrid_property

@@ -2,7 +2,7 @@ from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import get_jwt_identity
 
-from myapi.api.schemas import RouteClosureTableSchema, RouteSchema, RouteTreeSchema
+from myapi.schemas import RouteClosureTableSchema, RouteSchema, RouteTreeSchema
 from myapi.models import Route, RouteClosureTable, RouteTree, User
 from myapi.utils import ClosureTable
 
@@ -12,7 +12,7 @@ defaultRoutes = [
         "children": [
             {"name": "Analysis"},
             {"name": "Workbench"},
-        ]
+        ],
     },
     {
         "name": "System",
@@ -20,7 +20,7 @@ defaultRoutes = [
             {"name": "AccountManagement"},
             {"name": "RoleManagement"},
             {"name": "MenuManagement"},
-        ]
+        ],
     },
     {
         "name": "TicketManagement",
@@ -31,28 +31,26 @@ defaultRoutes = [
                     {"name": "ClientManagement"},
                     {"name": "TicketSalesDetail"},
                     {"name": "TicketSales2Finance"},
-                ]
+                ],
             },
-        ]
+        ],
     },
     {
         "name": "Voucher",
         "children": [
             {"name": "BookkeepingTemplate"},
             {"name": "VoucherGenerate"},
-        ]
+        ],
     },
 ]
 
 
 class RouteResource(Resource):
-
     def get(self):
         pass
 
 
 class RouteListResource(Resource):
-
     @staticmethod
     def get():
         user_id = get_jwt_identity()
@@ -61,7 +59,9 @@ class RouteListResource(Resource):
         #     RouteTree, Route, RouteClosureTable, RouteSchema, RouteClosureTableSchema
         # ).create_tree(defaultRoutes)
 
-        route_tree_ids = User.query.get(user_id).route_tree.with_entities(RouteTree.id).all()
+        route_tree_ids = (
+            User.query.get(user_id).route_tree.with_entities(RouteTree.id).all()
+        )
         route_tree_schema = RouteTreeSchema(many=True)
         route_tree_ids = route_tree_schema.dump(route_tree_ids)
         route_tree_id_list = [item.get("id") for item in route_tree_ids]

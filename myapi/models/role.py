@@ -13,10 +13,7 @@ class Role(db.Model):
     update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
 
     user = db.relationship(
-        "User",
-        secondary=Map_User_Role,
-        back_populates="role",
-        lazy="dynamic"
+        "User", secondary=Map_User_Role, back_populates="role", lazy="dynamic"
     )
 
 
@@ -32,5 +29,5 @@ class PermitCode(db.Model):
         "User",
         secondary=Map_User_PermitCode,
         back_populates="permit_code",
-        lazy="dynamic"
+        lazy="dynamic",
     )

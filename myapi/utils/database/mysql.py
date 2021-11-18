@@ -3,13 +3,15 @@ from myapi.config import MYSQL_SETTINGS
 
 
 class Mysql:
-
     def __init__(self, config=None):
         if config is None:
             config = {
-                "host": None, "port": None,
-                "user": None, "password": None,
-                "db": None, "charset": None
+                "host": None,
+                "port": None,
+                "user": None,
+                "password": None,
+                "db": None,
+                "charset": None,
             }
         self.config = config
         self.config["host"] = config["host"] or MYSQL_SETTINGS.get("host")
@@ -23,21 +25,23 @@ class Mysql:
         connection = pymysql.connect(**self.config)
         return connection
 
-    def execute(self, statement=''):
+    def execute(self, statement=""):
         if not statement:
-            return {'result': [], 'code': 400, 'message': 'SQL语句为空！'}
+            return {"result": [], "code": 400, "message": "SQL语句为空！"}
 
         connection = self.make_connection()
-        cursor = connection.cursor(pymysql.cursors.DictCursor)  # pymysql.cursors.SSCursor
+        cursor = connection.cursor(
+            pymysql.cursors.DictCursor
+        )  # pymysql.cursors.SSCursor
 
         try:
             cursor.execute(statement)
             result = cursor.fetchall()
             connection.commit()
-            return {'result': result, 'code': 200, 'message': '数据库操作成功！'}
+            return {"result": result, "code": 200, "message": "数据库操作成功！"}
         except:
             connection.rollback()
-            return {'result': [], 'code': 400, 'message': '数据库操作失败！'}
+            return {"result": [], "code": 400, "message": "数据库操作失败！"}
         finally:
             cursor.close()
             connection.close()

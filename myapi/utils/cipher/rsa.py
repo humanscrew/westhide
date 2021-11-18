@@ -1,22 +1,21 @@
 from Crypto.PublicKey import RSA as RSAMod
 from Crypto.Cipher import PKCS1_v1_5
 from Crypto import Random
+
 # import Crypto.Signature.PKCS1_v1_5 as sign_PKCS1_v1_5 # 用于签名/验签
 import base64
 
-from datetime import datetime
+from flask import json, jsonify
 
-from myapi.extensions import db, ma
-from myapi.models import User
+from myapi.models import User, RSAModel, DefaultRSAModel
+from myapi.schemas import RSASchema, DefaultRSASchema
+from myapi.extensions import db
 
-from flask import request, json, jsonify
-from flask_restful import Resource
 
 from .aes import AES
 
 
 class RSA:
-
     @staticmethod
     def create_rsa():
         rsa_key = RSAMod.generate(2048, Random.new().read)
@@ -51,10 +50,12 @@ class RSA:
             rsa_schema = RSASchema(partial=True)
             rsa_schema.load(
                 {"userId": user_id, "publicKey": public_key, "privateKey": private_key},
-                instance=rsa
+                instance=rsa,
             )
         else:
-            rsa = RSAModel(user_id=user_id, public_key=public_key, private_key=private_key)
+            rsa = RSAModel(
+                user_id=user_id, public_key=public_key, private_key=private_key
+            )
             db.session.add(rsa)
         db.session.commit()
 
@@ -62,11 +63,18 @@ class RSA:
 
     @staticmethod
     def get_rsa_key(user_info):
-        rsa_key = RSAModel.query.filter_by(user_id=user_info).first() \
-                  or User.query.filter_by(username=user_info).first().utils_rsa
+        rsa_key = (
+            RSAModel.query.filter_by(user_id=user_info).first()
+            or User.query.filter_by(username=user_info).first().utils_rsa
+        )
         if not rsa_key:
             return jsonify({"message": "获取公钥失败"}), 401
-        rsa_schema = RSASchema(only=("public_key", "private_key",))
+        rsa_schema = RSASchema(
+            only=(
+                "public_key",
+                "private_key",
+            )
+        )
 
         return rsa_schema.dump(rsa_key)
 
@@ -78,7 +86,9 @@ class RSA:
         return {**default_rsa_schema.dump(default_rsa)}
 
     # 用RSA解密aesKey，用解密后的aesKey，解密AES加密的密文
-    def decrypt_with_rsa(self, cipher_var, aes_key_with_rsa, aes_iv_with_rsa, user_info, private_key=None):
+    def decrypt_with_rsa(
+        self, cipher_var, aes_key_with_rsa, aes_iv_with_rsa, user_info, private_key=None
+    ):
         if private_key:
             rsa_private_key = private_key
         else:
@@ -98,69 +108,3 @@ class RSA:
             cipher_var = json.loads(text)
 
         return cipher_var, __aesKey, __aesIV
-
-
-class RSAModel(db.Model):
-    __tablename__ = "utils_rsa"
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, unique=True)
-    public_key = db.Column(db.Text, nullable=False)
-    private_key = db.Column(db.Text, nullable=False)
-    create_time = db.Column(db.DATETIME, default=datetime.now)
-    update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
-
-    user = db.relationship('User', backref=db.backref("utils_rsa", uselist=False), uselist=False, lazy='joined')
-
-
-class RSASchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = RSAModel
-        sqla_session = db.session
-        load_instance = True
-        include_fk = True
-        exclude = ("id",)
-
-
-class RSAResource(Resource):
-
-    @staticmethod
-    def post():
-        if not request.is_json:
-            return {"message": "Missing JSON in request"}, 405
-
-        username = request.json.get("username")
-        if not username:
-            return {"message": "用户名为空"}, 400
-
-        public_key = RSA().set_rsa_key(username)
-        if not public_key:
-            return {"message": "用户名错误"}, 400
-
-        return {"publicKey": public_key}
-
-
-class DefaultRSAModel(db.Model):
-    __tablename__ = "utils_default_rsa"
-    id = db.Column(db.Integer, primary_key=True)
-    public_key = db.Column(db.Text, nullable=False)
-    private_key = db.Column(db.Text, nullable=False)
-    create_time = db.Column(db.DATETIME, default=datetime.now)
-    update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
-
-
-class DefaultRSASchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = DefaultRSAModel
-        sqla_session = db.session
-        load_instance = True
-        exclude = ("id",)
-
-
-class DefaultRSAResource(Resource):
-
-    @staticmethod
-    def get():
-        default_rsa_schema = DefaultRSASchema(only=("public_key",))
-        default_rsa = DefaultRSAModel.query.first_or_404()
-
-        return {**default_rsa_schema.dump(default_rsa)}

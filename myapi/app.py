@@ -1,7 +1,7 @@
 from flask import Flask, json
 from flask_cors import CORS
 
-from myapi import api, auth, utils
+from myapi import api, auth, trigger
 from myapi.extensions import apispec, celery, db, mdb, jwt, migrate, logger
 
 from datetime import datetime, date
@@ -58,7 +58,7 @@ def register_blueprints(app):
     """register all blueprints for application"""
     app.register_blueprint(auth.views.blueprint)
     app.register_blueprint(api.views.blueprint)
-    app.register_blueprint(utils.views.blueprint)
+    app.register_blueprint(trigger.views.blueprint)
 
 
 def init_celery(app=None):
@@ -77,9 +77,9 @@ def init_celery(app=None):
 
 
 class MyJSONEncoder(json.JSONEncoder):
-
     def default(self, obj):
         from decimal import Decimal
+
         if isinstance(obj, Decimal):
             return float(obj)
         if isinstance(obj, datetime):

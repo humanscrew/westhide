@@ -2,11 +2,15 @@ from marshmallow_mongoengine import ModelSchema
 
 from marshmallow.fields import Nested
 
-from myapi.collections import AuxiliaryAccount, AuxiliaryGroup, FinanceAccount, BookkeepingTemplate
+from myapi.collections import (
+    AuxiliaryAccount,
+    AuxiliaryGroup,
+    FinanceAccount,
+    BookkeepingTemplate,
+)
 
 
 class AuxiliaryAccountSchema(ModelSchema):
-
     class Meta:
         model = AuxiliaryAccount
         model_skip_values = ()

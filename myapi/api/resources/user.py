@@ -2,15 +2,14 @@ from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import get_jwt_identity
 
-from myapi.api.schemas import UserSchema
+from myapi.schemas import UserSchema
 from myapi.models import User
-from myapi.extensions import db
+from myapi.commons import HandleQuery
 
-from myapi.utils import HandleQuery
+from myapi.extensions import db
 
 
 class UserResource(Resource):
-
     @staticmethod
     def get():
         user_schema = UserSchema()
@@ -52,7 +51,6 @@ class UserResource(Resource):
 
 
 class UserListResource(Resource):
-
     @staticmethod
     def get():
         user_schema = UserSchema(many=True)

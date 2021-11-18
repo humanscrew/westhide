@@ -1,6 +1,7 @@
-from myapi.api.schemas import RoleSchema
-from myapi.models import User
 from myapi.extensions import ma, db
+from myapi.models import User
+from .role import RoleSchema
+
 # from marshmallow import INCLUDE
 
 

@@ -20,7 +20,9 @@ class FinanceAccountEmbed(mdb.EmbeddedDocument):
     code = mdb.StringField()
     name = mdb.StringField()
     direction = mdb.StringField(max_length=1)
-    auxiliaryAccounts = mdb.EmbeddedDocumentListField(AuxiliaryAccountEmbed, default=[AuxiliaryAccountEmbed()])
+    auxiliaryAccounts = mdb.EmbeddedDocumentListField(
+        AuxiliaryAccountEmbed, default=[AuxiliaryAccountEmbed()]
+    )
     createTime = mdb.DateTimeField(default=datetime.utcnow)
     updateTime = mdb.DateTimeField(default=datetime.utcnow)
 
@@ -47,10 +49,14 @@ class FinanceVoucher(mdb.Document):
     count = mdb.IntField()
     unitPrice = mdb.DecimalField()
 
-    debitFinanceAccount = mdb.EmbeddedDocumentField(FinanceAccountEmbed, default=FinanceAccountEmbed())
+    debitFinanceAccount = mdb.EmbeddedDocumentField(
+        FinanceAccountEmbed, default=FinanceAccountEmbed()
+    )
     debitAmount = mdb.DecimalField()
 
-    creditFinanceAccount = mdb.EmbeddedDocumentField(FinanceAccountEmbed, default=FinanceAccountEmbed())
+    creditFinanceAccount = mdb.EmbeddedDocumentField(
+        FinanceAccountEmbed, default=FinanceAccountEmbed()
+    )
     creditAmount = mdb.DecimalField()
 
     lister = mdb.StringField()

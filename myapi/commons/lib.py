@@ -1,6 +1,4 @@
-
 class Lib(object):
-
     def __init__(self):
         super().__init__()
         pass
@@ -9,7 +7,9 @@ class Lib(object):
     def camel2under_score(camel_case: str) -> str:
         if not isinstance(camel_case, str):
             return camel_case
-        camel_str_list: list = ["_" + item if item.isupper() else item for item in camel_case]
+        camel_str_list: list = [
+            "_" + item if item.isupper() else item for item in camel_case
+        ]
         under_score: str = "".join(camel_str_list).lower()
         return under_score
 

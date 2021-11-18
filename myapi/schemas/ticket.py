@@ -3,7 +3,6 @@ from myapi.models import TicketLaiu8, TicketLaiu8Refund, Laiu8Client, Ticket2Fin
 
 
 class TicketLaiu8RefundSchema(ma.SQLAlchemyAutoSchema):
-
     class Meta:
         model = TicketLaiu8Refund
         sqla_session = db.session
@@ -23,7 +22,6 @@ class TicketLaiu8Schema(ma.SQLAlchemyAutoSchema):
 
 
 class Laiu8ClientSchema(ma.SQLAlchemyAutoSchema):
-
     class Meta:
         model = Laiu8Client
         sqla_session = db.session

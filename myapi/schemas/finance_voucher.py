@@ -6,7 +6,6 @@ from myapi.collections import AuxiliaryAccountEmbed, FinanceAccountEmbed, Financ
 
 
 class AuxiliaryAccountEmbedSchema(ModelSchema):
-
     class Meta:
         model = AuxiliaryAccountEmbed
         model_skip_values = ()

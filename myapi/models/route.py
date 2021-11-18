@@ -24,10 +24,7 @@ class Route(db.Model):
     route_meta = db.relationship("RouteMeta", lazy="joined")
 
     user = db.relationship(
-        "User",
-        secondary=Map_User_Route,
-        back_populates="route",
-        lazy="dynamic"
+        "User", secondary=Map_User_Route, back_populates="route", lazy="dynamic"
     )
 
 
@@ -66,7 +63,7 @@ class RouteTree(db.Model):
         "User",
         secondary=Map_User_Route_Tree,
         back_populates="route_tree",
-        lazy="dynamic"
+        lazy="dynamic",
     )
 
 
@@ -74,8 +71,8 @@ class RouteClosureTable(db.Model):
     __tablename__ = "route_closure_table"
     id = db.Column("id", db.Integer, primary_key=True)
     tree_id = db.Column(db.Integer, db.ForeignKey("route_tree.id"), nullable=False)
-    ancestor_id = db.Column(db.Integer, db.ForeignKey('route.id'), nullable=False)
-    descendant_id = db.Column(db.Integer, db.ForeignKey('route.id'), nullable=False)
+    ancestor_id = db.Column(db.Integer, db.ForeignKey("route.id"), nullable=False)
+    descendant_id = db.Column(db.Integer, db.ForeignKey("route.id"), nullable=False)
     distance = db.Column(db.Integer, nullable=False)
     depth = db.Column(db.Integer, nullable=False)
 

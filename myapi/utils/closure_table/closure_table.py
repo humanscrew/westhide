@@ -3,12 +3,16 @@ from sqlalchemy.sql.expression import and_, or_, func
 
 
 class ClosureTable:
-
-    def __init__(self,
-                 tree_model, node_model, closure_table_model,
-                 node_schema, closure_table_schema,
-                 ancestor_key="name", descendant_key="children"
-                 ):
+    def __init__(
+        self,
+        tree_model,
+        node_model,
+        closure_table_model,
+        node_schema,
+        closure_table_schema,
+        ancestor_key="name",
+        descendant_key="children",
+    ):
         self.tree_model = tree_model
         self.node_model = node_model
         self.closure_table_model = closure_table_model
@@ -22,7 +26,9 @@ class ClosureTable:
         for node in self.nodes:
             if node[field] == value:
                 return node
-        node = self.node_model.query.filter(getattr(self.node_model, field) == value).first()
+        node = self.node_model.query.filter(
+            getattr(self.node_model, field) == value
+        ).first()
         node = self.node_schema().dump(node)
         self.nodes.extend(node)
         return node
@@ -31,12 +37,18 @@ class ClosureTable:
         # ancestor_id = self.node_model.query.with_entities(self.node_model.id).filter_by(name=ancestor).one().id
         # descendant_id = self.node_model.query.with_entities(self.node_model.id).filter_by(name=descendant).one().id
         closure_table = self.closure_table_model(
-            tree_id=tree_id, ancestor_id=ancestor_id, descendant_id=descendant_id, distance=distance, depth=depth
+            tree_id=tree_id,
+            ancestor_id=ancestor_id,
+            descendant_id=descendant_id,
+            distance=distance,
+            depth=depth,
         )
         db.session.add(closure_table)
         db.session.commit()
 
-    def handle_create_tree(self, tree_list, ancestor_key, descendant_key, ancestor_list=None, tree_id=None):
+    def handle_create_tree(
+        self, tree_list, ancestor_key, descendant_key, ancestor_list=None, tree_id=None
+    ):
         for tree in tree_list:
             node_name = tree.get(ancestor_key)
             if not node_name:
@@ -61,7 +73,13 @@ class ClosureTable:
             descendant_list = tree.get(descendant_key)
             if isinstance(descendant_list, list):
                 ancestor_list.append(node_name)
-                self.handle_create_tree(descendant_list, ancestor_key, descendant_key, ancestor_list, tree_id)
+                self.handle_create_tree(
+                    descendant_list,
+                    ancestor_key,
+                    descendant_key,
+                    ancestor_list,
+                    tree_id,
+                )
                 ancestor_list.pop()
 
     def create_tree(self, tree_list, ancestor_key=None, descendant_key=None):
@@ -81,7 +99,9 @@ class ClosureTable:
                 index = len(descendant_list)
                 descendant_list.append(node)
                 ancestor_list.append(descendant_id)
-                self.handle_get_tree(ancestor_list, descendant_list[index]["children"], link_list)
+                self.handle_get_tree(
+                    ancestor_list, descendant_list[index]["children"], link_list
+                )
                 ancestor_list.pop()
 
     def get_tree_list(self, nodes, tree_ids):
@@ -96,7 +116,10 @@ class ClosureTable:
                 self.closure_table_model.tree_id.in_(tree_ids),
                 self.closure_table_model.ancestor_id.in_(node_id_list),
                 self.closure_table_model.descendant_id.in_(node_id_list),
-                or_(self.closure_table_model.distance == 1, self.closure_table_model.depth == 0)
+                or_(
+                    self.closure_table_model.distance == 1,
+                    self.closure_table_model.depth == 0,
+                ),
             )
         ).all()
         closure_table_schema = self.closure_table_schema(many=True)

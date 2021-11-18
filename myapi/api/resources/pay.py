@@ -16,7 +16,7 @@ class TenPayResource(Resource):
 
     @staticmethod
     def post():
-        bill_date = request.json.get('billDate')
+        bill_date = request.json.get("billDate")
 
         result = Tenpay(bill_date).transfer_bill2db()
 

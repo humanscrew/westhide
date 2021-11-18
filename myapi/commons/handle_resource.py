@@ -1,11 +1,10 @@
 from flask import jsonify
-from myapi.utils import Lib
-from myapi.commons import paginate as common_paginate
 from sqlalchemy.sql.expression import or_
+from .lib import Lib
+from .pagination import paginate as common_paginate
 
 
 class HandleQuery:
-
     def __init__(self, model, schema=None, request=None):
         self.model = model
         self.query = model.query
@@ -14,7 +13,7 @@ class HandleQuery:
         self.request = request.args or request.json
 
     def sort(self, sorter=None):
-        sorter = sorter or self.request.get('sorter')
+        sorter = sorter or self.request.get("sorter")
         if not sorter:
             return self
         for item in sorter:
@@ -23,12 +22,14 @@ class HandleQuery:
             sort_type = item.get("type")
 
             if field in self.columns and type:
-                self.query = self.query.order_by(getattr(getattr(self.model, field), sort_type)())
+                self.query = self.query.order_by(
+                    getattr(getattr(self.model, field), sort_type)()
+                )
 
         return self
 
     def filter_in(self, filter_in=None):
-        filter_in = filter_in or self.request.get('filterIn')
+        filter_in = filter_in or self.request.get("filterIn")
         if not filter_in:
             return self
         for item in filter_in:
@@ -42,7 +43,7 @@ class HandleQuery:
         return self
 
     def filter_like(self, filter_like=None):
-        filter_like = filter_like or self.request.get('filterLike')
+        filter_like = filter_like or self.request.get("filterLike")
         if not filter_like:
             return self
         for item in filter_like:
@@ -53,12 +54,18 @@ class HandleQuery:
 
             if field in self.columns and values:
                 self.query = self.query.filter(
-                    or_(*[getattr(self.model, field).like("%" + val + "%") for val in values]), )
+                    or_(
+                        *[
+                            getattr(self.model, field).like("%" + val + "%")
+                            for val in values
+                        ]
+                    ),
+                )
 
         return self
 
     def between(self, between=None):
-        between = between or self.request.get('between')
+        between = between or self.request.get("between")
         if not between:
             return self
         for item in between:
@@ -67,12 +74,14 @@ class HandleQuery:
             left = item.get("left")
             right = item.get("right")
             if field in self.columns and left and right:
-                self.query = self.query.filter(getattr(self.model, field).between(left, right))
+                self.query = self.query.filter(
+                    getattr(self.model, field).between(left, right)
+                )
 
         return self
 
     def with_entities(self, with_entities=None):
-        with_entities = with_entities or self.request.get('withEntities')
+        with_entities = with_entities or self.request.get("withEntities")
         if not with_entities:
             return self
         for field in with_entities:
@@ -84,7 +93,7 @@ class HandleQuery:
         return self
 
     def distinct(self, distinct=None):
-        distinct = distinct or self.request.get('distinct')
+        distinct = distinct or self.request.get("distinct")
         if not distinct:
             return self
         self.query = self.query.distinct()
@@ -92,7 +101,7 @@ class HandleQuery:
         return self
 
     def limit(self, limit):
-        limit = limit or self.request.get('limit')
+        limit = limit or self.request.get("limit")
         if not limit:
             return self
         self.query = self.query.limit(limit)
@@ -100,15 +109,24 @@ class HandleQuery:
         return self
 
     def offset(self, offset):
-        offset = offset or self.request.get('offset')
+        offset = offset or self.request.get("offset")
         if not offset:
             return self
         self.query = self.query.offset(offset)
 
         return self
 
-    def deal(self, sorter=None, filter_in=None, filter_like=None, between=None, with_entities=None, distinct=None,
-             limit=None, offset=None):
+    def deal(
+        self,
+        sorter=None,
+        filter_in=None,
+        filter_like=None,
+        between=None,
+        with_entities=None,
+        distinct=None,
+        limit=None,
+        offset=None,
+    ):
         self.sort(sorter)
         self.filter_in(filter_in)
         self.filter_like(filter_like)
@@ -127,7 +145,6 @@ class HandleQuery:
 
 
 class HandleObjects:
-
     def __init__(self, collection, schema=None, request=None):
         self.collection = collection
         self.objects = collection.objects
@@ -136,7 +153,7 @@ class HandleObjects:
         self.request = request.args or request.json
 
     def sort(self, sorter=None):
-        sorter = sorter or self.request.get('sorter')
+        sorter = sorter or self.request.get("sorter")
         if not sorter:
             return self
         for item in sorter:
@@ -150,7 +167,7 @@ class HandleObjects:
         return self
 
     def filter_in(self, filter_in=None):
-        filter_in = filter_in or self.request.get('filterIn')
+        filter_in = filter_in or self.request.get("filterIn")
         if not filter_in:
             return self
         for item in filter_in:
@@ -164,7 +181,7 @@ class HandleObjects:
         return self
 
     def filter_like(self, filter_like=None):
-        filter_like = filter_like or self.request.get('filterLike')
+        filter_like = filter_like or self.request.get("filterLike")
         if not filter_like:
             return self
         for item in filter_like:
@@ -180,7 +197,7 @@ class HandleObjects:
         return self
 
     def with_entities(self, with_entities=None):
-        with_entities = with_entities or self.request.get('withEntities')
+        with_entities = with_entities or self.request.get("withEntities")
         if not with_entities:
             return self
         for field in with_entities:
@@ -190,8 +207,8 @@ class HandleObjects:
         return self
 
     def distinct(self, distinct=None, field=None):
-        distinct = distinct or self.request.get('distinct')
-        fields = field or self.request.get('withEntities')
+        distinct = distinct or self.request.get("distinct")
+        fields = field or self.request.get("withEntities")
         if not distinct or fields:
             return self
         self.objects = self.objects.distinct(fields[0])
@@ -199,7 +216,7 @@ class HandleObjects:
         return self
 
     def limit(self, limit):
-        limit = limit or self.request.get('limit')
+        limit = limit or self.request.get("limit")
         if not limit:
             return self
         self.objects = self.objects.limit(limit)
@@ -207,15 +224,23 @@ class HandleObjects:
         return self
 
     def offset(self, offset):
-        offset = offset or self.request.get('offset')
+        offset = offset or self.request.get("offset")
         if not offset:
             return self
         self.objects = self.objects.skip(offset)
 
         return self
 
-    def deal(self, sorter=None, filter_in=None, filter_like=None, with_entities=None, distinct=None, limit=None,
-             offset=None):
+    def deal(
+        self,
+        sorter=None,
+        filter_in=None,
+        filter_like=None,
+        with_entities=None,
+        distinct=None,
+        limit=None,
+        offset=None,
+    ):
         self.sort(sorter)
         self.filter_in(filter_in)
         self.filter_like(filter_like)
@@ -228,8 +253,8 @@ class HandleObjects:
     def paginate(self, schema=None, page=None, per_page=None):
         if not schema:
             schema = self.schema
-        page = page or self.request.get('page')
-        per_page = per_page or self.request.get('per_page')
+        page = page or self.request.get("page")
+        per_page = per_page or self.request.get("per_page")
         total = self.objects.count()
         if page and per_page:
             self.offset((page - 1) * per_page)
