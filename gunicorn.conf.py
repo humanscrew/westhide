@@ -18,7 +18,7 @@ keepalive = 60  # 服务器保持连接的时间，能够避免频繁的三次�
 forwarded_allow_ips = "*"  # 允许哪些ip地址来访问
 
 # 设置守护进程,将进程交给supervisor管理
-daemon = "false"
+# daemon = "false"
 
 capture_output = True  # 是否捕获输出
 

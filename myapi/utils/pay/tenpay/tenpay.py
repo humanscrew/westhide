@@ -14,30 +14,24 @@ from wechatpayv3 import WeChatPay, WeChatPayType
 
 from .apiclient.config import TenPayConfig, BillFieldLabel
 
-MCHID = TenPayConfig.MCHID.value
-CERT_DIR = TenPayConfig.CERT_DIR.value
-PRIVATE_KEY = TenPayConfig.PRIVATE_KEY.value
-CERT_SERIAL_NO = TenPayConfig.CERT_SERIAL_NO.value
-APIV3_KEY = TenPayConfig.APIV3_KEY.value
-APPID = TenPayConfig.APPID.value
-NOTIFY_URL = TenPayConfig.NOTIFY_URL.value
-LOGGER = TenPayConfig.LOGGER.value
-
 DIRPATH = os.path.dirname(os.path.realpath(__file__))
+
+APPID = TenPayConfig.APPID.value
+MCHID = TenPayConfig.MCHID.value
 
 
 class Tenpay:
     def __init__(self, bill_date=None):
         self.tenpay = WeChatPay(
             wechatpay_type=WeChatPayType.NATIVE,
-            mchid=MCHID,
-            private_key=PRIVATE_KEY,
-            cert_serial_no=CERT_SERIAL_NO,
-            apiv3_key=APIV3_KEY,
-            appid=APPID,
-            notify_url=NOTIFY_URL,
-            cert_dir=CERT_DIR,
-            # logger=LOGGER
+            mchid=TenPayConfig.MCHID.value,
+            private_key=TenPayConfig.PRIVATE_KEY.value,
+            cert_serial_no=TenPayConfig.CERT_SERIAL_NO.value,
+            apiv3_key=TenPayConfig.APIV3_KEY.value,
+            appid=TenPayConfig.APPID.value,
+            notify_url=TenPayConfig.NOTIFY_URL.value,
+            cert_dir=TenPayConfig.CERT_DIR.value,
+            # logger=TenPayConfig.LOGGER.value
         )
         self.bill_date = bill_date
         self.download_url = None

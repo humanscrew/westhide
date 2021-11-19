@@ -97,6 +97,8 @@ myapi/config.py
 
 myapi/utils/pay/tenpay/apiclient/
 myapi/utils/pay/tenpay/bill_file/
+myapi/utils/pay/alipay/apiclient/
+myapi/utils/pay/alipay/bill_file/
 
 myapi/logs/*
 !myapi/logs/logs.py
