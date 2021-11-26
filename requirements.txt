@@ -46,6 +46,7 @@ Flask-SQLAlchemy==2.5.1
 Flask-WTF==1.0.0
 frozenlist==1.2.0
 graphene==2.1.9
+graphene-mongo==0.2.13
 graphene-sqlalchemy==2.3.0
 graphql-core==2.3.2
 graphql-relay==2.0.1
