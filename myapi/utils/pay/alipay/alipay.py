@@ -22,7 +22,9 @@ class Alipay:
         if isinstance(params, dict):
             for key in params:
                 setattr(self.model, key, params[key])
-                self.request = AlipayDataDataserviceBillDownloadurlQueryRequest(biz_model=self.model)
+                self.request = AlipayDataDataserviceBillDownloadurlQueryRequest(
+                    biz_model=self.model
+                )
 
         return params
 
@@ -47,4 +49,4 @@ class Alipay:
             }
 
 
-print(Alipay(params={"bill_type": "trade", "bill_date": "2021-10-05"}).execute_request())
+# Alipay(params={"bill_type": "trade", "bill_date": "2021-10-05"}).execute_request()
