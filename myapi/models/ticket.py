@@ -2,6 +2,10 @@ from myapi.extensions import db
 
 from datetime import datetime
 
+from myapi.extensions import cdb
+from sqlalchemy import Column, func
+from clickhouse_sqlalchemy import types, engines
+
 
 class TicketLaiu8(db.Model):
     __tablename__ = "ticket_laiu8"
@@ -108,3 +112,44 @@ class Ticket2Finance(db.Model):
     use_voucher = db.Column(db.DECIMAL(10, 3), comment="使用的积分")
     create_time = db.Column(db.DATETIME, default=datetime.now)
     update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
+
+
+class TicketLaiu8CK(cdb.Model):
+    __tablename__ = "ticket_laiu8"
+    id = Column(types.Int32, primary_key=True)
+    is_lock = Column(types.Nullable(types.Int8))
+    order_id = Column(types.String)
+    order_no = Column(types.Nullable(types.String))
+    channel_name = Column(types.Nullable(types.String))
+    create_time = Column(types.DateTime)
+    user_id = Column(types.Nullable(types.String))
+    user_type = Column(types.Nullable(types.String))
+    user_name = Column(types.Nullable(types.String))
+    mobile = Column(types.Nullable(types.String))
+    ticket_no = Column(types.Nullable(types.String))
+    ticket_type_name = Column(types.Nullable(types.String))
+    product_type = Column(types.Nullable(types.String))
+    ticket_status = Column(types.Nullable(types.String))
+    departure_datetime = Column(types.Nullable(types.DateTime))
+    line_name = Column(types.Nullable(types.String))
+    ship_name = Column(types.Nullable(types.String))
+    cabin_name = Column(types.Nullable(types.String))
+    seat_memo = Column(types.Nullable(types.String))
+    passenger_name = Column(types.Nullable(types.String))
+    passenger_id_no = Column(types.Nullable(types.String))
+    full_ticket_price = Column(types.Nullable(types.Decimal(10, 3)))
+    discount_price = Column(types.Nullable(types.Decimal(10, 3)))
+    ticket_price = Column(types.Nullable(types.Decimal(10, 3)))
+    get_voucher = Column(types.Nullable(types.Decimal(10, 3)))
+    use_voucher = Column(types.Nullable(types.Decimal(10, 3)))
+    payment_time = Column(types.Nullable(types.DateTime))
+    payment_method = Column(types.Nullable(types.String))
+    pay_id = Column(types.Nullable(types.String))
+    real_price = Column(types.Nullable(types.Decimal(10, 3)))
+    change_type = Column(types.Nullable(types.String))
+    ticket_no_new = Column(types.Nullable(types.String))
+    change_time = Column(types.Nullable(types.DateTime))
+    ticket_change_channel_name = Column(types.Nullable(types.String))
+    change_user_name = Column(types.Nullable(types.String))
+
+    __table_args__ = (engines.MergeTree(partition_by=(func.toDate(create_time),), order_by=('id',)),)

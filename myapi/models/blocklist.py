@@ -17,7 +17,7 @@ class TokenBlocklist(db.Model):
             "token_id": self.id,
             "jti": self.jti,
             "token_type": self.token_type,
-            "user_identity": self.user_identity,
+            "user_id": self.user_id,
             "revoked": self.revoked,
             "expires": self.expires,
         }

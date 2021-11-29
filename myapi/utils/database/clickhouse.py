@@ -1,6 +1,9 @@
 from clickhouse_driver import connect
-from myapi.config import CLICKHOUSE_SETTINGS
+from myapi.config import CLICKHOUSE_SETTINGS, CLICKHOUSE_DATABASE_URI
 import pandas
+
+from sqlalchemy import create_engine, MetaData
+from clickhouse_sqlalchemy import make_session, get_declarative_base
 
 
 class Clickhouse:
@@ -54,3 +57,11 @@ class Clickhouse:
         finally:
             cursor.close()
             connection.close()
+
+
+class ClickhouseSQLAlchemy:
+    def __init__(self):
+        engine = create_engine(CLICKHOUSE_DATABASE_URI)
+        metadata = MetaData(bind=engine)
+        self.session = make_session(engine)
+        self.Model = get_declarative_base(metadata=metadata)

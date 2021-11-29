@@ -10,5 +10,8 @@ class UserType(SQLAlchemyObjectType):
     class Meta:
         model = User
         interfaces = (Node,)
-        exclude_fields = ("_password", "password",)
+        exclude_fields = (
+            "_password",
+            "password",
+        )
         batching = True

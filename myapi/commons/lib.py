@@ -20,3 +20,9 @@ class Lib(object):
             return deal_list
         else:
             return raw_list
+
+    @staticmethod
+    def camel_case(self, field_name, field_obj):
+        string = field_obj.data_key or field_name
+        parts = iter(string.split("_"))
+        field_obj.data_key = next(parts) + "".join(item.title() for item in parts)

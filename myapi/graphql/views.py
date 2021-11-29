@@ -5,10 +5,5 @@ from .schema import schema
 blueprint = Blueprint("graphql", __name__, url_prefix="/westhide/graphql")
 
 blueprint.add_url_rule(
-    '/',
-    view_func=GraphQLView.as_view(
-        'graphql',
-        schema=schema,
-        graphiql=True
-    )
+    "/", view_func=GraphQLView.as_view("graphql", schema=schema, graphiql=True)
 )

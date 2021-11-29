@@ -11,26 +11,23 @@ from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 from celery import Celery
 
-from myapi.commons.apispec import APISpecExt
+from .commons.apispec import APISpecExt
+from .commons.lib import Lib
 
-from myapi.logs import Logger
+from .utils.database import ClickhouseSQLAlchemy
+
+from .logs import Logger
 
 db = SQLAlchemy()
+cdb = ClickhouseSQLAlchemy()
 mdb = MongoEngine()
 jwt = JWTManager()
 ma = Marshmallow()
+ma.SQLAlchemyAutoSchema.on_bind_field = Lib.camel_case
+
 migrate = Migrate()
 apispec = APISpecExt()
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 celery = Celery()
 
 logger = Logger()
-
-
-def camel_case(self, field_name, field_obj):
-    string = field_obj.data_key or field_name
-    parts = iter(string.split("_"))
-    field_obj.data_key = next(parts) + "".join(item.title() for item in parts)
-
-
-ma.SQLAlchemyAutoSchema.on_bind_field = camel_case
