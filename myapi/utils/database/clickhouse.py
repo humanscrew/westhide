@@ -12,6 +12,7 @@ class Clickhouse:
                 "user": None,
                 "password": None,
                 "database": None,
+                "compression": None,
             }
         self.config = config
         self.config["host"] = config["host"] or CLICKHOUSE_SETTINGS.get("host")
@@ -22,6 +23,9 @@ class Clickhouse:
         )
         self.config["database"] = config["database"] or CLICKHOUSE_SETTINGS.get(
             "database"
+        )
+        self.config["compression"] = config["compression"] or CLICKHOUSE_SETTINGS.get(
+            "compression"
         )
 
     def make_connection(self):

@@ -1,7 +1,7 @@
 from flask import Flask, json
 from flask_cors import CORS
 
-from myapi import api, auth, trigger
+from myapi import api, auth, trigger, graphql
 from myapi.extensions import apispec, celery, db, mdb, jwt, migrate, logger
 
 from datetime import datetime, date
@@ -59,6 +59,7 @@ def register_blueprints(app):
     app.register_blueprint(auth.views.blueprint)
     app.register_blueprint(api.views.blueprint)
     app.register_blueprint(trigger.views.blueprint)
+    app.register_blueprint(graphql.views.blueprint)
 
 
 def init_celery(app=None):

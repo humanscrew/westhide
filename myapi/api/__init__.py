@@ -1,3 +1,3 @@
-from myapi.api import views
+from . import views
 
 __all__ = ["views"]

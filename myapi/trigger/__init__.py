@@ -1,3 +1,3 @@
-from myapi.trigger import views
+from . import views
 
 __all__ = ["views"]
