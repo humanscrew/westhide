@@ -1,5 +1,6 @@
-from .user import UserType
+from . import user, dashboard
 
 __all__ = [
-    "UserType",
+    "user",
+    "dashboard",
 ]

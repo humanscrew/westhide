@@ -152,4 +152,6 @@ class TicketLaiu8CK(cdb.Model):
     ticket_change_channel_name = Column(types.Nullable(types.String))
     change_user_name = Column(types.Nullable(types.String))
 
-    __table_args__ = (engines.MergeTree(partition_by=(func.toDate(create_time),), order_by=('id',)),)
+    __table_args__ = (
+        engines.MergeTree(partition_by=(func.toDate(create_time),), order_by=("id",)),
+    )

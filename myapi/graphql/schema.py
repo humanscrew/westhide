@@ -1,17 +1,9 @@
-from graphene import ObjectType, Schema, relay, Field
-from graphene_sqlalchemy import SQLAlchemyConnectionField
-from .types import UserType
-from myapi.models import User
+from graphene import Schema
+from .types import user, dashboard
 
 
-class Query(ObjectType):
-    node = relay.Node.Field()
-    users = SQLAlchemyConnectionField(UserType)
-    user = Field(UserType)
-
-    @staticmethod
-    def resolve_user(self, info):
-        return User.query.first()
+class Query(user.Query, dashboard.Query):
+    pass
 
 
 schema = Schema(query=Query)

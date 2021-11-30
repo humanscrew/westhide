@@ -19,10 +19,15 @@ from .company import (
 )
 from .role import Role, PermitCode
 from .route import Route, RouteMeta, RouteTree, RouteClosureTable
-from .ticket import TicketLaiu8, TicketLaiu8Refund, Laiu8Client, Ticket2Finance
+from .ticket import (
+    TicketLaiu8,
+    TicketLaiu8Refund,
+    Laiu8Client,
+    Ticket2Finance,
+    TicketLaiu8CK,
+)
 from .sms import SmsAliyun, SmsAliyunDetail
 from .pay import TenPay
-
 
 __all__ = [
     "TokenBlocklist",
@@ -51,6 +56,7 @@ __all__ = [
     "TicketLaiu8Refund",
     "Laiu8Client",
     "Ticket2Finance",
+    "TicketLaiu8CK",
     "SmsAliyun",
     "SmsAliyunDetail",
     "TenPay",
