@@ -69,8 +69,8 @@ def register():
     CipherHook().decrypt_request(None, default_private_key)
 
     if (
-        username
-        and User.query.with_entities(User.id).filter_by(username=username).first()
+            username
+            and User.query.with_entities(User.id).filter_by(username=username).first()
     ):
         return {"message": "该用户名已被注册"}, 400
 
@@ -144,7 +144,7 @@ def register_views():
 
 @blueprint.after_request
 def after_request(response):
-    return CipherHook().encrypt_response(response)
+    return CipherHook.encrypt_response(response)
 
 
 @blueprint.errorhandler(ValidationError)

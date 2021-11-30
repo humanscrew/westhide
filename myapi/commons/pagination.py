@@ -1,19 +1,17 @@
-"""Simple helper to paginate query
-"""
 from flask import url_for, request
 
 DEFAULT_PAGE_SIZE = 50
 DEFAULT_PAGE_NUMBER = 1
 
 
-def extract_pagination(query=None, page=None, per_page=None, **request_args):
+def extract_pagination(query=None, page=None, per_page=None, **other_request_args):
     page = int(page) if page is not None else 1
     per_page = int(per_page) if per_page is not None else query.count()
-    return page, per_page, request_args
+    return page, per_page, other_request_args
 
 
 def paginate(query, schema, link=None):
-    page, per_page, other_request_args = extract_pagination(query, **request.args)
+    page, per_page, other_request_args = extract_pagination(query, **(request.args or request.json))
     page_obj = query.paginate(page=page, per_page=per_page)
     result = {
         "total": page_obj.total,
@@ -22,20 +20,20 @@ def paginate(query, schema, link=None):
     }
 
     if link:
-        next = url_for(
+        next_url = url_for(
             request.endpoint,
             page=page_obj.next_num if page_obj.has_next else page_obj.page,
             per_page=per_page,
             **other_request_args,
             **request.view_args
         )
-        prev = url_for(
+        prev_url = url_for(
             request.endpoint,
             page=page_obj.prev_num if page_obj.has_prev else page_obj.page,
             per_page=per_page,
             **other_request_args,
             **request.view_args
         )
-        result.update(next=next, prev=prev)
+        result.update(next=next_url, prev=prev_url)
 
     return result

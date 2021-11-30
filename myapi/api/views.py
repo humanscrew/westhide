@@ -73,9 +73,9 @@ def handle_marshmallow_error(e):
 def before_request():
     if request.method == "POST" and not request.is_json:
         return {"message": "Missing JSON in request"}, 405
-    return CipherHook().decrypt_request()
+    return CipherHook.decrypt_request()
 
 
 @blueprint.after_request
 def after_request(response):
-    return CipherHook().encrypt_response(response)
+    return CipherHook.encrypt_response(response)

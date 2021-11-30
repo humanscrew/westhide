@@ -3,6 +3,7 @@ from flask_jwt_extended import get_jwt_identity
 
 from myapi.utils import AES
 from myapi.utils import RSA
+from copy import deepcopy
 
 
 class CipherHook:
@@ -28,31 +29,28 @@ class CipherHook:
 
         return response
 
-    def decrypt_request(self, user_info=None, private_key=None):
+    @staticmethod
+    def decrypt_request(user_info=None, private_key=None):
         if request.method == "OPTIONS":
             return None
 
         if not private_key and not user_info:
             user_info = get_jwt_identity()
-        if request.is_json:
-            self.decrypt_request_data(request.json, user_info, private_key)
-        if request.args:
-            request.args = self.decrypt_request_data(
-                request.args.to_dict(), user_info, private_key
-            )
-        if not request.json and not request.args:
-            self.decrypt_request_data({}, user_info, private_key)
 
-        return None
+        request_data = request.json or request.args.to_dict()
 
-    @staticmethod
-    def decrypt_request_data(args=None, user_info=None, private_key=None):
         aes_key_with_rsa = request.headers.get("aesKey", None)
         aes_iv_with_rsa = request.headers.get("aesIV", None)
         if not aes_key_with_rsa or not aes_iv_with_rsa:
             return None
-        args, g.aesKey, g.aesIV = RSA().decrypt_with_rsa(
-            args, aes_key_with_rsa, aes_iv_with_rsa, user_info, private_key
+        request_data, g.aesKey, g.aesIV = RSA().decrypt_with_rsa(
+            request_data, aes_key_with_rsa, aes_iv_with_rsa, user_info, private_key
         )
 
-        return args
+        if request.json:
+            request.json.update(**request_data)
+        if request.args:
+            setattr(request, "args", request_data)
+
+        setattr(request, "data", json.dumps(request_data).encode())
+        return None

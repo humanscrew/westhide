@@ -10,10 +10,10 @@ class HandleQuery:
         self.query = model.query
         self.columns = model.__table__.columns.keys()
         self.schema = schema
-        self.request = request.args or request.json
+        self.request_data = request.args or request.json
 
     def sort(self, sorter=None):
-        sorter = sorter or self.request.get("sorter")
+        sorter = sorter or self.request_data.get("sorter")
         if not sorter:
             return self
         for item in sorter:
@@ -29,7 +29,7 @@ class HandleQuery:
         return self
 
     def filter_in(self, filter_in=None):
-        filter_in = filter_in or self.request.get("filterIn")
+        filter_in = filter_in or self.request_data.get("filterIn")
         if not filter_in:
             return self
         for item in filter_in:
@@ -43,7 +43,7 @@ class HandleQuery:
         return self
 
     def filter_like(self, filter_like=None):
-        filter_like = filter_like or self.request.get("filterLike")
+        filter_like = filter_like or self.request_data.get("filterLike")
         if not filter_like:
             return self
         for item in filter_like:
@@ -65,7 +65,7 @@ class HandleQuery:
         return self
 
     def between(self, between=None):
-        between = between or self.request.get("between")
+        between = between or self.request_data.get("between")
         if not between:
             return self
         for item in between:
@@ -81,7 +81,7 @@ class HandleQuery:
         return self
 
     def with_entities(self, with_entities=None):
-        with_entities = with_entities or self.request.get("withEntities")
+        with_entities = with_entities or self.request_data.get("withEntities")
         if not with_entities:
             return self
         for field in with_entities:
@@ -93,7 +93,7 @@ class HandleQuery:
         return self
 
     def distinct(self, distinct=None):
-        distinct = distinct or self.request.get("distinct")
+        distinct = distinct or self.request_data.get("distinct")
         if not distinct:
             return self
         self.query = self.query.distinct()
@@ -101,7 +101,7 @@ class HandleQuery:
         return self
 
     def limit(self, limit):
-        limit = limit or self.request.get("limit")
+        limit = limit or self.request_data.get("limit")
         if not limit:
             return self
         self.query = self.query.limit(limit)
@@ -109,7 +109,7 @@ class HandleQuery:
         return self
 
     def offset(self, offset):
-        offset = offset or self.request.get("offset")
+        offset = offset or self.request_data.get("offset")
         if not offset:
             return self
         self.query = self.query.offset(offset)
@@ -117,15 +117,15 @@ class HandleQuery:
         return self
 
     def deal(
-        self,
-        sorter=None,
-        filter_in=None,
-        filter_like=None,
-        between=None,
-        with_entities=None,
-        distinct=None,
-        limit=None,
-        offset=None,
+            self,
+            sorter=None,
+            filter_in=None,
+            filter_like=None,
+            between=None,
+            with_entities=None,
+            distinct=None,
+            limit=None,
+            offset=None,
     ):
         self.sort(sorter)
         self.filter_in(filter_in)
@@ -148,12 +148,12 @@ class HandleObjects:
     def __init__(self, collection, schema=None, request=None):
         self.collection = collection
         self.objects = collection.objects
-        self.documents = list(self.collection._fields.keys())
+        self.documents = list(getattr(self.collection, "_fields").keys())
         self.schema = schema
-        self.request = request.args or request.json
+        self.request_data = request.args or request.json
 
     def sort(self, sorter=None):
-        sorter = sorter or self.request.get("sorter")
+        sorter = sorter or self.request_data.get("sorter")
         if not sorter:
             return self
         for item in sorter:
@@ -167,7 +167,7 @@ class HandleObjects:
         return self
 
     def filter_in(self, filter_in=None):
-        filter_in = filter_in or self.request.get("filterIn")
+        filter_in = filter_in or self.request_data.get("filterIn")
         if not filter_in:
             return self
         for item in filter_in:
@@ -181,7 +181,7 @@ class HandleObjects:
         return self
 
     def filter_like(self, filter_like=None):
-        filter_like = filter_like or self.request.get("filterLike")
+        filter_like = filter_like or self.request_data.get("filterLike")
         if not filter_like:
             return self
         for item in filter_like:
@@ -197,7 +197,7 @@ class HandleObjects:
         return self
 
     def with_entities(self, with_entities=None):
-        with_entities = with_entities or self.request.get("withEntities")
+        with_entities = with_entities or self.request_data.get("withEntities")
         if not with_entities:
             return self
         for field in with_entities:
@@ -207,8 +207,8 @@ class HandleObjects:
         return self
 
     def distinct(self, distinct=None, field=None):
-        distinct = distinct or self.request.get("distinct")
-        fields = field or self.request.get("withEntities")
+        distinct = distinct or self.request_data.get("distinct")
+        fields = field or self.request_data.get("withEntities")
         if not distinct or fields:
             return self
         self.objects = self.objects.distinct(fields[0])
@@ -216,7 +216,7 @@ class HandleObjects:
         return self
 
     def limit(self, limit):
-        limit = limit or self.request.get("limit")
+        limit = limit or self.request_data.get("limit")
         if not limit:
             return self
         self.objects = self.objects.limit(limit)
@@ -224,7 +224,7 @@ class HandleObjects:
         return self
 
     def offset(self, offset):
-        offset = offset or self.request.get("offset")
+        offset = offset or self.request_data.get("offset")
         if not offset:
             return self
         self.objects = self.objects.skip(offset)
@@ -232,14 +232,14 @@ class HandleObjects:
         return self
 
     def deal(
-        self,
-        sorter=None,
-        filter_in=None,
-        filter_like=None,
-        with_entities=None,
-        distinct=None,
-        limit=None,
-        offset=None,
+            self,
+            sorter=None,
+            filter_in=None,
+            filter_like=None,
+            with_entities=None,
+            distinct=None,
+            limit=None,
+            offset=None,
     ):
         self.sort(sorter)
         self.filter_in(filter_in)
@@ -253,8 +253,8 @@ class HandleObjects:
     def paginate(self, schema=None, page=None, per_page=None):
         if not schema:
             schema = self.schema
-        page = page or self.request.get("page")
-        per_page = per_page or self.request.get("per_page")
+        page = page or self.request_data.get("page")
+        per_page = per_page or self.request_data.get("per_page")
         total = self.objects.count()
         if page and per_page:
             self.offset((page - 1) * per_page)
