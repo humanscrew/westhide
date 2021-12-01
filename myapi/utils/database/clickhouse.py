@@ -11,9 +11,9 @@ class Clickhouse:
         if config is None:
             config = {}
 
-        self.config = {}
-        for key, value in CLICKHOUSE_SETTINGS.items():
-            self.config.setdefault(key, config.get(key) or value)
+        self.config = {
+            key: config.get(key) or value for key, value in CLICKHOUSE_SETTINGS.items()
+        }
 
     @staticmethod
     def record_to_dict(records, columns):

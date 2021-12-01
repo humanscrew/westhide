@@ -7,11 +7,11 @@ class Mysql:
         if config is None:
             config = {}
 
-        self.config = {}
-        for key, value in MYSQL_SETTINGS.items():
-            if key in ["dialect", "driver"]:
-                continue
-            self.config.setdefault(key, config.get(key) or value)
+        self.config = {
+            key: config.get(key) or value
+            for key, value in MYSQL_SETTINGS.items()
+            if key not in ["dialect", "driver"]
+        }
 
     def make_connection(self):
         connection = pymysql.connect(**self.config)

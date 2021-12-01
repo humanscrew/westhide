@@ -117,15 +117,15 @@ class HandleQuery:
         return self
 
     def deal(
-            self,
-            sorter=None,
-            filter_in=None,
-            filter_like=None,
-            between=None,
-            with_entities=None,
-            distinct=None,
-            limit=None,
-            offset=None,
+        self,
+        sorter=None,
+        filter_in=None,
+        filter_like=None,
+        between=None,
+        with_entities=None,
+        distinct=None,
+        limit=None,
+        offset=None,
     ):
         self.sort(sorter)
         self.filter_in(filter_in)
@@ -232,14 +232,14 @@ class HandleObjects:
         return self
 
     def deal(
-            self,
-            sorter=None,
-            filter_in=None,
-            filter_like=None,
-            with_entities=None,
-            distinct=None,
-            limit=None,
-            offset=None,
+        self,
+        sorter=None,
+        filter_in=None,
+        filter_like=None,
+        with_entities=None,
+        distinct=None,
+        limit=None,
+        offset=None,
     ):
         self.sort(sorter)
         self.filter_in(filter_in)

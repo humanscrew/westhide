@@ -11,7 +11,9 @@ def extract_pagination(query=None, page=None, per_page=None, **other_request_arg
 
 
 def paginate(query, schema, link=None):
-    page, per_page, other_request_args = extract_pagination(query, **(request.args or request.json))
+    page, per_page, other_request_args = extract_pagination(
+        query, **(request.args or request.json)
+    )
     page_obj = query.paginate(page=page, per_page=per_page)
     result = {
         "total": page_obj.total,
