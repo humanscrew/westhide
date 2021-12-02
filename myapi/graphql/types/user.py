@@ -24,6 +24,6 @@ class Query(ObjectType):
     user = types.Field(UserType)
 
     @staticmethod
-    def resolve_user(self, info):
+    def resolve_user(parent, info):
         user_id = get_jwt_identity()
         return User.query.get_or_404(user_id)

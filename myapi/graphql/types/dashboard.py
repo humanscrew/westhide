@@ -31,7 +31,7 @@ class GrowCardType(ObjectType):
     )
 
     @staticmethod
-    def resolve_visits(self, info, product_type, ticket_status, start_time, end_time):
+    def resolve_visits(parent, info, product_type, ticket_status, start_time, end_time):
         query = cdb.session.query(func.count(TicketLaiu8CK.id)).filter(
             and_(
                 TicketLaiu8CK.departure_datetime >= start_time,
@@ -49,7 +49,7 @@ class GrowCardType(ObjectType):
         return query.scalar()
 
     @staticmethod
-    def resolve_sales(self, info, product_type, ticket_status, start_time, end_time):
+    def resolve_sales(parent, info, product_type, ticket_status, start_time, end_time):
         query = cdb.session.query(func.sum(TicketLaiu8CK.ticket_price)).filter(
             and_(
                 TicketLaiu8CK.departure_datetime >= start_time,
@@ -67,7 +67,7 @@ class GrowCardType(ObjectType):
         return query.scalar()
 
     @staticmethod
-    def resolve_net_cashflow(self, info, product_type, start_time, end_time):
+    def resolve_net_cashflow(parent, info, product_type, start_time, end_time):
         query = cdb.session.query(func.sum(TicketLaiu8CK.ticket_price)).filter(
             and_(
                 TicketLaiu8CK.create_time >= start_time,
@@ -83,5 +83,5 @@ class Query(ObjectType):
     dashboard = types.Field(GrowCardType)
 
     @staticmethod
-    def resolve_dashboard(self, info):
+    def resolve_dashboard(parent, info):
         return GrowCardType

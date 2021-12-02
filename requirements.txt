@@ -16,6 +16,7 @@ apispec-webframeworks==0.5.2
 async-timeout==4.0.1
 attrs==21.2.0
 backports.entry-points-selectable==1.1.1
+bidict==0.21.4
 billiard==3.6.4.0
 black==21.11b1
 blinker==1.4
@@ -44,6 +45,7 @@ flask-marshmallow==0.14.0
 Flask-Migrate==3.1.0
 flask-mongoengine==1.0.0
 Flask-RESTful==0.3.9
+Flask-SocketIO==5.1.1
 Flask-SQLAlchemy==2.5.1
 Flask-WTF==1.0.0
 frozenlist==1.2.0
@@ -91,6 +93,8 @@ PyMySQL==1.0.2
 pyparsing==2.4.7
 python-dateutil==2.8.2
 python-dotenv==0.19.2
+python-engineio==4.3.0
+python-socketio==5.5.0
 pytz==2021.3
 pytz-deprecation-shim==0.1.0.post0
 PyYAML==6.0
