@@ -32,7 +32,7 @@ def configure_extensions(app):
     mdb.init_app(app)
     jwt.init_app(app)
     migrate.init_app(app, db)
-    # logger.init_app(app)
+    logger.init_app(app)
 
 
 def configure_apispec(app):

@@ -1,204 +1,49 @@
 # -*- coding: utf-8 -*-
 import os
-from random import sample
 from datetime import date, timedelta, datetime
-from string import digits, ascii_letters
 
 import pandas as pd
 
+from sqlalchemy.sql.expression import and_
 from myapi.extensions import db
 from myapi.models import TenPay
 
-from flask import jsonify, request, json
+from flask import json
 from wechatpayv3 import WeChatPay, WeChatPayType
 
-from .apiclient.config import TenPayConfig, BillFieldLabel
+from .bill_field import BillFieldLabel
+from .apiclient.laiu8.config import TenPayConfig as Laiu8Config
+from .apiclient.ennova.config import TenPayConfig as EnnovaConfig
 
 DIRPATH = os.path.dirname(os.path.realpath(__file__))
 
-APPID = TenPayConfig.APPID.value
-MCHID = TenPayConfig.MCHID.value
+config_map = {"laiu8": Laiu8Config, "ennova": EnnovaConfig}
 
 
 class Tenpay:
-    def __init__(self, bill_date=None):
+    def __init__(self, platform, bill_date=None):
+        self.platform = platform
+        self.config = config_map.get(platform)
         self.tenpay = WeChatPay(
             wechatpay_type=WeChatPayType.NATIVE,
-            mchid=TenPayConfig.MCHID.value,
-            private_key=TenPayConfig.PRIVATE_KEY.value,
-            cert_serial_no=TenPayConfig.CERT_SERIAL_NO.value,
-            apiv3_key=TenPayConfig.APIV3_KEY.value,
-            appid=TenPayConfig.APPID.value,
-            notify_url=TenPayConfig.NOTIFY_URL.value,
-            cert_dir=TenPayConfig.CERT_DIR.value,
-            # logger=TenPayConfig.LOGGER.value
+            mchid=self.config.MCHID.value,
+            private_key=self.config.PRIVATE_KEY.value,
+            cert_serial_no=self.config.CERT_SERIAL_NO.value,
+            apiv3_key=self.config.APIV3_KEY.value,
+            appid=self.config.APPID.value,
+            notify_url=self.config.NOTIFY_URL.value,
+            cert_dir=self.config.CERT_DIR.value,
+            logger=self.config.LOGGER.value,
         )
-        self.bill_date = bill_date
+        self.bill_date = bill_date or (date.today() + timedelta(days=-1)).strftime(
+            "%Y-%m-%d"
+        )
         self.download_url = None
-
-    def pay_native(self):
-        # 以native下单为例，下单成功后即可获取到'code_url'，将'code_url'转换为二维码，并用微信扫码即可进行支付测试。
-        out_trade_no = "".join(sample(ascii_letters + digits, 8))
-        description = "demo-description"
-        amount = 1
-        code, message = self.tenpay.pay(
-            description=description,
-            out_trade_no=out_trade_no,
-            amount={"total": amount, "currency": "CNY"},
-        )
-        result = json.loads(message)
-        return {"code": code, "result": result}
-
-    def pay_jsapi(self):
-        # jsApi下单，tenpay初始化的时候，wechatpay_type设置为WeChatPayType.JSAPI。
-        # 下单成功后，将prepay_id和其他必须的参数组合传递给JS SDK的wx.choosetenpay接口唤起支付
-        out_trade_no = "".join(sample(ascii_letters + digits, 8))
-        description = "demo-description"
-        amount = 1
-        payer = {"openid": "demo-openid"}
-        code, message = self.tenpay.pay(
-            description=description,
-            out_trade_no=out_trade_no,
-            amount={"total": amount, "currency": "CNY"},
-            payer=payer,
-        )
-        result = json.loads(message)
-        if code in range(200, 300):
-            prepay_id = result.get("prepay_id")
-            timestamp = "demo-timestamp"
-            nonce_str = "demo-nonce_str"
-            package = "prepay_id=" + prepay_id
-            pay_sign = self.tenpay.sign([APPID, timestamp, nonce_str, package])
-            sign_type = "RSA"
-            return {
-                "code": 0,
-                "result": {
-                    "appId": APPID,
-                    "timestamp": timestamp,
-                    "nonceStr": nonce_str,
-                    "package": "prepay_id=%s" % prepay_id,
-                    "signType": sign_type,
-                    "paySign": pay_sign,
-                },
-            }
-        else:
-            return {"code": -1, "result": {"reason": result.get("code")}}
-
-    def pay_h5(self):
-        # h5支付下单，tenpay初始化的时候，wechatpay_type设置为WeChatPayType.H5。
-        # 下单成功后，将获取的的h5_url传递给前端跳转唤起支付。
-        out_trade_no = "".join(sample(ascii_letters + digits, 8))
-        description = "demo-description"
-        amount = 1
-        scene_info = {"payer_client_ip": "1.2.3.4", "h5_info": {"type": "Wap"}}
-        code, message = self.tenpay.pay(
-            description=description,
-            out_trade_no=out_trade_no,
-            amount={"total": amount, "currency": "CNY"},
-            scene_info=scene_info,
-        )
-        result = json.loads(message)
-        return {"code": code, "result": result}
-
-    def pay_mini_program(self):
-        # 小程序支付下单，tenpay初始化的时候，wechatpay_type设置为WeChatPayType.MINIPROG。
-        # 下单成功后，将prepay_id和其他必须的参数组合传递给小程序的wx.requestPayment接口唤起支付
-        out_trade_no = "".join(sample(ascii_letters + digits, 8))
-        description = "demo-description"
-        amount = 1
-        payer = {"openid": "demo-openid"}
-        code, message = self.tenpay.pay(
-            description=description,
-            out_trade_no=out_trade_no,
-            amount={"total": amount, "currency": "CNY"},
-            payer=payer,
-        )
-        result = json.loads(message)
-        if code in range(200, 300):
-            prepay_id = result.get("prepay_id")
-            timestamp = "demo-time_stamp"
-            nonce_str = "demo-nonce_str"
-            package = "prepay_id=" + prepay_id
-            pay_sign = self.tenpay.sign([APPID, timestamp, nonce_str, package])
-            sign_type = "RSA"
-            return jsonify(
-                {
-                    "code": 0,
-                    "result": {
-                        "appId": APPID,
-                        "timestamp": timestamp,
-                        "nonceStr": nonce_str,
-                        "package": "prepay_id=%s" % prepay_id,
-                        "signType": sign_type,
-                        "paySign": pay_sign,
-                    },
-                }
-            )
-        else:
-            return {"code": -1, "result": {"reason": result.get("code")}}
-
-    def pay_app(self):
-        # app支付下单，tenpay初始化的时候，wechatpay_type设置为WeChatPayType.APP。
-        # 下单成功后，将prepay_id和其他必须的参数组合传递给IOS或ANDROID SDK接口唤起支付
-        out_trade_no = "".join(sample(ascii_letters + digits, 8))
-        description = "demo-description"
-        amount = 1
-        code, message = self.tenpay.pay(
-            description=description,
-            out_trade_no=out_trade_no,
-            amount={"total": amount, "currency": "CNY"},
-        )
-        result = json.loads(message)
-        if code in range(200, 300):
-            prepay_id = result.get("prepay_id")
-            timestamp = "demo-timestamp"
-            nonce_str = "demo-nonce_str"
-            package = "Sign=tenpay"
-            pay_sign = "demo-pay_sign"
-            return {
-                "code": 0,
-                "result": {
-                    "appId": APPID,
-                    "partnerId": MCHID,
-                    "prepayId": prepay_id,
-                    "package": package,
-                    "nonceStr": nonce_str,
-                    "timestamp": timestamp,
-                    "sign": pay_sign,
-                },
-            }
-        else:
-            return {"code": -1, "result": {"reason": result.get("code")}}
-
-    def notify(self):
-        result = self.tenpay.decrypt_callback(request.headers, request.data)
-        if result:
-            resp = json.loads(result)
-            appid = resp.get("appid")
-            mchid = resp.get("mchid")
-            out_trade_no = resp.get("out_trade_no")
-            transaction_id = resp.get("transaction_id")
-            trade_type = resp.get("trade_type")
-            trade_state = resp.get("trade_state")
-            trade_state_desc = resp.get("trade_state_desc")
-            bank_type = resp.get("bank_type")
-            attach = resp.get("attach")
-            success_time = resp.get("success_time")
-            payer = resp.get("payer")
-            amount = resp.get("amount").get("total")
-            # TODO: 根据返回参数进行必要的业务处理，处理完后返回200或204
-            return {"code": "200", "message": "支付接口回调成功"}
-        else:
-            return {"code": "400", "message": "支付接口回调失败"}
 
     def trade_bill(self, bill_date=None):
         # 微信在次日9点启动生成前一天的对账单，建议商户10点后再获取
-        self.bill_date = (
-            bill_date
-            or self.bill_date
-            or (date.today() + timedelta(days=-1)).strftime("%Y-%m-%d")
-        )
-        code, message = self.tenpay.trade_bill(bill_date=self.bill_date)
+        self.bill_date = bill_date or self.bill_date
+        code, message = getattr(self.tenpay, "trade_bill")(bill_date=self.bill_date)
         result = json.loads(message)
         if code in range(200, 300):
             self.download_url = result.get("download_url")
@@ -209,10 +54,12 @@ class Tenpay:
     def download_bill(self, download_url=None, bill_date=None):
         self.download_url = download_url or self.download_url
         self.bill_date = bill_date or self.bill_date
-        code, message = self.tenpay.download_bill(self.download_url)
+        code, message = getattr(self.tenpay, "download_bill")(self.download_url)
         if code in range(200, 300) and isinstance(message, bytes):
             bill_file_path = os.path.join(
-                DIRPATH, "bill_file", f"tenpay_bill_{self.bill_date}.csv.gz"
+                DIRPATH,
+                "bill_file",
+                f"tenpay_bill_{self.bill_date}_{self.platform}.csv.gz",
             )
             with open(bill_file_path, "wb") as f:
                 f.write(message)
@@ -224,18 +71,22 @@ class Tenpay:
     def transfer_bill2db(self, bill_date=None):
         try:
             self.bill_date = bill_date or self.bill_date
-
-            self.trade_bill()
-            self.download_bill()
-
             ten_pay = TenPay.query.filter(
-                getattr(TenPay, "trade_time").like(self.bill_date + "%")
+                and_(
+                    getattr(TenPay, "trade_time").like(self.bill_date + "%"),
+                    getattr(TenPay, "mchid") == self.config.MCHID.value,
+                )
             ).first()
             if ten_pay:
                 return {"code": 400, "message": "已存在该日账单明细"}
 
+            self.trade_bill()
+            self.download_bill()
+
             bill_file_path = os.path.join(
-                DIRPATH, "bill_file", f"tenpay_bill_{self.bill_date}.csv.gz"
+                DIRPATH,
+                "bill_file",
+                f"tenpay_bill_{self.bill_date}_{self.platform}.csv.gz",
             )
             df = pd.read_csv(bill_file_path, compression="gzip", header=0, sep=",")
             # df.columns.values = [BillFieldLabel(col).name for col in df.columns.values]
@@ -257,10 +108,3 @@ class Tenpay:
             return {"code": 200, "bill": df.to_dict(orient="records")}
         except:
             return {"code": 400, "message": "账单传输失败"}
-
-
-# from io import BytesIO
-# import gzip
-# buff = BytesIO(resp)
-# gf = gzip.GzipFile(fileobj=buff)
-# content = gf.read().decode('utf-8')

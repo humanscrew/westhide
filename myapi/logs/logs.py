@@ -54,7 +54,7 @@ class Logger(object):
             app.logger,
             # logging.getLogger('sqlalchemy'),
             # logging.getLogger('werkzeug'),
-            # logging.getLogger('tenpay')
+            logging.getLogger("tenpay"),
         ):
             logger.addHandler(file_handler)
             logger.addHandler(stream_handler)

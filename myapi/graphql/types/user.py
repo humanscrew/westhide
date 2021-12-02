@@ -1,12 +1,26 @@
-from graphene import Node, ObjectType, types
-from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
+from graphene import Node, ObjectType, types, Connection
+from graphene_sqlalchemy import SQLAlchemyObjectType
+from graphene_sqlalchemy_filter import FilterableConnectionField, FilterSet
+
 from myapi.models import User
-from .role import RoleType
+from .role import RoleConnectionField, RoleConnection
 from flask_jwt_extended import get_jwt_identity
 
 
+class UserFilter(FilterSet):
+    class Meta:
+        model = User
+        fields = {"username": [...]}
+
+
+class UserConnectionField(FilterableConnectionField):
+    filters = {
+        User: UserFilter(),
+    }
+
+
 class UserType(SQLAlchemyObjectType):
-    roles = types.List(RoleType)
+    role = RoleConnectionField(RoleConnection)
 
     class Meta:
         model = User
@@ -16,12 +30,18 @@ class UserType(SQLAlchemyObjectType):
             "password",
         )
         batching = True
+        # connection_field_factory = UserConnectionField.factory
+
+
+class UserConnection(Connection):
+    class Meta:
+        node = UserType
 
 
 class Query(ObjectType):
     node = Node.Field()
-    users = SQLAlchemyConnectionField(UserType)
     user = types.Field(UserType)
+    users = UserConnectionField(UserConnection)
 
     @staticmethod
     def resolve_user(parent, info):
