@@ -13,7 +13,7 @@ class Role(db.Model):
     update_time = db.Column(db.DATETIME, default=datetime.now, onupdate=datetime.now)
 
     user = db.relationship(
-        "User", secondary=Map_User_Role, back_populates="role", lazy="dynamic"
+        "User", secondary=Map_User_Role, back_populates="role", lazy="bulk"
     )
 
 

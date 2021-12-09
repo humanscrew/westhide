@@ -1,4 +1,3 @@
-from .rootpage import RootPage
 from .mysql import MysqlResource
 from .clickhouse import ClickhouseResource
 from .user import UserResource, UserListResource
@@ -10,7 +9,6 @@ from .finance import BookkeepingTemplateResource
 from .pay import TenPayBillResource
 
 __all__ = [
-    "RootPage",
     "MysqlResource",
     "ClickhouseResource",
     "UserResource",

@@ -80,7 +80,7 @@ class User(db.Model):
     )
 
     role = db.relationship(
-        "Role", secondary=Map_User_Role, back_populates="user", lazy="dynamic"
+        "Role", secondary=Map_User_Role, back_populates="user", lazy="bulk"
     )
 
     permit_code = db.relationship(

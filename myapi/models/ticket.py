@@ -58,7 +58,7 @@ class TicketLaiu8(db.Model):
     change_user_name = db.Column(db.String(80), index=True, comment="状态变更操作人")
 
     ticket_laiu8_refund = db.relationship(
-        "TicketLaiu8Refund", back_populates="ticket_laiu8"
+        "TicketLaiu8Refund", back_populates="ticket_laiu8", lazy="bulk"
     )
 
 
@@ -75,7 +75,9 @@ class TicketLaiu8Refund(db.Model):
     fee = db.Column(db.DECIMAL(10, 3), index=True, comment="手续费")
     refund_amount = db.Column(db.DECIMAL(10, 3), index=True, comment="退款金额")
 
-    ticket_laiu8 = db.relationship("TicketLaiu8", back_populates="ticket_laiu8_refund")
+    ticket_laiu8 = db.relationship(
+        "TicketLaiu8", back_populates="ticket_laiu8_refund", lazy="bulk"
+    )
 
 
 class Laiu8Client(db.Model):

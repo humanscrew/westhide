@@ -11,8 +11,9 @@ class TenPayBillResource(Resource):
         bill_date = request.json.get("billDate")
 
         if isinstance(platform, str):
-            result = Tenpay(platform, bill_date).transfer_bill2db()
-        elif isinstance(platform, list):
+            platform = platform.split(",")
+
+        if isinstance(platform, list):
             result = [Tenpay(item, bill_date).transfer_bill2db() for item in platform]
         else:
             return {"message": "Please post the correct platform"}, 400

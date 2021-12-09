@@ -8,7 +8,6 @@ from myapi.commons import CipherHook
 from myapi.extensions import apispec
 
 from .resources import (
-    RootPage,
     MysqlResource,
     ClickhouseResource,
     UserResource,
@@ -29,7 +28,6 @@ from myapi.schemas import UserSchema
 blueprint = Blueprint("api", __name__, url_prefix="/westhide/api")
 api = Api(blueprint)
 
-api.add_resource(RootPage, "/", endpoint="rootPage")
 api.add_resource(MysqlResource, "/mysql", endpoint="api_mysql")
 api.add_resource(ClickhouseResource, "/clickhouse", endpoint="api_clickhouse")
 api.add_resource(UserResource, "/user", endpoint="api_user")

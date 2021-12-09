@@ -2,7 +2,7 @@ from flask import Flask, json
 from flask_cors import CORS
 
 from myapi import api, auth, trigger, graphql
-from myapi.extensions import apispec, celery, db, mdb, jwt, migrate, logger
+from myapi.extensions import apispec, celery, toolbar, db, mdb, jwt, migrate, logger
 
 from datetime import datetime, date
 
@@ -28,6 +28,7 @@ def create_app(testing=False):
 
 def configure_extensions(app):
     """configure flask extensions"""
+    toolbar.init_app(app)
     db.init_app(app)
     mdb.init_app(app)
     jwt.init_app(app)
