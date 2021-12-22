@@ -21,7 +21,7 @@ class HandleQuery:
             field = Lib.camel2under_score(field)
             sort_type = item.get("type")
 
-            if field in self.columns and type:
+            if field in self.columns and sort_type:
                 self.query = self.query.order_by(
                     getattr(getattr(self.model, field), sort_type)()
                 )
@@ -117,15 +117,15 @@ class HandleQuery:
         return self
 
     def deal(
-        self,
-        sorter=None,
-        filter_in=None,
-        filter_like=None,
-        between=None,
-        with_entities=None,
-        distinct=None,
-        limit=None,
-        offset=None,
+            self,
+            sorter=None,
+            filter_in=None,
+            filter_like=None,
+            between=None,
+            with_entities=None,
+            distinct=None,
+            limit=None,
+            offset=None,
     ):
         self.sort(sorter)
         self.filter_in(filter_in)
@@ -232,14 +232,14 @@ class HandleObjects:
         return self
 
     def deal(
-        self,
-        sorter=None,
-        filter_in=None,
-        filter_like=None,
-        with_entities=None,
-        distinct=None,
-        limit=None,
-        offset=None,
+            self,
+            sorter=None,
+            filter_in=None,
+            filter_like=None,
+            with_entities=None,
+            distinct=None,
+            limit=None,
+            offset=None,
     ):
         self.sort(sorter)
         self.filter_in(filter_in)

@@ -3,7 +3,6 @@ from flask_jwt_extended import get_jwt_identity
 
 from myapi.utils import AES
 from myapi.utils import RSA
-from copy import deepcopy
 
 
 class CipherHook:
