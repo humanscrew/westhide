@@ -1,7 +1,7 @@
 from graphene import ObjectType, types
 from sqlalchemy import func, and_
 from myapi.extensions import cdb
-from myapi.models import TicketLaiu8CK
+from myapi.struct.models import TicketLaiu8CK
 from datetime import datetime
 
 

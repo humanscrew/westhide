@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
-from myapi.commons import CipherHook
+from myapi.common import CipherHook
 
 from flask_graphql import GraphQLView
 from .schema import schema

@@ -12,7 +12,7 @@ def cli():
 def init():
     """Create a new admin user"""
     from myapi.extensions import db
-    from myapi.models import User
+    from myapi.struct.models import User
 
     click.echo("create user")
     user = User(

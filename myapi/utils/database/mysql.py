@@ -4,8 +4,7 @@ from myapi.config import MYSQL_SETTINGS
 
 class Mysql:
     def __init__(self, config=None):
-        if config is None:
-            config = {}
+        config = {} if config is None else config
 
         self.config = {
             key: config.get(key) or value

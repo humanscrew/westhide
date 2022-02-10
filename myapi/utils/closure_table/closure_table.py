@@ -4,14 +4,14 @@ from sqlalchemy.sql.expression import and_, or_, func
 
 class ClosureTable:
     def __init__(
-        self,
-        tree_model,
-        node_model,
-        closure_table_model,
-        node_schema,
-        closure_table_schema,
-        ancestor_key="name",
-        descendant_key="children",
+            self,
+            tree_model,
+            node_model,
+            closure_table_model,
+            node_schema,
+            closure_table_schema,
+            ancestor_key="name",
+            descendant_key="children",
     ):
         self.tree_model = tree_model
         self.node_model = node_model
@@ -30,7 +30,7 @@ class ClosureTable:
             getattr(self.node_model, field) == value
         ).first()
         node = self.node_schema().dump(node)
-        self.nodes.extend(node)
+        self.nodes.append(node)
         return node
 
     def add_link(self, tree_id, ancestor_id, descendant_id, distance, depth):
@@ -47,14 +47,17 @@ class ClosureTable:
         db.session.commit()
 
     def handle_create_tree(
-        self, tree_list, ancestor_key, descendant_key, ancestor_list=None, tree_id=None
+            self, tree_list, ancestor_key, descendant_key, ancestor_list=None, tree_id=None
     ):
+        if not isinstance(ancestor_list, list):
+            ancestor_list = []
+
         for tree in tree_list:
             node_name = tree.get(ancestor_key)
             if not node_name:
                 return
 
-            depth = isinstance(ancestor_list, list) and len(ancestor_list)
+            depth = len(ancestor_list)
             if not depth:
                 max_tree_id = db.session.query(func.max(self.tree_model.id)).scalar()
                 tree_id = max_tree_id + 1 if max_tree_id else 1

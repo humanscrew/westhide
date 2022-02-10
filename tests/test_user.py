@@ -1,7 +1,7 @@
 from flask import url_for
 
 from myapi.extensions import pwd_context
-from myapi.models import User
+from myapi.struct.models import User
 
 
 def test_get_user(client, db, user, admin_headers):

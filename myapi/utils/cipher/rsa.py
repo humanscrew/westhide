@@ -7,10 +7,9 @@ import base64
 
 from flask import json, jsonify
 
-from myapi.models import User, RSAModel, DefaultRSAModel
-from myapi.schemas import RSASchema, DefaultRSASchema
+from myapi.struct.models import User, RSAModel, DefaultRSAModel
+from myapi.struct.schemas import RSASchema, DefaultRSASchema
 from myapi.extensions import db
-
 
 from .aes import AES
 

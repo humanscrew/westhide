@@ -2,12 +2,11 @@ import json
 import pytest
 from dotenv import load_dotenv
 
-from myapi.models import User
+from myapi.struct.models import User
 from myapi.app import create_app
 from myapi.extensions import db as _db
 from pytest_factoryboy import register
 from tests.factories import UserFactory
-
 
 register(UserFactory)
 

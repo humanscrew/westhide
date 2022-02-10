@@ -1,10 +1,9 @@
-from flask import Flask, json
+from flask import Flask
 from flask_cors import CORS
 
-from myapi import api, auth, trigger, graphql
-from myapi.extensions import apispec, celery, toolbar, db, mdb, jwt, migrate, logger
-
-from datetime import datetime, date
+from myapi.common.lib import Lib, MyJSONEncoder
+from myapi.extensions import apispec, celery, toolbar, db, mdb, jwt, ma, migrate, logger
+from myapi import api, graphql
 
 
 def create_app(testing=False):
@@ -13,7 +12,9 @@ def create_app(testing=False):
     app.config.from_object("myapi.config")
 
     CORS(app, supports_credentials=True)
+
     app.json_encoder = MyJSONEncoder
+    ma.SQLAlchemyAutoSchema.on_bind_field = Lib.camel_case
 
     if testing is True:
         app.config["TESTING"] = True
@@ -57,9 +58,9 @@ def configure_apispec(app):
 
 def register_blueprints(app):
     """register all blueprints for application"""
-    app.register_blueprint(auth.views.blueprint)
-    app.register_blueprint(api.views.blueprint)
-    app.register_blueprint(trigger.views.blueprint)
+    app.register_blueprint(api.trigger.views.blueprint)
+    app.register_blueprint(api.auth.views.blueprint)
+    app.register_blueprint(api.endpoint.views.blueprint)
     app.register_blueprint(graphql.views.blueprint)
 
 
@@ -76,16 +77,3 @@ def init_celery(app=None):
 
     celery.Task = ContextTask
     return celery
-
-
-class MyJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        from decimal import Decimal
-
-        if isinstance(obj, Decimal):
-            return float(obj)
-        if isinstance(obj, datetime):
-            return obj.strftime("%Y-%m-%d %H:%M:%S")
-        if isinstance(obj, date):
-            return obj.strftime("%Y-%m-%d")
-        return super().default(obj)

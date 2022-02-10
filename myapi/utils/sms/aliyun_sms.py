@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from flask import json
 
 from myapi.config import ALIYUN_SMS
@@ -13,8 +12,8 @@ from alibabacloud_dysmsapi20170525 import models as dysmsapi_models
 from alibabacloud_tea_util.client import Client as UtilClient
 
 from myapi.extensions import db
-from myapi.models import SmsAliyun, SmsAliyunDetail
-from myapi.schemas import SmsAliyunSchema, SmsAliyunDetailSchema
+from myapi.struct.models import SmsAliyun, SmsAliyunDetail
+from myapi.struct.schemas import SmsAliyunSchema, SmsAliyunDetailSchema
 
 
 class AliyunSms:

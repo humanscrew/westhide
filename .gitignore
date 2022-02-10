@@ -100,9 +100,9 @@ myapi/utils/pay/tenpay/bill_file/
 myapi/utils/pay/alipay/apiclient/
 myapi/utils/pay/alipay/bill_file/
 
-myapi/logs/*
-!myapi/logs/logs.py
-!myapi/logs/__init__.py
+myapi/utils/logs/*
+!myapi/utils/logs/logs.py
+!myapi/utils/logs/__init__.py
 
 migrations/
 /gunicorn_log/

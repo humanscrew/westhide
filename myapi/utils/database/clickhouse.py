@@ -8,8 +8,7 @@ from clickhouse_sqlalchemy import make_session, get_declarative_base
 
 class Clickhouse:
     def __init__(self, config=None):
-        if config is None:
-            config = {}
+        config = {} if config is None else config
 
         self.config = {
             key: config.get(key) or value for key, value in CLICKHOUSE_SETTINGS.items()

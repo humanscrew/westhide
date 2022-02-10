@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import os
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 
 import pandas as pd
 
 from sqlalchemy.sql.expression import and_
+from sqlalchemy import func
 from myapi.extensions import db
-from myapi.models import TenPay
+from myapi.struct.models import TenPay
 
 from flask import json
 from wechatpayv3 import WeChatPay, WeChatPayType
@@ -73,7 +74,7 @@ class Tenpay:
             self.bill_date = bill_date or self.bill_date
             ten_pay = TenPay.query.filter(
                 and_(
-                    getattr(TenPay, "trade_time").like(self.bill_date + "%"),
+                    func.date(getattr(TenPay, "trade_time")) == self.bill_date,
                     getattr(TenPay, "mchid") == self.config.MCHID.value,
                 )
             ).first()
@@ -96,8 +97,6 @@ class Tenpay:
                 # df[col] = df[col].apply(lambda x: x[1:])
                 df[col] = df[col].str.strip(r"`")
 
-            df["create_time"] = datetime.now()
-            df["update_time"] = datetime.now()
             df.to_sql(
                 name="tenpay_bill",
                 con=db.get_engine(),

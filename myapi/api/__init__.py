@@ -1,3 +1,3 @@
-from . import views
+from . import auth, endpoint, trigger
 
-__all__ = ["views"]
+__all__ = ["auth", "endpoint", "trigger"]

@@ -2,7 +2,7 @@ from graphene import Node, ObjectType, types, Connection
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy_filter import FilterableConnectionField, FilterSet
 
-from myapi.models import User
+from myapi.struct.models import User
 from .role import RoleConnectionField, RoleConnection
 from flask_jwt_extended import get_jwt_identity
 
