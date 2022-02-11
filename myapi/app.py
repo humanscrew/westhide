@@ -59,7 +59,6 @@ def configure_apispec(app):
 def register_blueprints(app):
     """register all blueprints for application"""
     app.register_blueprint(api.trigger.views.blueprint)
-    app.register_blueprint(api.auth.views.blueprint)
     app.register_blueprint(api.endpoint.views.blueprint)
     app.register_blueprint(graphql.views.blueprint)
 

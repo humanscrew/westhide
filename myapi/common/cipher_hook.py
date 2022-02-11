@@ -33,15 +33,23 @@ class CipherHook:
         if request.method == "OPTIONS":
             return None
 
+        aes_key_with_rsa = request.headers.get("AES-Key", None)
+        aes_iv_with_rsa = request.headers.get("AES-IV", None)
+        if not aes_key_with_rsa or not aes_iv_with_rsa:
+            return None
+
+        if request.endpoint == "trigger_register":
+            private_key = RSA.get_default_rsa().get("privateKey")
+
         if not private_key and not user_info:
-            user_info = get_jwt_identity()
+            user_info = (
+                request.headers.get("Username")
+                or request.headers.get("user_id")
+                or get_jwt_identity()
+            )
 
         request_data = request.json or request.args.to_dict()
 
-        aes_key_with_rsa = request.headers.get("aesKey", None)
-        aes_iv_with_rsa = request.headers.get("aesIV", None)
-        if not aes_key_with_rsa or not aes_iv_with_rsa:
-            return None
         request_data, g.aesKey, g.aesIV = RSA().decrypt_with_rsa(
             request_data, aes_key_with_rsa, aes_iv_with_rsa, user_info, private_key
         )

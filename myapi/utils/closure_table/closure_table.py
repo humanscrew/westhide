@@ -4,14 +4,14 @@ from sqlalchemy.sql.expression import and_, or_, func
 
 class ClosureTable:
     def __init__(
-            self,
-            tree_model,
-            node_model,
-            closure_table_model,
-            node_schema,
-            closure_table_schema,
-            ancestor_key="name",
-            descendant_key="children",
+        self,
+        tree_model,
+        node_model,
+        closure_table_model,
+        node_schema,
+        closure_table_schema,
+        ancestor_key="name",
+        descendant_key="children",
     ):
         self.tree_model = tree_model
         self.node_model = node_model
@@ -47,7 +47,7 @@ class ClosureTable:
         db.session.commit()
 
     def handle_create_tree(
-            self, tree_list, ancestor_key, descendant_key, ancestor_list=None, tree_id=None
+        self, tree_list, ancestor_key, descendant_key, ancestor_list=None, tree_id=None
     ):
         if not isinstance(ancestor_list, list):
             ancestor_list = []

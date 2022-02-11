@@ -62,10 +62,12 @@ class RSA:
 
     @staticmethod
     def get_rsa_key(user_info):
-        rsa_key = (
-            RSAModel.query.filter_by(user_id=user_info).first()
-            or User.query.filter_by(username=user_info).first().utils_rsa
-        )
+
+        if isinstance(user_info, str):
+            rsa_key = User.query.filter_by(username=user_info).first().utils_rsa
+        else:
+            rsa_key = RSAModel.query.filter_by(user_id=user_info).first()
+
         if not rsa_key:
             return jsonify({"message": "获取公钥失败"}), 401
         rsa_schema = RSASchema(
